@@ -1,0 +1,1348 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Zvířátka">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#E4F3EE">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="apple-touch-icon.png">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+img{max-width:100%}
+</style>
+<title>Zvířátková dílna</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap">
+<style>
+:root{
+  --bg:#E4F3EE;
+  --bg-deep:#CDE9E0;
+  --ink:#203047;
+  --muted:#5A6E86;
+  --card:#FFFFFF;
+  --tomato:#FF6B4A;
+  --sun:#FFC23C;
+  --leaf:#3FB67A;
+  --sky:#5BB8F5;
+  --plum:#9B6BDF;
+  --shadow:rgba(32,48,71,.16);
+  color-scheme:light;
+}
+html{box-sizing:border-box;height:100%}
+*,*::before,*::after{box-sizing:inherit}
+body{
+  height:100%;margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Baloo 2",ui-rounded,"Arial Rounded MT Bold","Helvetica Neue",system-ui,sans-serif;
+  font-size:16px;line-height:1.3;overflow:hidden;
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
+  -webkit-tap-highlight-color:transparent;overscroll-behavior:none;
+}
+button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer;touch-action:manipulation}
+button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
+#app{position:relative;height:100%;max-width:1100px;margin:0 auto}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:10px;padding:10px 16px;flex:none}
+.topbar h2{margin:0;font-size:24px;font-weight:800;line-height:1;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px 28px}
+
+/* chunky toy buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  height:48px;min-width:48px;padding:0 12px;border-radius:16px;background:var(--card);
+  box-shadow:0 4px 0 var(--shadow);font-weight:700;font-size:17px;flex:none;
+  transition:transform .08s, box-shadow .08s;
+}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--shadow)}
+.btn svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.btn.on{background:var(--sun)}
+.btn.primary{background:var(--tomato);color:#fff;box-shadow:0 4px 0 #C94A2E}
+.btn.green{background:var(--leaf);color:#fff;box-shadow:0 4px 0 #2B8A5A}
+
+/* HOME */
+#home{overflow:hidden}
+.home-top{display:flex;justify-content:space-between;align-items:center;padding:12px 16px}
+.stars{display:inline-flex;align-items:center;gap:6px;background:var(--card);border-radius:999px;padding:6px 14px;font-weight:800;font-size:18px;box-shadow:0 4px 0 var(--shadow);font-variant-numeric:tabular-nums}
+.home-body{flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px;padding:0 16px 12px;overflow-y:auto}
+.home-body h1{margin:0;font-size:clamp(40px,11vw,72px);line-height:.9;font-weight:800;letter-spacing:-.01em;text-wrap:balance}
+.home-body h1 span{display:block;color:var(--tomato)}
+.lead{margin:0;color:var(--muted);font-size:19px;font-weight:500;max-width:30ch}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (min-width:760px){.modes{grid-template-columns:repeat(4,1fr)}}
+.mode{
+  display:flex;flex-direction:column;align-items:flex-start;gap:10px;text-align:left;min-width:0;
+  padding:14px;border-radius:26px;box-shadow:0 6px 0 var(--shadow);transition:transform .1s, box-shadow .1s;
+}
+.mode:active{transform:translateY(4px);box-shadow:0 2px 0 var(--shadow)}
+.mode-puzzle{background:var(--sun)}
+.mode-color{background:var(--sky)}
+.mode-count{background:#8FDBAE}
+.mode-abc{background:#D6C2FF}
+.mode-art{width:88px;height:88px;border-radius:18px;overflow:hidden;background:#fff;display:block;box-shadow:inset 0 0 0 4px rgba(255,255,255,.7)}
+@media (min-width:760px){.mode-art{width:100%;height:auto;aspect-ratio:1}}
+.mode-art canvas,.mode-art svg{width:100%;height:100%;display:block}
+.art-txt{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.art-txt b{font-size:44px;font-weight:800;color:var(--tomato)}
+.art-txt span{font-size:20px;letter-spacing:-2px}
+.mode-name{display:block;font-size:26px;font-weight:800;line-height:1}
+.mode-sub{display:block;font-size:15px;font-weight:600;opacity:.8;margin-top:3px}
+
+/* COUNTING */
+.cnt-field{position:relative;flex:1;min-height:0;margin:0 16px;border-radius:28px;overflow:hidden;background:linear-gradient(#BFE6FF,#EAF8FF 62%,#8FD16A 62%)}
+.cnt-item{position:absolute;translate:-50% -50%;font-size:clamp(40px,min(14vw,9vh),88px);line-height:1;padding:6px}
+.cnt-item.tapped{animation:boing .35s}
+.cnt-item .num{position:absolute;right:-4px;top:-4px;background:var(--tomato);color:#fff;font-size:20px;font-weight:800;min-width:32px;height:32px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:"Baloo 2",ui-rounded,system-ui,sans-serif;box-shadow:0 2px 0 rgba(0,0,0,.15)}
+@keyframes boing{0%{transform:scale(1)}40%{transform:scale(1.3)}70%{transform:scale(.92)}100%{transform:scale(1)}}
+.prompt{text-align:center;font-size:22px;font-weight:800;padding:10px 16px 0;flex:none}
+.answers{display:flex;gap:12px;padding:14px 16px 14px;justify-content:center;flex:none}
+.ans{flex:1;max-width:120px;height:84px;border-radius:24px;background:var(--card);font-size:48px;font-weight:800;box-shadow:0 5px 0 var(--shadow);transition:transform .08s}
+.ans:active{transform:translateY(3px)}
+.ans.ok{background:var(--leaf);color:#fff}
+.ans.bad{animation:shake .4s;opacity:.35}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.dots{display:flex;gap:6px;flex:none}
+.dots i{width:12px;height:12px;border-radius:50%;background:rgba(32,48,71,.15)}
+.dots i.on{background:var(--sun);box-shadow:0 0 0 2px rgba(32,48,71,.2)}
+
+.prompt b{color:var(--tomato);font-size:1.3em}
+.pick-lead{margin:0 0 12px;font-size:19px;font-weight:700;color:var(--muted)}
+.num-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:12px}
+.num-tile{position:relative;aspect-ratio:1;max-width:100%;border-radius:24px;box-shadow:0 4px 0 var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transition:transform .08s}
+.num-tile:active{transform:translateY(3px)}
+.num-tile b{font-size:54px;font-weight:800;line-height:.85}
+.num-tile .pips{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;max-width:62px}
+.num-tile .pips i{width:9px;height:9px;border-radius:50%;background:var(--ink);opacity:.5}
+.num-tile .badge{position:absolute;top:6px;right:8px;font-size:18px}
+.num-intro{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:12px;text-align:center}
+.num-hero{font-size:clamp(110px,34vw,200px);font-weight:800;line-height:.85;color:var(--tomato);text-shadow:0 6px 0 rgba(32,48,71,.12)}
+.num-word{font-size:clamp(28px,8vw,40px);font-weight:800}
+.num-row{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;font-size:clamp(28px,8vw,44px);max-width:6.5em;min-height:1.2em;line-height:1.1}
+.num-row span{animation:boing .35s}
+.cnt-field.groups{display:flex;flex-direction:column;gap:10px;padding:10px;background:rgba(255,255,255,.45)}
+@media (orientation:landscape){.cnt-field.groups{flex-direction:row}}
+.grp{flex:1;min-height:0;background:var(--card);border-radius:22px;box-shadow:0 4px 0 var(--shadow);display:flex;align-items:center;justify-content:center;padding:6px}
+.grp-in{display:flex;flex-wrap:wrap;justify-content:center;gap:0 4px;max-width:6.2em;font-size:clamp(22px,min(7vw,4.4vh),40px);line-height:1.1}
+.grp.ok{box-shadow:0 0 0 5px var(--leaf),0 4px 0 var(--shadow)}
+.grp.bad{animation:shake .4s;opacity:.35}
+.play-btn{height:64px;padding:0 40px;font-size:26px;border-radius:22px}
+
+/* ALPHABET */
+.abc-card{margin:0 16px;background:var(--card);border-radius:28px;box-shadow:0 5px 0 var(--shadow);padding:14px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex:none;text-align:center}
+.abc-quiz .abc-card{flex:1;min-height:0}
+.abc-big{font-size:clamp(64px,20vw,110px);font-weight:800;line-height:.9;color:var(--tomato)}
+.abc-big small{font-size:.6em;color:var(--plum)}
+.abc-emoji{font-size:clamp(64px,20vw,120px);line-height:1.1}
+.abc-word{font-size:clamp(28px,9vw,46px);font-weight:800;letter-spacing:.06em;line-height:1.1}
+.abc-word .first{color:var(--tomato)}
+.abc-word .blank{display:inline-block;min-width:1.2em;border-bottom:5px solid var(--tomato);color:transparent}
+.abc-word .first.pop{animation:boing .4s}
+.abc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:10px;padding-top:14px}
+.abc-key{aspect-ratio:1;max-width:100%;border-radius:18px;background:var(--card);box-shadow:0 4px 0 var(--shadow);font-size:30px;font-weight:800}
+.abc-key[aria-pressed="true"]{background:var(--tomato);color:#fff;box-shadow:0 4px 0 #C94A2E}
+.abc-pane{flex:1;min-height:0;display:flex;flex-direction:column}
+.parade{flex:none;overflow:hidden;padding:6px 0 10px;white-space:nowrap;font-size:34px;line-height:1}
+.parade-track{display:inline-block;animation:parade 60s linear infinite}
+@keyframes parade{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* PICKERS */
+.seg-row{display:flex;align-items:center;gap:10px;padding:0 16px 10px;flex:none;flex-wrap:wrap}
+.seg-label{font-weight:700;color:var(--muted)}
+.seg{display:flex;gap:8px}
+.seg button{height:44px;min-width:56px;padding:0 10px;border-radius:14px;background:var(--card);font-weight:800;font-size:18px;box-shadow:0 3px 0 var(--shadow);display:inline-flex;align-items:center;gap:6px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff;box-shadow:0 3px 0 #0E1826}
+.seg .gridico{width:18px;height:18px;display:inline-grid;gap:1.5px}
+.seg .gridico i{background:currentColor;border-radius:1.5px;opacity:.85}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 16px 12px;flex:none;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;height:40px;padding:0 16px;border-radius:999px;background:rgba(255,255,255,.6);font-weight:700;font-size:16px}
+.chip[aria-pressed="true"]{background:var(--card);box-shadow:0 3px 0 var(--shadow);color:var(--tomato)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:12px}
+.tile{position:relative;aspect-ratio:1;max-width:100%;border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:0 4px 0 var(--shadow);transition:transform .08s}
+.tile:active{transform:translateY(3px)}
+.tile .em{font-size:48px;line-height:1.05}
+.tile .nm{font-size:15px;font-weight:700}
+.tile .badge{position:absolute;top:6px;right:8px;font-size:18px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px}
+.ctile{background:var(--card);border-radius:22px;padding:8px 8px 6px;box-shadow:0 4px 0 var(--shadow);display:flex;flex-direction:column;gap:4px;align-items:stretch;transition:transform .08s}
+.ctile:active{transform:translateY(3px)}
+.ctile svg{width:100%;aspect-ratio:1;max-width:100%;display:block;border-radius:14px}
+.ctile .nm{font-weight:700;font-size:17px;text-align:center}
+.ctile svg .r{stroke-width:6}
+
+/* PUZZLE */
+.pz-area{position:relative;flex:1;overflow:hidden;touch-action:none;margin:0 0 4px}
+.board{position:absolute;border-radius:8px;background:rgba(255,255,255,.6);box-shadow:inset 0 0 0 3px rgba(32,48,71,.12);z-index:0;overflow:hidden}
+.board img{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+.board .ghost{opacity:.22;transition:opacity .2s}
+.board.nohint .ghost{opacity:0}
+.board .full{opacity:0;transition:opacity .5s .15s}
+.board.done{z-index:5000;box-shadow:0 0 0 6px var(--sun),0 10px 30px rgba(32,48,71,.25)}
+.board.done .full{opacity:1}
+.piece{position:absolute;left:0;top:0;pointer-events:none;will-change:transform;filter:drop-shadow(0 3px 3px rgba(20,30,50,.32))}
+.piece.placed{filter:none}
+.piece.anim{transition:transform .2s cubic-bezier(.3,1.4,.6,1)}
+.piece.lift{filter:drop-shadow(0 10px 10px rgba(20,30,50,.35))}
+.pz-progress{font-weight:800;font-variant-numeric:tabular-nums;color:var(--muted);font-size:17px;flex:none}
+
+/* COLORING */
+.cl-stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:0 16px 8px}
+#clSvg{width:100%;height:100%;display:block;touch-action:none;filter:drop-shadow(0 6px 0 var(--shadow));border-radius:24px}
+.r{fill:#fff;stroke:var(--ink);stroke-width:4.5;stroke-linejoin:round;stroke-linecap:round}
+.r.bg{stroke:none}
+.k{fill:var(--ink);pointer-events:none}
+.l{fill:none;stroke:var(--ink);stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.palette{flex:none;display:flex;gap:10px;overflow-x:auto;padding:14px 16px 12px;scrollbar-width:none;background:rgba(255,255,255,.55);border-radius:28px 28px 0 0}
+.palette::-webkit-scrollbar{display:none}
+.sw{flex:none;width:48px;height:48px;border-radius:50%;border:4px solid #fff;box-shadow:0 4px 0 var(--shadow);transition:transform .12s}
+.sw[aria-pressed="true"]{transform:translateY(-6px) scale(1.08);box-shadow:0 0 0 3px var(--ink),0 8px 0 var(--shadow)}
+
+/* WIN */
+.overlay{position:absolute;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(32,48,71,.35)}
+.win-card{background:var(--card);border-radius:32px;padding:22px 20px 20px;width:min(360px,100%);text-align:center;box-shadow:0 8px 0 var(--shadow);animation:pop .35s cubic-bezier(.3,1.5,.6,1)}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.win-art{font-size:96px;line-height:1.1;display:block;margin:0 auto}
+.win-art svg{width:180px;height:180px;display:block;margin:0 auto;border-radius:20px}
+.win-card h3{margin:6px 0 2px;font-size:34px;font-weight:800;line-height:1}
+.win-card p{margin:0 0 16px;color:var(--muted);font-size:18px;font-weight:600}
+.win-btns{display:flex;flex-direction:column;gap:12px}
+.win-btns .btn{height:54px;font-size:20px;width:100%}
+#confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9500}
+
+@media (prefers-reduced-motion:reduce){
+  .parade-track{animation:none}
+  .win-card{animation:none}
+  .piece.anim{transition:none}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- HOME -->
+  <section id="home" class="screen">
+    <div class="home-top">
+      <div class="stars" aria-label="Složená zvířátka">⭐ <span id="starCount">0</span></div>
+      <button class="btn" id="muteBtn" aria-label="Zvuk"></button>
+    </div>
+    <div class="home-body">
+      <h1>Zvířátková <span>dílna</span></h1>
+      <p class="lead">Skládej, vybarvuj, počítej a poznávej písmenka.</p>
+      <div class="modes">
+        <button class="mode mode-puzzle" id="goPuzzle">
+          <span class="mode-art"><canvas id="artPuzzle" width="224" height="224"></canvas></span>
+          <span><span class="mode-name">Puzzle</span><span class="mode-sub" id="puzzleCount"></span></span>
+        </button>
+        <button class="mode mode-color" id="goColor">
+          <span class="mode-art" id="artColor"></span>
+          <span><span class="mode-name">Omalovánky</span><span class="mode-sub" id="colorCount"></span></span>
+        </button>
+        <button class="mode mode-count" id="goCount">
+          <span class="mode-art"><span class="art-txt"><b>3</b><span>🐥🐥🐥</span></span></span>
+          <span><span class="mode-name">Čísla</span><span class="mode-sub">učíme se 1 až 10</span></span>
+        </button>
+        <button class="mode mode-abc" id="goAbc">
+          <span class="mode-art"><span class="art-txt"><b>A</b><span>🍍</span></span></span>
+          <span><span class="mode-name">Abeceda</span><span class="mode-sub">písmenka a slova</span></span>
+        </button>
+      </div>
+    </div>
+    <div class="parade" aria-hidden="true"><span class="parade-track" id="parade"></span></div>
+  </section>
+
+  <!-- PUZZLE PICKER -->
+  <section id="pickPuzzle" class="screen" hidden>
+    <div class="topbar">
+      <button class="btn" data-back="home" aria-label="Zpět"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <h2>Puzzle</h2>
+      <div class="stars">⭐ <span id="starCount2">0</span></div>
+    </div>
+    <div class="seg-row">
+      <span class="seg-label">Dílků:</span>
+      <div class="seg" id="diffSeg"></div>
+    </div>
+    <div class="chips" id="catChips"></div>
+    <div class="scroll"><div class="grid" id="animalGrid"></div></div>
+  </section>
+
+  <!-- PUZZLE -->
+  <section id="puzzle" class="screen" hidden>
+    <div class="topbar">
+      <button class="btn" data-back="pickPuzzle" aria-label="Zpět"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <h2 id="pzTitle"></h2>
+      <span class="pz-progress" id="pzProgress"></span>
+      <button class="btn" id="hintBtn" aria-label="Nápověda"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+      <button class="btn" id="shuffleBtn" aria-label="Zamíchat"><svg viewBox="0 0 24 24"><path d="M3 7h4c4 0 6 10 10 10h4M3 17h4c1.6 0 2.8-1.6 4-3.5M13 9.5C14.2 8 15.4 7 17 7h4M18 4l3 3-3 3M18 14l3 3-3 3"/></svg></button>
+    </div>
+    <div class="pz-area" id="pzArea"></div>
+  </section>
+
+  <!-- COLORING PICKER -->
+  <section id="pickColor" class="screen" hidden>
+    <div class="topbar">
+      <button class="btn" data-back="home" aria-label="Zpět"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <h2>Omalovánky</h2>
+    </div>
+    <div class="scroll"><div class="cgrid" id="colorGrid"></div></div>
+  </section>
+
+  <!-- COLORING -->
+  <section id="color" class="screen" hidden>
+    <div class="topbar">
+      <button class="btn" data-back="pickColor" aria-label="Zpět"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <h2 id="clTitle"></h2>
+      <button class="btn" id="undoBtn" aria-label="Zpět o krok"><svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg></button>
+      <button class="btn" id="clearBtn" aria-label="Vygumovat vše"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></button>
+      <button class="btn green" id="doneBtn" aria-label="Hotovo"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button>
+    </div>
+    <div class="cl-stage"><svg id="clSvg" viewBox="0 0 400 400" aria-label="Omalovánka"></svg></div>
+    <div class="palette" id="palette"></div>
+  </section>
+
+  <!-- COUNTING -->
+  <section id="count" class="screen" hidden>
+    <div class="topbar">
+      <button class="btn" id="numBack" aria-label="Zpět"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <h2 id="numTitle">Čísla</h2>
+      <div class="dots" id="cntDots"></div>
+    </div>
+    <div class="scroll" id="numPick">
+      <p class="pick-lead">Které číslo se dnes naučíme?</p>
+      <div class="num-grid" id="numGrid"></div>
+    </div>
+    <div class="abc-pane" id="numPlay" hidden>
+      <div class="cnt-field" id="cntField"></div>
+      <button class="prompt" id="cntPrompt" aria-label="Zopakovat"></button>
+      <div class="answers" id="cntAnswers"></div>
+    </div>
+  </section>
+
+  <!-- ALPHABET -->
+  <section id="abc" class="screen" hidden>
+    <div class="topbar">
+      <button class="btn" data-back="home" aria-label="Zpět"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <h2>Abeceda</h2>
+      <div class="dots" id="abcDots"></div>
+    </div>
+    <div class="seg-row">
+      <div class="seg" id="abcSeg"><button data-m="learn">Poznávat</button><button data-m="quiz">Hádat</button></div>
+    </div>
+    <div class="abc-pane" id="abcLearn">
+      <button class="abc-card" id="abcCard" aria-label="Přehrát"></button>
+      <div class="scroll"><div class="abc-grid" id="abcGrid"></div></div>
+    </div>
+    <div class="abc-pane abc-quiz" id="abcQuiz" hidden>
+      <button class="abc-card" id="abcQCard" aria-label="Přehrát otázku"></button>
+      <div class="prompt">Na jaké písmeno to začíná?</div>
+      <div class="answers" id="abcAnswers"></div>
+    </div>
+  </section>
+
+  <div class="overlay" id="win" hidden>
+    <div class="win-card">
+      <div class="win-art" id="winArt"></div>
+      <h3 id="winTitle"></h3>
+      <p id="winSub"></p>
+      <div class="win-btns" id="winBtns"></div>
+    </div>
+  </div>
+</div>
+<canvas id="confetti" hidden></canvas>
+
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+const EMOJI_FONT = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+
+/* ---------- DATA ---------- */
+const HABS = {
+  farm:   { sky:['#BFE6FF','#EAF8FF'], ground:'#8FD16A', ground2:'#7BC257', sun:true, deco:['🌻','🌷','🌾','🌼'] },
+  forest: { sky:['#CFEBD6','#F1FAF3'], ground:'#6DB36B', ground2:'#5CA25B', deco:['🌲','🍄','🌳','🌿'] },
+  wild:   { sky:['#FFE0A3','#FFF6DE'], ground:'#E3B862', ground2:'#D6A74E', sun:true, deco:['🌴','🌿','🌵','🌴'] },
+  water:  { sky:['#6FD0F5','#1D7CC2'], water:true, deco:['🫧','🐚','🌿','🫧'] },
+  air:    { sky:['#9ED7FF','#E8F6FF'], clouds:true, deco:['☁️','☁️','🌈','☁️'] },
+  polar:  { sky:['#D8EEFF','#F6FBFF'], ground:'#FFFFFF', ground2:'#E3F1FB', deco:['❄️','🏔️','❄️','⛄'] },
+  fairy:  { sky:['#E6D0FF','#FFE4F2'], ground:'#B7E3A4', ground2:'#A3D78E', deco:['✨','🌈','⭐','🍭'] }
+};
+const CATS = [
+  ['all','Vše'],['farm','Statek'],['forest','Les'],['wild','Divočina'],['water','Voda'],['air','Nebe'],['polar','Led'],['fairy','Pohádky']
+];
+const ANIMALS = [
+  ['🐕','Pes','farm'],['🐈','Kočka','farm'],['🐎','Kůň','farm'],['🐄','Kráva','farm'],['🐖','Prasátko','farm'],['🐑','Ovečka','farm'],
+  ['🐐','Koza','farm'],['🐓','Kohout','farm'],['🐔','Slepice','farm'],['🐤','Kuřátko','farm'],['🦆','Kachna','farm'],['🐇','Králík','farm'],
+  ['🦃','Krocan','farm'],['🐹','Křeček','farm'],['🦙','Lama','farm'],['🐁','Myška','farm'],['🐩','Pudl','farm'],
+  ['🦊','Liška','forest'],['🐺','Vlk','forest'],['🐻','Medvěd','forest'],['🐿️','Veverka','forest'],['🦔','Ježek','forest'],['🦌','Jelen','forest'],
+  ['🦉','Sova','forest'],['🦡','Jezevec','forest'],['🦫','Bobr','forest'],['🐗','Divočák','forest'],['🐌','Šnek','forest'],['🐞','Beruška','forest'],
+  ['🦋','Motýl','forest'],['🐝','Včelka','forest'],['🐛','Housenka','forest'],['🐸','Žába','forest'],['🦝','Mýval','forest'],['🐜','Mravenec','forest'],
+  ['🦁','Lev','wild'],['🐯','Tygr','wild'],['🦓','Zebra','wild'],['🦒','Žirafa','wild'],['🐘','Slon','wild'],['🦏','Nosorožec','wild'],
+  ['🦛','Hroch','wild'],['🐪','Velbloud','wild'],['🦘','Klokan','wild'],['🐒','Opice','wild'],['🦍','Gorila','wild'],['🦧','Orangutan','wild'],
+  ['🦥','Lenochod','wild'],['🐼','Panda','wild'],['🐨','Koala','wild'],['🐊','Krokodýl','wild'],['🐍','Had','wild'],['🦎','Ještěrka','wild'],
+  ['🐢','Želva','wild'],['🦜','Papoušek','wild'],['🦩','Plameňák','wild'],['🦚','Páv','wild'],['🐆','Levhart','wild'],['🦬','Bizon','wild'],
+  ['🐳','Velryba','water'],['🐬','Delfín','water'],['🦭','Tuleň','water'],['🐟','Ryba','water'],['🐠','Rybička','water'],['🐡','Čtverzubec','water'],
+  ['🦈','Žralok','water'],['🐙','Chobotnice','water'],['🦑','Oliheň','water'],['🦀','Krab','water'],['🦞','Humr','water'],['🦐','Kreveta','water'],
+  ['🪼','Medúza','water'],['🦦','Vydra','water'],
+  ['🦅','Orel','air'],['🕊️','Holubice','air'],['🦢','Labuť','air'],['🐦','Ptáček','air'],['🦇','Netopýr','air'],['🐦‍⬛','Kos','air'],
+  ['🐧','Tučňák','polar'],['🐻‍❄️','Lední medvěd','polar'],['🦣','Mamut','polar'],
+  ['🦄','Jednorožec','fairy'],['🐉','Drak','fairy'],['🦖','Tyranosaurus','fairy'],['🦕','Dinosaurus','fairy']
+].map(([e, name, hab]) => ({ e, name, hab }));
+
+/* ---------- SOUND & VOICE ---------- */
+let muted = store.get('zd-muted', false);
+let AC = null;
+function ac() {
+  if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { AC = null; } }
+  if (AC && AC.state === 'suspended') AC.resume();
+  return AC;
+}
+function tone(f, dur, type = 'triangle', vol = .16, when = 0) {
+  if (muted) return; const a = ac(); if (!a) return;
+  const t = a.currentTime + when, o = a.createOscillator(), g = a.createGain();
+  o.type = type; o.frequency.setValueAtTime(f, t);
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .012); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+  o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + dur + .03);
+}
+const sfx = {
+  pick() { tone(480, .07, 'sine', .12); },
+  snap() { tone(660, .09); tone(990, .14, 'triangle', .14, .06); },
+  paint() { tone(380 + Math.random() * 320, .08, 'sine', .1); },
+  win() { [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, .3, 'triangle', .16, i * .11)); }
+};
+function say(text) {
+  if (muted || !('speechSynthesis' in window)) return;
+  try {
+    const u = new SpeechSynthesisUtterance(text); u.lang = 'cs-CZ'; u.rate = .9; u.pitch = 1.15;
+    const v = speechSynthesis.getVoices().find(v => v.lang && v.lang.toLowerCase().startsWith('cs'));
+    if (v) u.voice = v;
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+  } catch (e) {}
+}
+const ICON_SOUND = '<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12"/></svg>';
+const ICON_MUTE = '<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
+function renderMute() { $('#muteBtn').innerHTML = muted ? ICON_MUTE : ICON_SOUND; $('#muteBtn').setAttribute('aria-pressed', String(!muted)); }
+$('#muteBtn').addEventListener('click', () => { muted = !muted; store.set('zd-muted', muted); renderMute(); if (!muted) sfx.pick(); });
+
+/* ---------- NAV ---------- */
+let current = 'home';
+function show(id) { document.querySelectorAll('.screen').forEach(s => { s.hidden = s.id !== id; }); current = id; $('#win').hidden = true; }
+document.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', () => {
+  const to = b.dataset.back;
+  if (to === 'home') renderHome();
+  if (to === 'pickColor') renderColorPicker();
+  if (to === 'pickPuzzle') renderPuzzlePicker();
+  show(to);
+}));
+
+/* ---------- HELPERS ---------- */
+function seeded(seed) { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function hash(s) { let h = 2166136261; for (const ch of s) { h ^= ch.codePointAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
+// Safari on iPhone renders emoji badly (faded or blank) at very large canvas font sizes,
+// so each emoji is drawn once at its native bitmap size (~160px) and scaled up from there.
+const SPRITE_FONT = 128, SPRITE_SIZE = 192;
+const spriteCache = new Map();
+function emojiSprite(e) {
+  if (spriteCache.has(e)) return spriteCache.get(e);
+  const cv = document.createElement('canvas'); cv.width = cv.height = SPRITE_SIZE;
+  const ctx = cv.getContext('2d');
+  ctx.font = `${SPRITE_FONT}px ${EMOJI_FONT}`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+  const m = ctx.measureText(e);
+  const asc = m.actualBoundingBoxAscent || SPRITE_FONT * .8, desc = m.actualBoundingBoxDescent || SPRITE_FONT * .1;
+  const l = m.actualBoundingBoxLeft, r = m.actualBoundingBoxRight;
+  const dx = (l != null && r != null) ? (l - r) / 2 : 0;
+  ctx.fillText(e, SPRITE_SIZE / 2 + dx, SPRITE_SIZE / 2 + (asc - desc) / 2);
+  spriteCache.set(e, cv);
+  return cv;
+}
+function drawEmoji(ctx, e, cx, cy, size) {
+  const box = size * SPRITE_SIZE / SPRITE_FONT;
+  ctx.save();
+  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(emojiSprite(e), cx - box / 2, cy - box / 2, box, box);
+  ctx.restore();
+}
+
+/* ---------- SCENE (puzzle picture) ---------- */
+function drawScene(ctx, S, a) {
+  const h = HABS[a.hab]; const rnd = seeded(hash(a.e));
+  const g = ctx.createLinearGradient(0, 0, 0, S);
+  g.addColorStop(0, h.sky[0]); g.addColorStop(1, h.sky[1]);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, S, S);
+  if (h.sun) {
+    ctx.fillStyle = 'rgba(255,214,74,.35)'; ctx.beginPath(); ctx.arc(S * .84, S * .14, S * .1, 0, 7); ctx.fill();
+    ctx.fillStyle = '#FFD54A'; ctx.beginPath(); ctx.arc(S * .84, S * .14, S * .065, 0, 7); ctx.fill();
+  }
+  if (h.water) {
+    ctx.fillStyle = 'rgba(255,255,255,.18)';
+    for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.moveTo(S * (.1 + i * .2), 0); ctx.lineTo(S * (.2 + i * .2), 0); ctx.lineTo(S * (.05 + i * .2), S); ctx.lineTo(S * (-.02 + i * .2), S); ctx.fill(); }
+    ctx.fillStyle = '#F2D59A'; ctx.beginPath(); ctx.moveTo(0, S * .88); ctx.quadraticCurveTo(S * .5, S * .82, S, S * .9); ctx.lineTo(S, S); ctx.lineTo(0, S); ctx.fill();
+  }
+  if (h.ground) {
+    ctx.fillStyle = h.ground2; ctx.beginPath(); ctx.moveTo(0, S * .7); ctx.quadraticCurveTo(S * .3, S * .64, S * .62, S * .7); ctx.quadraticCurveTo(S * .85, S * .74, S, S * .69); ctx.lineTo(S, S); ctx.lineTo(0, S); ctx.fill();
+    ctx.fillStyle = h.ground; ctx.beginPath(); ctx.moveTo(0, S * .77); ctx.quadraticCurveTo(S * .5, S * .7, S, S * .79); ctx.lineTo(S, S); ctx.lineTo(0, S); ctx.fill();
+    ctx.fillStyle = 'rgba(20,40,30,.13)'; ctx.beginPath(); ctx.ellipse(S * .5, S * .84, S * .27, S * .045, 0, 0, 7); ctx.fill();
+  }
+  const zones = [[.12, .14], [.88, .16], [.1, .88], [.9, .88]];
+  zones.forEach(([x, y], i) => {
+    if (h.sun && i === 1) return;
+    drawEmoji(ctx, h.deco[i], S * (x + (rnd() - .5) * .06), S * (y + (rnd() - .5) * .05), S * (.12 + rnd() * .04));
+  });
+  drawEmoji(ctx, a.e, S * .5, S * .52, S * .6);
+}
+
+/* ---------- COLORING PAGES ---------- */
+const c = (x, y, r, k = 'r') => `<circle class="${k}" cx="${x}" cy="${y}" r="${r}"/>`;
+const e = (x, y, rx, ry, k = 'r', rot = 0) => `<ellipse class="${k}" cx="${x}" cy="${y}" rx="${rx}" ry="${ry}"${rot ? ` transform="rotate(${rot} ${x} ${y})"` : ''}/>`;
+const p = (d, k = 'r') => `<path class="${k}" d="${d}"/>`;
+const rc = (x, y, w, h, rx, k = 'r') => `<rect class="${k}" x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}"/>`;
+const cloud = (x, y) => p(`M${x} ${y + 30} a16 16 0 0 1 12 -26 a22 22 0 0 1 40 -8 a18 18 0 0 1 30 14 a14 14 0 0 1 -2 20 Z`);
+function scallop(cx, cy, R, n, bump) {
+  let d = '';
+  for (let i = 0; i < n; i++) {
+    const a0 = i / n * Math.PI * 2, a1 = (i + 1) / n * Math.PI * 2, am = (a0 + a1) / 2;
+    const x0 = cx + R * Math.cos(a0), y0 = cy + R * Math.sin(a0);
+    const x1 = cx + R * Math.cos(a1), y1 = cy + R * Math.sin(a1);
+    const qx = cx + (R + bump * 2) * Math.cos(am), qy = cy + (R + bump * 2) * Math.sin(am);
+    d += (i === 0 ? `M${x0.toFixed(1)} ${y0.toFixed(1)} ` : '') + `Q${qx.toFixed(1)} ${qy.toFixed(1)} ${x1.toFixed(1)} ${y1.toFixed(1)} `;
+  }
+  return d + 'Z';
+}
+// zigzag half-ring (hedgehog spikes) over the upper half of a circle
+function spikes(cx, cy, r1, r2, n) {
+  let d = `M${cx - r1} ${cy} `;
+  for (let i = 0; i <= n * 2; i++) {
+    const a = Math.PI + (i / (n * 2)) * Math.PI, r = i % 2 ? r2 : r1;
+    d += `L${(cx + r * Math.cos(a)).toFixed(1)} ${(cy + r * Math.sin(a)).toFixed(1)} `;
+  }
+  return d + 'Z';
+}
+const BG = '<rect class="r bg" width="400" height="400"/>';
+const GROUND = p('M0 330 Q110 305 210 326 T400 318 V400 H0Z');
+const meadow = () => BG + c(342, 62, 30) + cloud(36, 58) + GROUND;
+const pond = () => meadow() + e(200, 348, 175, 32);
+
+const PAGES = [
+  { id:'cat', name:'Kočička', e:'🐈', svg: meadow() +
+    p('M262 305 C318 302 338 262 322 226 C316 214 300 218 305 230 C318 260 305 284 258 287 Z') +
+    p('M160 142 L160 80 L208 118 Z') + p('M260 142 L260 80 L212 118 Z') +
+    p('M168 128 L168 96 L194 116 Z') + p('M252 128 L252 96 L226 116 Z') +
+    e(210, 272, 72, 62) + e(210, 285, 36, 40) + e(182, 334, 22, 12) + e(238, 334, 22, 12) +
+    c(210, 168, 60) + e(188, 165, 11, 14) + e(232, 165, 11, 14) + e(189, 167, 5, 9, 'k') + e(231, 167, 5, 9, 'k') +
+    p('M201 188 L219 188 L210 198 Z') +
+    p('M210 198 Q210 208 198 209 M210 198 Q210 208 222 209 M182 194 L140 186 M182 202 L140 206 M238 194 L280 186 M238 202 L280 206', 'l') },
+  { id:'dog', name:'Pejsek', e:'🐕', svg: meadow() +
+    p('M270 305 C320 300 335 260 322 228 C318 218 305 222 308 232 C316 262 305 285 265 288 Z') +
+    e(205, 280, 72, 62) + e(205, 288, 34, 40) + e(178, 336, 22, 12) + e(232, 336, 22, 12) +
+    c(205, 165, 58) + e(150, 172, 20, 42, 'r', 15) + e(260, 172, 20, 42, 'r', -15) +
+    e(227, 152, 16, 18) + e(205, 194, 30, 21) + e(205, 183, 12, 8, 'k') + c(184, 154, 7, 'k') + c(226, 154, 7, 'k') +
+    p('M205 190 L205 200 M191 204 Q205 212 219 204', 'l') +
+    p('M165 215 Q205 235 245 215 L245 228 Q205 248 165 228 Z') + c(205, 244, 9) },
+  { id:'pig', name:'Prasátko', e:'🐖', svg: meadow() +
+    rc(130, 290, 28, 48, 9) + rc(168, 292, 28, 46, 9) + rc(232, 292, 28, 46, 9) + rc(268, 290, 28, 48, 9) +
+    e(210, 250, 108, 70) + e(245, 228, 26, 18) + p('M314 240 q22 -12 18 8 q-4 16 12 6', 'l') +
+    p('M80 182 L70 138 L108 166 Z') + p('M126 166 L142 132 L152 178 Z') +
+    c(112, 222, 55) + e(128, 244, 10, 7) + e(76, 236, 26, 20) + e(68, 236, 4, 6, 'k') + e(84, 236, 4, 6, 'k') + c(104, 206, 6, 'k') +
+    p('M88 262 Q98 268 110 262', 'l') },
+  { id:'fish', name:'Rybička', e:'🐠', svg: BG +
+    p('M0 352 Q100 330 200 350 T400 345 V400 H0Z') +
+    p('M60 400 C40 340 80 320 60 262 C92 310 72 340 86 400 Z') + p('M330 400 C310 350 350 330 336 282 C362 322 346 352 360 400 Z') +
+    c(88, 118, 11) + c(68, 86, 7) + c(96, 62, 5) + c(318, 84, 8) + c(336, 58, 5) +
+    p('M280 200 L350 150 Q335 200 350 250 Z') + p('M168 146 Q210 92 262 150 Z') + p('M198 252 Q220 292 252 246 Z') +
+    e(200, 200, 95, 62) +
+    p('M220 142 Q240 200 220 258 L245 252 Q262 200 245 148 Z') + p('M170 142 Q185 200 170 258 L150 253 Q164 200 150 147 Z') +
+    p('M195 208 Q226 202 232 228 Q210 234 195 208 Z') + c(128, 186, 14) + c(125, 188, 6, 'k') +
+    p('M106 214 Q116 220 126 212', 'l') },
+  { id:'owl', name:'Sovička', e:'🦉', svg: BG + c(335, 62, 26) + c(60, 60, 5) + c(110, 36, 4) + c(275, 110, 4) +
+    p('M10 322 Q200 305 390 328 L390 346 Q200 322 10 340 Z') +
+    p('M136 122 L124 64 L176 100 Z') + p('M264 122 L276 64 L224 100 Z') +
+    e(200, 250, 80, 85) + e(200, 150, 75, 60) +
+    p('M125 210 Q92 270 140 320 Q152 260 125 210 Z') + p('M275 210 Q308 270 260 320 Q248 260 275 210 Z') +
+    e(200, 266, 46, 56) + p('M180 240 q10 8 20 0 q10 8 20 0 M180 270 q10 8 20 0 q10 8 20 0 M186 300 q7 6 14 0 q7 6 14 0', 'l') +
+    c(170, 148, 28) + c(230, 148, 28) + c(170, 150, 14) + c(230, 150, 14) + c(170, 151, 7, 'k') + c(230, 151, 7, 'k') +
+    p('M190 176 L210 176 L200 198 Z') + e(174, 334, 16, 8) + e(226, 334, 16, 8) },
+  { id:'turtle', name:'Želvička', e:'🐢', svg: meadow() +
+    p('M92 284 L56 300 L94 302 Z') + e(130, 305, 22, 28) + e(265, 305, 22, 28) +
+    e(300, 275, 30, 18) + c(330, 250, 32) + c(340, 242, 5, 'k') + p('M328 262 Q340 270 352 259', 'l') +
+    p('M90 300 Q95 160 200 155 Q305 160 310 300 Z') +
+    p('M175 195 L225 195 L242 240 L200 268 L158 240 Z') +
+    p('M128 205 L170 200 L155 245 L110 250 Q112 222 128 205 Z') + p('M272 205 L230 200 L245 245 L290 250 Q288 222 272 205 Z') +
+    p('M110 262 L158 252 L195 278 L190 298 L100 298 Q102 278 110 262 Z') + p('M290 262 L242 252 L205 278 L210 298 L300 298 Q298 278 290 262 Z') +
+    p('M80 300 Q200 318 320 300 L320 312 Q200 330 80 312 Z') },
+  { id:'butterfly', name:'Motýlek', e:'🦋', svg: meadow() +
+    p('M195 200 C150 90 60 80 70 160 C75 200 140 215 195 210 Z') + p('M205 200 C250 90 340 80 330 160 C325 200 260 215 205 210 Z') +
+    p('M195 215 C140 220 90 260 120 305 C150 335 190 280 197 230 Z') + p('M205 215 C260 220 310 260 280 305 C250 335 210 280 203 230 Z') +
+    c(118, 148, 20) + c(282, 148, 20) + c(160, 182, 10) + c(240, 182, 10) + c(140, 280, 13) + c(260, 280, 13) +
+    e(200, 228, 12, 62) + c(200, 152, 16) + p('M195 139 Q180 100 165 95 M205 139 Q220 100 235 95', 'l') + c(165, 95, 6, 'k') + c(235, 95, 6, 'k') },
+  { id:'elephant', name:'Slon', e:'🐘', svg: meadow() +
+    rc(140, 268, 40, 72, 12) + rc(190, 272, 40, 68, 12) + rc(245, 272, 40, 68, 12) + rc(288, 268, 40, 72, 12) +
+    p('M334 222 Q356 256 344 282', 'l') + e(240, 228, 102, 76) +
+    p('M85 210 C60 250 60 300 80 320 C90 330 105 322 98 310 C85 290 90 260 115 235 Z') +
+    c(130, 190, 60) + e(165, 196, 40, 56) + c(110, 176, 6, 'k') + p('M104 236 Q98 262 120 264 Q112 250 118 238 Z') },
+  { id:'ladybug', name:'Beruška', e:'🐞', svg: meadow() +
+    p('M40 330 C80 200 320 180 370 300 C300 360 120 380 40 330 Z') + p('M62 325 Q200 282 350 296', 'l') +
+    p('M150 220 L108 198 M145 250 L98 256 M155 282 L114 306 M250 220 L292 198 M255 250 L302 256 M245 282 L286 306', 'l') +
+    c(200, 165, 36) + c(186, 152, 8) + c(214, 152, 8) + c(186, 153, 3.5, 'k') + c(214, 153, 3.5, 'k') +
+    p('M190 132 Q180 105 165 100 M210 132 Q220 105 235 100', 'l') +
+    p('M200 170 A80 80 0 0 0 200 330 Z') + p('M200 170 A80 80 0 0 1 200 330 Z') +
+    c(165, 220, 14) + c(150, 268, 12) + c(176, 304, 10) + c(235, 220, 14) + c(250, 268, 12) + c(224, 304, 10) },
+  { id:'bear', name:'Medvídek', e:'🐻', svg: meadow() +
+    c(150, 104, 26) + c(250, 104, 26) + c(150, 104, 12) + c(250, 104, 12) +
+    e(200, 270, 80, 70) + e(200, 282, 45, 45) + e(132, 262, 22, 40, 'r', 25) + e(268, 262, 22, 40, 'r', -25) +
+    e(155, 330, 30, 20) + e(245, 330, 30, 20) + c(155, 332, 10) + c(245, 332, 10) +
+    c(200, 150, 62) + e(200, 174, 28, 22) + e(200, 164, 11, 8, 'k') + c(178, 138, 7, 'k') + c(222, 138, 7, 'k') +
+    p('M200 172 L200 182 M188 186 Q200 194 212 186', 'l') },
+  { id:'bunny', name:'Zajíček', e:'🐇', svg: meadow() +
+    e(175, 90, 18, 55) + e(225, 90, 18, 55) + e(175, 92, 8, 40) + e(225, 92, 8, 40) +
+    e(200, 276, 70, 64) + e(200, 288, 38, 42) + e(165, 334, 28, 14) + e(235, 334, 28, 14) +
+    c(200, 172, 55) + c(166, 190, 10) + c(234, 190, 10) + c(182, 162, 7, 'k') + c(218, 162, 7, 'k') +
+    p('M193 182 L207 182 L200 190 Z') +
+    p('M200 190 Q200 200 190 202 M200 190 Q200 200 210 202 M176 188 L146 182 M176 196 L146 200 M224 188 L254 182 M224 196 L254 200', 'l') +
+    p('M250 242 Q234 222 244 208 Q254 226 257 238 Q262 216 274 210 Q268 232 260 244 Z') + p('M248 238 L298 312 L266 244 Z') },
+  { id:'penguin', name:'Tučňák', e:'🐧', svg: BG + cloud(250, 50) +
+    p('M-10 330 L90 200 L190 330 Z') + p('M150 330 L270 176 L400 330 Z') +
+    p('M0 330 Q110 312 210 326 T400 320 V400 H0Z') +
+    e(200, 225, 85, 115) + e(200, 248, 58, 88) + p('M150 150 Q200 112 250 150 Q260 190 200 200 Q140 190 150 150 Z') +
+    p('M118 190 Q70 260 110 300 Q125 250 125 200 Z') + p('M282 190 Q330 260 290 300 Q275 250 275 200 Z') +
+    c(180, 152, 7, 'k') + c(220, 152, 7, 'k') + p('M188 168 L212 168 L200 186 Z') +
+    p('M135 196 Q200 226 265 196 L268 213 Q200 246 132 213 Z') + p('M234 216 L248 270 L268 263 L255 210 Z') +
+    e(170, 340, 26, 10) + e(230, 340, 26, 10) },
+  { id:'snail', name:'Šnek', e:'🐌', svg: meadow() +
+    p('M50 335 Q60 300 110 300 L290 300 Q310 300 310 270 L312 190 Q315 160 340 160 Q365 160 365 190 L362 300 Q360 335 320 338 Z') +
+    c(190, 215, 92) + p('M190 220 a12 12 0 0 1 24 0 a24 24 0 0 1 -48 0 a36 36 0 0 1 72 0 a48 48 0 0 1 -96 0 a60 60 0 0 1 120 0', 'l') +
+    p('M330 165 L320 122 M350 165 L364 122', 'l') + c(320, 118, 11) + c(364, 118, 11) + c(321, 119, 4.5, 'k') + c(363, 119, 4.5, 'k') +
+    p('M332 200 Q342 210 354 198', 'l') },
+  { id:'lion', name:'Lev', e:'🦁', svg: meadow() +
+    p('M262 300 Q330 305 328 256', 'l') + e(330, 242, 12, 16) +
+    e(200, 285, 70, 55) + e(170, 336, 24, 12) + e(230, 336, 24, 12) +
+    p(scallop(200, 165, 76, 14, 9)) + c(158, 118, 16) + c(242, 118, 16) +
+    c(200, 165, 55) + c(180, 154, 6, 'k') + c(220, 154, 6, 'k') +
+    e(188, 190, 17, 13) + e(212, 190, 17, 13) + p('M190 174 L210 174 L200 186 Z') },
+  { id:'duck', name:'Kachnička', e:'🦆', svg: pond() +
+    p('M288 268 L338 245 L312 292 Z') + e(200, 285, 100, 48) + e(140, 245, 28, 26) + c(130, 200, 42) +
+    p('M175 272 Q225 248 272 272 Q235 308 185 295 Z') + p('M92 198 Q60 202 70 214 Q84 220 100 212 Z') + c(122, 190, 6, 'k') +
+    p('M52 350 q15 -8 30 0 M300 358 q15 -8 30 0', 'l') },
+  { id:'frog', name:'Žabka', e:'🐸', svg: pond() +
+    p('M70 335 Q70 300 200 296 Q330 300 330 335 Q330 362 200 364 Q70 362 70 335 Z') +
+    e(125, 300, 45, 26) + e(275, 300, 45, 26) + e(200, 258, 85, 62) + e(200, 275, 50, 40) +
+    e(160, 322, 20, 9) + e(240, 322, 20, 9) + c(160, 195, 28) + c(240, 195, 28) + c(160, 192, 15) + c(240, 192, 15) +
+    c(160, 194, 7, 'k') + c(240, 194, 7, 'k') + c(142, 250, 9) + c(258, 250, 9) + p('M150 238 Q200 272 250 238', 'l') },
+  { id:'cow', name:'Kravička', e:'🐄', svg: meadow() +
+    rc(140, 285, 26, 52, 8) + rc(175, 288, 26, 50, 8) + rc(250, 288, 26, 50, 8) + rc(285, 285, 26, 52, 8) +
+    p('M318 240 Q340 270 332 298', 'l') + e(332, 306, 8, 12) +
+    e(220, 250, 105, 62) +
+    p('M180 200 Q210 195 215 225 Q205 250 175 240 Q160 220 180 200 Z') + p('M260 230 Q295 225 300 255 Q285 280 258 268 Q245 248 260 230 Z') +
+    e(250, 308, 20, 11) +
+    p('M88 140 Q78 118 92 110 Q96 126 102 136 Z') + p('M142 136 Q150 112 164 116 Q152 128 150 140 Z') +
+    e(72, 158, 20, 10, 'r', -20) + e(158, 154, 20, 10, 'r', 20) +
+    e(115, 175, 45, 50) + e(115, 212, 38, 24) + e(102, 212, 4, 6, 'k') + e(128, 212, 4, 6, 'k') +
+    c(100, 165, 6, 'k') + c(130, 165, 6, 'k') },
+  { id:'mouse', name:'Myška', e:'🐁', svg: meadow() +
+    p('M250 320 Q320 332 330 282 Q335 250 310 245', 'l') +
+    c(145, 120, 40) + c(255, 120, 40) + c(145, 120, 24) + c(255, 120, 24) +
+    e(200, 272, 68, 62) + e(200, 284, 38, 40) + e(170, 334, 24, 10) + e(230, 334, 24, 10) +
+    e(200, 170, 62, 55) + c(180, 160, 8, 'k') + c(220, 160, 8, 'k') + c(200, 190, 9) +
+    p('M186 192 L146 184 M186 198 L146 204 M214 192 L254 184 M214 198 L254 204 M200 199 Q200 208 192 210 M200 199 Q200 208 208 210', 'l') +
+    p('M244 300 L306 278 L306 318 L244 330 Z') + c(268, 308, 5) + c(290, 298, 4) },
+  { id:'fox', name:'Lištička', e:'🦊', svg: meadow() +
+    p('M255 320 C330 330 362 262 332 218 C322 250 300 280 250 290 Z') + p('M332 218 C348 240 350 262 344 280 C332 266 322 246 332 218 Z') +
+    e(205, 275, 65, 60) + p('M175 235 Q205 225 235 235 Q230 300 205 318 Q180 300 175 235 Z') +
+    e(180, 334, 20, 11) + e(230, 334, 20, 11) +
+    p('M150 140 L145 72 L195 118 Z') + p('M260 140 L265 72 L215 118 Z') + p('M158 125 L156 92 L182 116 Z') + p('M252 125 L254 92 L228 116 Z') +
+    p('M140 150 Q205 95 270 150 Q260 190 205 225 Q150 190 140 150 Z') +
+    p('M150 170 Q175 180 205 225 Q160 205 150 170 Z') + p('M260 170 Q235 180 205 225 Q250 205 260 170 Z') +
+    c(205, 219, 8, 'k') + e(180, 160, 5, 8, 'k') + e(230, 160, 5, 8, 'k') },
+  { id:'hedgehog', name:'Ježek', e:'🦔', svg: meadow() +
+    p(spikes(185, 290, 78, 112, 17)) + e(190, 295, 105, 42) +
+    p('M240 255 Q290 250 335 298 Q300 324 245 320 Q225 292 240 255 Z') + c(335, 297, 8, 'k') + c(285, 278, 6, 'k') +
+    e(150, 334, 18, 9) + e(230, 334, 18, 9) +
+    c(160, 190, 22) + p('M160 168 L164 155', 'l') + p('M164 160 Q178 150 186 160 Q172 168 164 160 Z') },
+  { id:'giraffe', name:'Žirafa', e:'🦒', svg: meadow() +
+    rc(170, 268, 20, 70, 6) + rc(200, 270, 20, 68, 6) + rc(255, 270, 20, 68, 6) + rc(285, 268, 20, 70, 6) +
+    p('M318 230 Q336 260 328 286', 'l') + e(240, 240, 85, 50) +
+    p('M150 232 L110 90 L150 80 L200 215 Z') +
+    c(215, 230, 12) + c(252, 252, 10) + c(282, 226, 11) + c(242, 212, 8) + c(150, 150, 9) + c(168, 195, 9) + c(135, 112, 7) +
+    p('M112 62 L108 40 M132 60 L136 38', 'l') + c(108, 38, 6) + c(136, 38, 6) +
+    e(152, 70, 14, 7, 'r', -30) + e(115, 85, 40, 24, 'r', -15) +
+    c(112, 78, 5, 'k') + c(84, 92, 3, 'k') + p('M86 102 Q96 108 106 102', 'l') },
+  { id:'whale', name:'Velryba', e:'🐳', svg: BG + c(340, 60, 28) + cloud(40, 50) +
+    p('M0 150 Q50 135 100 150 T200 150 T300 150 T400 150 V400 H0 Z') +
+    p('M200 116 Q185 76 160 78 Q182 62 200 94 Q218 62 240 78 Q215 76 200 116 Z') +
+    p('M320 230 Q360 170 382 190 Q360 215 345 240 Q370 250 382 280 Q350 286 320 250 Z') +
+    p('M60 250 Q70 150 200 145 Q310 145 330 240 Q310 300 200 305 Q90 305 60 250 Z') +
+    p('M80 270 Q200 320 310 262 Q300 295 200 300 Q110 300 80 270 Z') +
+    p('M180 262 Q200 292 232 284 Q216 266 180 262 Z') + c(115, 225, 7, 'k') + p('M70 252 Q95 262 125 250', 'l') +
+    p('M40 340 q15 -8 30 0 M300 350 q15 -8 30 0 M160 365 q15 -8 30 0', 'l') },
+  { id:'octopus', name:'Chobotnice', e:'🐙', svg: BG +
+    p('M0 352 Q100 330 200 350 T400 345 V400 H0Z') + c(70, 90, 10) + c(90, 60, 6) + c(330, 80, 8) +
+    [0, 1, 2, 3, 4, 5].map(i => { const x = 112 + i * 30, d = i < 3 ? -1 : 1, w = 26;
+      return p(`M${x} 240 C${x + d * 10} 290 ${x + d * 34} 300 ${x + w / 2 + d * 40} 330 Q${x + w / 2 + d * 46} 346 ${x + w / 2 + d * 30} 344 C${x + w / 2 + d * 14} 322 ${x + w + d * 4} 292 ${x + w} 240 Z`); }).join('') +
+    e(200, 180, 95, 85) + c(160, 130, 10) + c(242, 124, 12) + c(202, 108, 8) +
+    c(165, 185, 18) + c(235, 185, 18) + c(168, 188, 8, 'k') + c(232, 188, 8, 'k') +
+    c(140, 216, 9) + c(260, 216, 9) + p('M180 222 Q200 238 220 222', 'l') },
+  { id:'chick', name:'Kuřátko', e:'🐤', svg: meadow() +
+    p('M195 148 Q180 120 196 112 Q200 130 206 146 Q212 124 226 124 Q214 138 210 150 Z') +
+    c(200, 220, 75) + p('M130 215 Q98 238 116 272 Q140 262 146 228 Z') + p('M270 215 Q302 238 284 272 Q260 262 254 228 Z') +
+    c(175, 205, 8, 'k') + c(225, 205, 8, 'k') + p('M188 222 L212 222 L200 240 Z') + c(160, 230, 8) + c(240, 230, 8) +
+    p('M110 300 L135 270 L160 295 L185 268 L210 295 L235 268 L260 295 L290 270 Q305 340 200 350 Q95 340 110 300 Z') },
+  { id:'bee', name:'Včelka', e:'🐝', svg: meadow() +
+    p('M320 330 L320 262', 'l') + p(scallop(320, 240, 18, 6, 8)) + c(320, 240, 11) +
+    e(170, 145, 35, 50, 'r', -25) + e(230, 145, 35, 50, 'r', 25) +
+    p('M283 218 L308 225 L283 232 Z') + e(200, 225, 85, 65) +
+    p('M175 163 Q185 225 175 287 L205 290 Q215 225 205 160 Z') + p('M235 166 Q245 225 235 284 L257 274 Q265 225 257 176 Z') +
+    c(115, 210, 40) + c(105, 200, 6, 'k') + p('M95 222 Q108 232 120 224', 'l') +
+    p('M105 172 Q95 145 80 140 M125 172 Q130 145 145 138', 'l') + c(80, 140, 6, 'k') + c(145, 138, 6, 'k') },
+  { id:'crab', name:'Krab', e:'🦀', svg: BG + c(340, 60, 28) +
+    p('M0 190 Q100 175 200 190 T400 190 V260 H0 Z') + p('M0 250 Q200 228 400 250 V400 H0 Z') +
+    p('M140 280 L100 300 L90 330 M145 300 L112 332 M260 280 L300 300 L310 330 M255 300 L288 332 M140 245 L100 202 M260 245 L300 202', 'l') +
+    p('M100 202 Q60 192 70 150 Q85 170 100 165 Q95 150 110 140 Q125 175 100 202 Z') +
+    p('M300 202 Q340 192 330 150 Q315 170 300 165 Q305 150 290 140 Q275 175 300 202 Z') +
+    e(200, 270, 80, 50) + p('M180 225 L175 192 M220 225 L225 192', 'l') + c(175, 185, 12) + c(225, 185, 12) +
+    c(176, 186, 5, 'k') + c(224, 186, 5, 'k') + p('M180 280 Q200 295 220 280', 'l') + c(155, 256, 7) + c(245, 256, 7) },
+  { id:'hippo', name:'Hroch', e:'🦛', svg: pond() +
+    e(232, 272, 110, 64) + c(120, 136, 14) + c(190, 131, 14) + e(150, 195, 65, 58) + e(140, 245, 80, 46) +
+    e(112, 232, 6, 8, 'k') + e(168, 232, 6, 8, 'k') + c(130, 172, 7, 'k') + c(178, 172, 7, 'k') +
+    p('M92 262 Q140 284 188 262', 'l') + rc(118, 268, 10, 12, 2) + rc(152, 268, 10, 12, 2) +
+    p('M25 322 Q60 306 95 322 T165 322 T235 322 T305 322 T375 322 L375 358 Q200 384 25 358 Z') },
+  { id:'dino', name:'Dinosaurus', e:'🦕', svg: meadow() +
+    rc(160, 270, 32, 64, 10) + rc(200, 275, 32, 60, 10) + rc(250, 275, 32, 60, 10) + rc(285, 270, 32, 64, 10) +
+    p('M300 240 Q370 250 386 302 Q350 270 300 276 Z') +
+    p('M190 197 L200 176 L212 194 Z') + p('M222 192 L234 169 L246 192 Z') + p('M256 196 L268 176 L279 200 Z') +
+    e(230, 245, 90, 55) + p('M160 232 Q120 150 115 90 L150 85 Q160 150 202 212 Z') + e(120, 80, 38, 24) +
+    c(215, 250, 10) + c(250, 234, 9) + c(272, 262, 8) +
+    c(112, 72, 5, 'k') + c(88, 76, 3, 'k') + p('M92 90 Q104 97 116 91', 'l') },
+  { id:'unicorn', name:'Jednorožec', e:'🦄', svg: BG + c(60, 60, 6) + c(340, 90, 6) + c(90, 150, 4) +
+    p('M30 400 A170 170 0 0 1 370 400 L342 400 A142 142 0 0 0 58 400 Z') +
+    p('M58 400 A142 142 0 0 1 342 400 L314 400 A114 114 0 0 0 86 400 Z') +
+    p('M86 400 A114 114 0 0 1 314 400 L286 400 A86 86 0 0 0 114 400 Z') +
+    p('M170 250 Q162 330 150 400 L300 400 Q282 320 250 230 Z') +
+    p('M230 110 Q290 120 290 180 Q310 220 285 260 Q300 300 270 332 Q260 280 250 230 Q245 170 230 110 Z') +
+    p('M205 112 L216 70 L236 116 Z') +
+    p('M150 150 Q170 100 230 115 Q260 150 250 230 Q230 270 190 260 Q130 260 115 230 Q105 200 150 150 Z') +
+    e(135, 228, 30, 24) + c(192, 214, 10) +
+    p('M185 116 L200 40 L215 119 Z') + p('M190 100 L209 94 M194 82 L207 78 M197 64 L204 61', 'l') +
+    p('M185 118 Q160 130 165 162 Q180 140 202 136 Z') +
+    p('M172 176 Q185 188 200 176 M176 181 L170 188 M186 184 L184 192 M196 181 L200 188', 'l') +
+    c(124, 225, 4, 'k') + p('M122 244 Q138 253 154 244', 'l') },
+  { id:'sheep', name:'Ovečka', e:'🐑', svg: meadow() +
+    rc(150, 290, 18, 45, 6) + rc(180, 292, 18, 43, 6) + rc(240, 292, 18, 43, 6) + rc(270, 290, 18, 45, 6) +
+    p(scallop(215, 250, 70, 14, 10)) + e(100, 214, 18, 9, 'r', -25) + e(162, 214, 18, 9, 'r', 25) +
+    e(130, 232, 34, 42) + p(scallop(130, 192, 18, 7, 6)) +
+    c(118, 230, 5, 'k') + c(142, 230, 5, 'k') + p('M124 252 Q130 258 136 252', 'l') },
+  { id:'panda', name:'Panda', e:'🐼', svg: meadow() +
+    rc(292, 196, 16, 140, 6) + p('M292 240 L308 240 M292 285 L308 285', 'l') + p('M300 202 Q330 176 346 188 Q326 204 300 202 Z') +
+    c(145, 110, 26) + c(255, 110, 26) +
+    e(200, 275, 78, 64) + e(135, 265, 22, 42, 'r', 20) + e(265, 265, 22, 42, 'r', -20) +
+    e(158, 330, 28, 18) + e(242, 330, 28, 18) +
+    c(200, 160, 64) + e(175, 158, 17, 22, 'r', 25) + e(225, 158, 17, 22, 'r', -25) +
+    c(177, 155, 7) + c(223, 155, 7) + c(177, 156, 3.5, 'k') + c(223, 156, 3.5, 'k') +
+    e(200, 186, 10, 7, 'k') + p('M200 191 L200 199 M190 203 Q200 209 210 203', 'l') },
+  { id:'monkey', name:'Opička', e:'🐒', svg: meadow() +
+    p('M258 312 Q340 322 330 252 Q325 222 300 227', 'l') +
+    c(135, 160, 24) + c(265, 160, 24) + c(135, 160, 12) + c(265, 160, 12) +
+    e(200, 277, 62, 58) + e(200, 287, 36, 38) + e(170, 334, 24, 11) + e(230, 334, 24, 11) +
+    c(200, 160, 62) + p('M160 150 Q170 120 200 140 Q230 120 240 150 Q260 200 200 215 Q140 200 160 150 Z') +
+    c(182, 160, 7, 'k') + c(218, 160, 7, 'k') + c(194, 182, 3, 'k') + c(206, 182, 3, 'k') +
+    p('M180 195 Q200 210 220 195', 'l') +
+    p('M250 255 Q290 250 300 215 Q308 218 305 230 Q300 270 252 268 Z') }
+];
+const PALETTE = ['#E53935','#FF7A45','#FB8C00','#FDD835','#FFF3A0','#9CCC65','#43A047','#1B7F4B','#80DEEA','#4FC3F7','#1E88E5','#3949AB',
+  '#B39DDB','#8E24AA','#F48FB1','#EC407A','#FFCCBC','#D7B98E','#8D6E63','#5D4037','#BDBDBD','#546E7A','#263238','#FFFFFF'];
+
+function pageSvg(pg, fills, extra = '') {
+  return `<svg viewBox="0 0 400 400" ${extra}>${pg.svg}</svg>`;
+}
+function applyFills(svgEl, fills) {
+  if (!fills) return;
+  svgEl.querySelectorAll('.r').forEach((el, i) => { if (fills[i]) el.style.fill = fills[i]; });
+}
+
+/* ---------- HOME ---------- */
+function solvedSet() { return new Set(store.get('zd-solved', [])); }
+function renderHome() {
+  const n = solvedSet().size;
+  $('#starCount').textContent = `${n} / ${ANIMALS.length}`;
+  $('#puzzleCount').textContent = `${ANIMALS.length} zvířátek`;
+  $('#colorCount').textContent = `${PAGES.length} obrázků`;
+}
+function drawHomeArt() {
+  const cv = $('#artPuzzle'), ctx = cv.getContext('2d'), S = cv.width;
+  drawScene(ctx, S, ANIMALS.find(a => a.e === '🦊'));
+  const n = 3, s = S / n, E = makeEdges(n);
+  ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,.95)';
+  for (let r = 0; r < n; r++) for (let q = 0; q < n; q++) {
+    ctx.save(); ctx.translate(q * s - s * .3, r * s - s * .3); ctx.stroke(piecePath(r, q, s, s * .3, n, E)); ctx.restore();
+  }
+  const demo = PAGES[0], holder = $('#artColor');
+  holder.innerHTML = pageSvg(demo);
+  const f = []; f[0] = '#BFE6FF'; f[1] = '#FDD835'; f[3] = '#9CCC65'; f[4] = '#FF7A45'; f[9] = '#FF7A45'; f[12] = '#FF7A45'; f[10] = '#FFF3A0';
+  applyFills(holder.querySelector('svg'), f);
+  const list = ANIMALS.map(a => a.e).join(' ');
+  $('#parade').textContent = list + ' ' + list + ' ';
+}
+$('#goPuzzle').addEventListener('click', () => { ac(); renderPuzzlePicker(); show('pickPuzzle'); });
+$('#goColor').addEventListener('click', () => { ac(); renderColorPicker(); show('pickColor'); });
+
+/* ---------- PUZZLE PICKER ---------- */
+const DIFFS = [4, 9, 16, 25];
+let diff = store.get('zd-diff', 9); if (!DIFFS.includes(diff)) diff = 9;
+let cat = store.get('zd-cat', 'all');
+function filtered() { return cat === 'all' ? ANIMALS : ANIMALS.filter(a => a.hab === cat); }
+function renderPuzzlePicker() {
+  const solved = solvedSet();
+  $('#starCount2').textContent = `${solved.size} / ${ANIMALS.length}`;
+  $('#diffSeg').innerHTML = DIFFS.map(d => {
+    const k = Math.sqrt(d);
+    return `<button data-d="${d}" aria-pressed="${d === diff}"><span class="gridico" style="grid-template-columns:repeat(${k},1fr)">${'<i></i>'.repeat(d)}</span>${d}</button>`;
+  }).join('');
+  $('#catChips').innerHTML = CATS.map(([id, nm]) => `<button class="chip" data-c="${id}" aria-pressed="${id === cat}">${nm}</button>`).join('');
+  $('#animalGrid').innerHTML = filtered().map(a => {
+    const i = ANIMALS.indexOf(a), h = HABS[a.hab];
+    return `<button class="tile" data-i="${i}" style="background:linear-gradient(${h.sky[0]},${h.ground || h.sky[1]})">
+      ${solved.has(a.e) ? '<span class="badge">⭐</span>' : ''}<span class="em">${a.e}</span><span class="nm">${a.name}</span></button>`;
+  }).join('');
+}
+$('#diffSeg').addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; diff = +b.dataset.d; store.set('zd-diff', diff); sfx.pick(); renderPuzzlePicker(); });
+$('#catChips').addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; cat = b.dataset.c; store.set('zd-cat', cat); sfx.pick(); renderPuzzlePicker(); });
+$('#animalGrid').addEventListener('click', ev => { const b = ev.target.closest('.tile'); if (!b) return; openPuzzle(ANIMALS[+b.dataset.i]); });
+
+/* ---------- PUZZLE ---------- */
+let P = null;
+let hint = store.get('zd-hint', true);
+const hitCtx = document.createElement('canvas').getContext('2d');
+
+function makeEdges(n) {
+  const h = [], v = [];
+  for (let r = 0; r < n; r++) { h[r] = []; v[r] = []; for (let q = 0; q < n; q++) { h[r][q] = Math.random() < .5 ? 1 : -1; v[r][q] = Math.random() < .5 ? 1 : -1; } }
+  return { h, v };
+}
+function edge(path, ax, ay, bx, by, t) {
+  if (!t) { path.lineTo(bx, by); return; }
+  const dx = bx - ax, dy = by - ay, nx = dy, ny = -dx;
+  const P2 = (u, v) => [ax + dx * u + nx * v * t, ay + dy * u + ny * v * t];
+  path.lineTo(...P2(.37, 0));
+  path.bezierCurveTo(...P2(.42, 0), ...P2(.45, .05), ...P2(.41, .11));
+  path.bezierCurveTo(...P2(.35, .2), ...P2(.42, .27), ...P2(.5, .27));
+  path.bezierCurveTo(...P2(.58, .27), ...P2(.65, .2), ...P2(.59, .11));
+  path.bezierCurveTo(...P2(.55, .05), ...P2(.58, 0), ...P2(.63, 0));
+  path.lineTo(bx, by);
+}
+function piecePath(r, q, s, pad, n, E) {
+  const top = r === 0 ? 0 : -E.h[r][q];
+  const bottom = r === n - 1 ? 0 : E.h[r + 1][q];
+  const left = q === 0 ? 0 : -E.v[r][q];
+  const right = q === n - 1 ? 0 : E.v[r][q + 1];
+  const path = new Path2D(), x0 = pad, y0 = pad, x1 = pad + s, y1 = pad + s;
+  path.moveTo(x0, y0);
+  edge(path, x0, y0, x1, y0, top); edge(path, x1, y0, x1, y1, right);
+  edge(path, x1, y1, x0, y1, bottom); edge(path, x0, y1, x0, y0, left);
+  path.closePath();
+  return path;
+}
+function openPuzzle(a) {
+  ac();
+  const n = Math.sqrt(diff);
+  P = { animal: a, n, edges: makeEdges(n), placed: new Set(), done: false, zTop: 10, drags: new Map() };
+  $('#pzTitle').textContent = a.name;
+  show('puzzle');
+  requestAnimationFrame(() => requestAnimationFrame(buildPuzzle));
+}
+function setPos(p) { p.el.style.transform = `translate3d(${p.x}px,${p.y}px,0)${p.lift ? ' scale(1.06)' : ''}`; }
+function updateProgress() { $('#pzProgress').textContent = `${P.placed.size}/${P.n * P.n}`; }
+function buildPuzzle() {
+  const area = $('#pzArea'); area.innerHTML = '';
+  const W = area.clientWidth, H = area.clientHeight; if (!W || !H) return;
+  P.W = W; P.H = H;
+  const n = P.n; let bs, bx, by, scat;
+  if (W >= H * 1.1) {
+    bs = Math.floor(Math.min(H - 24, W * .52)); bx = 16; by = Math.round((H - bs) / 2);
+    scat = { x0: bx + bs + 14, y0: 8, x1: W - 8, y1: H - 8 };
+  } else {
+    bs = Math.floor(Math.min(W - 32, H * .54)); bx = Math.round((W - bs) / 2); by = 8;
+    scat = { x0: 8, y0: by + bs + 12, x1: W - 8, y1: H - 6 };
+  }
+  const s = bs / n, pad = Math.ceil(s * .3), pw = s + 2 * pad;
+  const dpr = Math.min(window.devicePixelRatio || 1, 3);
+  const src = document.createElement('canvas'); src.width = src.height = Math.round(bs * dpr);
+  drawScene(src.getContext('2d'), src.width, P.animal);
+  const url = src.toDataURL('image/jpeg', .9);
+  const board = document.createElement('div');
+  board.className = 'board' + (hint ? '' : ' nohint') + (P.done ? ' done' : '');
+  Object.assign(board.style, { left: bx + 'px', top: by + 'px', width: bs + 'px', height: bs + 'px' });
+  board.innerHTML = `<img class="ghost" alt="" src="${url}"><img class="full" alt="${P.animal.name}" src="${url}">`;
+  area.appendChild(board);
+  P.board = board; P.s = s; P.pad = pad; P.scat = scat;
+  P.pieces = [];
+  for (let r = 0; r < n; r++) for (let q = 0; q < n; q++) {
+    const path = piecePath(r, q, s, pad, n, P.edges);
+    const cv = document.createElement('canvas');
+    cv.width = cv.height = Math.ceil(pw * dpr); cv.style.width = cv.style.height = pw + 'px'; cv.className = 'piece';
+    const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.save(); ctx.clip(path); ctx.drawImage(src, pad - q * s, pad - r * s, bs, bs); ctx.restore();
+    ctx.lineWidth = 2.5; ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.stroke(path);
+    ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(32,48,71,.35)'; ctx.stroke(path);
+    const idx = r * n + q;
+    const pc = { idx, el: cv, path, w: pw, tx: bx + q * s - pad, ty: by + r * s - pad, x: 0, y: 0, z: 0, placed: P.placed.has(idx), lift: false };
+    if (pc.placed) { pc.x = pc.tx; pc.y = pc.ty; pc.z = 1; cv.classList.add('placed'); }
+    cv.style.zIndex = pc.z;
+    area.appendChild(cv);
+    P.pieces.push(pc);
+  }
+  scatter();
+  P.pieces.forEach(setPos);
+  updateProgress();
+  $('#hintBtn').classList.toggle('on', hint);
+}
+function scatter(animate) {
+  const free = P.pieces.filter(p => !p.placed);
+  const { s, pad, scat, W, H } = P;
+  const rw = Math.max(1, scat.x1 - scat.x0), rh = Math.max(1, scat.y1 - scat.y0);
+  const m = free.length; if (!m) return;
+  const cols = Math.max(1, Math.round(Math.sqrt(m * rw / rh))), rows = Math.ceil(m / cols);
+  const cw = rw / cols, ch = rh / rows;
+  const order = free.map((p, i) => i).sort(() => Math.random() - .5);
+  free.forEach((p, i) => {
+    const cell = order[i], cc = cell % cols, cr = Math.floor(cell / cols);
+    let cx = scat.x0 + cc * cw + cw / 2 + (Math.random() - .5) * cw * .3;
+    let cy = scat.y0 + cr * ch + ch / 2 + (Math.random() - .5) * ch * .3;
+    let x = cx - s / 2, y = cy - s / 2;
+    x = Math.max(0, Math.min(W - s, x)); y = Math.max(0, Math.min(H - s, y));
+    p.x = x - pad; p.y = y - pad;
+    p.z = ++P.zTop; p.el.style.zIndex = p.z;
+    if (animate) { p.el.classList.add('anim'); setTimeout(() => p.el.classList.remove('anim'), 260); }
+    setPos(p);
+  });
+}
+function localXY(ev) { const r = $('#pzArea').getBoundingClientRect(); return [ev.clientX - r.left, ev.clientY - r.top]; }
+$('#pzArea').addEventListener('pointerdown', ev => {
+  if (!P || P.done || !P.pieces) return;
+  const [x, y] = localXY(ev);
+  const cand = P.pieces.filter(p => !p.placed && !p.dragId).sort((a, b) => b.z - a.z);
+  for (const p of cand) {
+    const lx = x - p.x, ly = y - p.y;
+    if (lx < 0 || ly < 0 || lx > p.w || ly > p.w) continue;
+    const inCore = lx >= P.pad && ly >= P.pad && lx <= P.pad + P.s && ly <= P.pad + P.s;
+    if (inCore || hitCtx.isPointInPath(p.path, lx, ly)) {
+      ev.preventDefault();
+      p.dragId = ev.pointerId; p.ox = lx; p.oy = ly; p.lift = true;
+      p.z = ++P.zTop; p.el.style.zIndex = p.z; p.el.classList.add('lift'); p.el.classList.remove('anim');
+      P.drags.set(ev.pointerId, p);
+      try { $('#pzArea').setPointerCapture(ev.pointerId); } catch (e) {}
+      setPos(p); sfx.pick();
+      return;
+    }
+  }
+});
+$('#pzArea').addEventListener('pointermove', ev => {
+  if (!P) return; const p = P.drags.get(ev.pointerId); if (!p) return;
+  ev.preventDefault();
+  const [x, y] = localXY(ev);
+  p.x = Math.max(-P.pad, Math.min(P.W - P.s - P.pad, x - p.ox));
+  p.y = Math.max(-P.pad, Math.min(P.H - P.s - P.pad, y - p.oy));
+  setPos(p);
+});
+function endDrag(ev) {
+  if (!P) return; const p = P.drags.get(ev.pointerId); if (!p) return;
+  P.drags.delete(ev.pointerId); p.dragId = null; p.lift = false; p.el.classList.remove('lift');
+  const d = Math.hypot(p.x - p.tx, p.y - p.ty);
+  if (d < Math.max(P.s * .3, 24)) {
+    p.x = p.tx; p.y = p.ty; p.placed = true; P.placed.add(p.idx);
+    p.z = 1; p.el.classList.add('anim', 'placed');
+    setTimeout(() => { p.el.style.zIndex = 1; p.el.classList.remove('anim'); }, 220);
+    sfx.snap(); updateProgress();
+    if (P.placed.size === P.n * P.n) finishPuzzle();
+  }
+  setPos(p);
+}
+$('#pzArea').addEventListener('pointerup', endDrag);
+$('#pzArea').addEventListener('pointercancel', endDrag);
+$('#hintBtn').addEventListener('click', () => { hint = !hint; store.set('zd-hint', hint); $('#hintBtn').classList.toggle('on', hint); if (P && P.board) P.board.classList.toggle('nohint', !hint); });
+$('#shuffleBtn').addEventListener('click', () => { if (P && !P.done) { scatter(true); sfx.pick(); } });
+
+function finishPuzzle() {
+  P.done = true;
+  const solved = solvedSet(); solved.add(P.animal.e); store.set('zd-solved', [...solved]);
+  setTimeout(() => {
+    P.board.classList.add('done');
+    sfx.win(); confetti(); say(P.animal.name);
+    setTimeout(() => {
+      const a = P.animal;
+      const list = filtered(); const next = list[(list.indexOf(a) + 1) % list.length] || ANIMALS[0];
+      const page = PAGES.find(pg => pg.e === a.e);
+      showWin(`<span role="img" aria-label="${a.name}">${a.e}</span>`, `${a.name}!`, 'Hurá, máš to složené.', [
+        { label: `Další: ${next.e} ${next.name}`, cls: 'primary', fn: () => openPuzzle(next) },
+        page ? { label: `Vybarvit ${page.name.toLowerCase()}`, cls: '', fn: () => openColor(page) } : null,
+        { label: 'Vybrat jiné zvířátko', cls: '', fn: () => { renderPuzzlePicker(); show('pickPuzzle'); } }
+      ].filter(Boolean), () => say(a.name));
+    }, 1100);
+  }, 250);
+}
+
+let rsT;
+window.addEventListener('resize', () => {
+  clearTimeout(rsT);
+  rsT = setTimeout(() => {
+    if (current !== 'puzzle' || !P) return;
+    const a = $('#pzArea');
+    if (Math.abs(a.clientWidth - P.W) > 20 || Math.abs(a.clientHeight - P.H) > 60) buildPuzzle();
+  }, 200);
+});
+
+/* ---------- WIN + CONFETTI ---------- */
+function showWin(art, title, sub, buttons, onArt) {
+  $('#winArt').innerHTML = art; $('#winTitle').textContent = title; $('#winSub').textContent = sub;
+  $('#winArt').onclick = onArt || null;
+  const box = $('#winBtns'); box.innerHTML = '';
+  buttons.forEach(b => { const el = document.createElement('button'); el.className = 'btn ' + b.cls; el.textContent = b.label; el.addEventListener('click', b.fn); box.appendChild(el); });
+  $('#win').hidden = false;
+}
+function confetti() {
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const cv = $('#confetti'), dpr = Math.min(window.devicePixelRatio || 1, 2);
+  cv.hidden = false; cv.width = innerWidth * dpr; cv.height = innerHeight * dpr;
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const cols = ['#FF6B4A', '#FFC23C', '#3FB67A', '#5BB8F5', '#9B6BDF', '#F48FB1'];
+  const parts = Array.from({ length: 140 }, () => ({
+    x: innerWidth / 2 + (Math.random() - .5) * 80, y: innerHeight * .35,
+    vx: (Math.random() - .5) * 14, vy: -Math.random() * 14 - 4, r: Math.random() * 6.28, vr: (Math.random() - .5) * .4,
+    w: 7 + Math.random() * 7, h: 5 + Math.random() * 5, c: cols[Math.floor(Math.random() * cols.length)]
+  }));
+  const t0 = performance.now();
+  (function frame(t) {
+    const el = t - t0; ctx.clearRect(0, 0, innerWidth, innerHeight);
+    parts.forEach(q => { q.vy += .35; q.vx *= .99; q.x += q.vx; q.y += q.vy; q.r += q.vr;
+      ctx.save(); ctx.translate(q.x, q.y); ctx.rotate(q.r); ctx.fillStyle = q.c; ctx.fillRect(-q.w / 2, -q.h / 2, q.w, q.h); ctx.restore(); });
+    if (el < 2800) requestAnimationFrame(frame); else { ctx.clearRect(0, 0, innerWidth, innerHeight); cv.hidden = true; }
+  })(t0);
+}
+
+/* ---------- COLORING ---------- */
+let C = null;
+let curColor = store.get('zd-color', PALETTE[0]);
+function renderColorPicker() {
+  const g = $('#colorGrid');
+  g.innerHTML = PAGES.map((pg, i) => `<button class="ctile" data-i="${i}">${pageSvg(pg)}<span class="nm">${pg.name}</span></button>`).join('');
+  g.querySelectorAll('.ctile').forEach((b, i) => applyFills(b.querySelector('svg'), store.get('zd-c-' + PAGES[i].id, null)));
+}
+$('#colorGrid').addEventListener('click', ev => { const b = ev.target.closest('.ctile'); if (!b) return; openColor(PAGES[+b.dataset.i]); });
+function renderPalette() {
+  $('#palette').innerHTML = PALETTE.map(col => `<button class="sw" style="background:${col}" data-col="${col}" aria-label="Barva ${col}" aria-pressed="${col === curColor}"></button>`).join('');
+}
+$('#palette').addEventListener('click', ev => {
+  const b = ev.target.closest('.sw'); if (!b) return;
+  curColor = b.dataset.col; store.set('zd-color', curColor);
+  $('#palette').querySelectorAll('.sw').forEach(s => s.setAttribute('aria-pressed', String(s === b)));
+  tone(700, .05, 'sine', .08);
+});
+function openColor(pg) {
+  ac();
+  const svg = $('#clSvg'); svg.innerHTML = pg.svg;
+  C = { pg, regions: [...svg.querySelectorAll('.r')], undo: [] };
+  applyFills(svg, store.get('zd-c-' + pg.id, null));
+  $('#clTitle').textContent = pg.name;
+  renderPalette();
+  show('color');
+  const sel = $('#palette .sw[aria-pressed="true"]'); if (sel) sel.scrollIntoView({ inline: 'center', block: 'nearest' });
+}
+function saveColor() { store.set('zd-c-' + C.pg.id, C.regions.map(el => el.style.fill || null)); }
+$('#clSvg').addEventListener('pointerdown', ev => {
+  if (!C) return;
+  const el = ev.target.closest && ev.target.closest('.r'); if (!el) return;
+  ev.preventDefault();
+  const i = C.regions.indexOf(el); if (i < 0) return;
+  const prev = el.style.fill || '';
+  el.style.fill = curColor;
+  if (el.style.fill === prev) return;
+  C.undo.push([[i, prev]]); sfx.paint(); saveColor();
+});
+$('#undoBtn').addEventListener('click', () => {
+  if (!C || !C.undo.length) return;
+  C.undo.pop().forEach(([i, prev]) => { C.regions[i].style.fill = prev; });
+  saveColor(); tone(300, .08, 'sine', .1);
+});
+$('#clearBtn').addEventListener('click', () => {
+  if (!C) return;
+  const batch = C.regions.map((el, i) => [i, el.style.fill || '']).filter(([, f]) => f);
+  if (!batch.length) return;
+  C.undo.push(batch); C.regions.forEach(el => { el.style.fill = ''; }); saveColor(); tone(220, .15, 'sine', .1);
+});
+$('#doneBtn').addEventListener('click', () => {
+  if (!C) return;
+  sfx.win(); confetti(); say('Krása! ' + C.pg.name);
+  const pg = C.pg, i = PAGES.indexOf(pg), next = PAGES[(i + 1) % PAGES.length];
+  const art = pageSvg(pg);
+  showWin(art, 'Krása!', `${pg.name} je hotová. Obrázek si pamatuju.`, [
+    { label: `Další: ${next.name}`, cls: 'primary', fn: () => openColor(next) },
+    { label: 'Ještě vybarvovat', cls: '', fn: () => { $('#win').hidden = true; } },
+    { label: 'Všechny obrázky', cls: '', fn: () => { renderColorPicker(); show('pickColor'); } }
+  ], () => say(pg.name));
+  applyFills($('#winArt svg'), C.regions.map(el => el.style.fill || null));
+});
+
+/* ---------- SHARED ---------- */
+const rand = n => Math.floor(Math.random() * n);
+function renderDots(el, total, done) { el.innerHTML = Array.from({ length: total }, (_, i) => `<i class="${i < done ? 'on' : ''}"></i>`).join(''); }
+function bounce(el) { el.classList.remove('tapped'); void el.offsetWidth; el.classList.add('tapped'); }
+function goHome() { renderHome(); show('home'); }
+
+/* ---------- NUMBERS ---------- */
+const NUM_WORDS = ['', 'jedna', 'dva', 'tři', 'čtyři', 'pět', 'šest', 'sedm', 'osm', 'devět', 'deset'];
+// [emoji, gender (m, ma = animate masc., f, n), [accusative sg, 2–4, 5+]]
+const THINGS = [
+  ['🍌', 'm', ['banán', 'banány', 'banánů']], ['🍎', 'n', ['jablko', 'jablka', 'jablek']],
+  ['🍓', 'f', ['jahodu', 'jahody', 'jahod']], ['🍐', 'f', ['hrušku', 'hrušky', 'hrušek']],
+  ['🥕', 'f', ['mrkev', 'mrkve', 'mrkví']], ['🐥', 'n', ['kuřátko', 'kuřátka', 'kuřátek']],
+  ['🐟', 'f', ['rybičku', 'rybičky', 'rybiček']], ['🎈', 'm', ['balónek', 'balónky', 'balónků']],
+  ['⭐', 'f', ['hvězdičku', 'hvězdičky', 'hvězdiček']], ['🚗', 'n', ['autíčko', 'autíčka', 'autíček']],
+  ['🌷', 'f', ['kytičku', 'kytičky', 'kytiček']], ['🐞', 'f', ['berušku', 'berušky', 'berušek']],
+  ['🐶', 'ma', ['pejska', 'pejsky', 'pejsků']], ['⚽', 'm', ['míč', 'míče', 'míčů']],
+  ['🧁', 'm', ['dortík', 'dortíky', 'dortíků']], ['🦋', 'ma', ['motýla', 'motýly', 'motýlů']],
+  ['🍦', 'f', ['zmrzlinu', 'zmrzliny', 'zmrzlin']], ['🐸', 'f', ['žabku', 'žabky', 'žabek']]
+];
+const TILE_COLORS = ['#FFC23C', '#5BB8F5', '#8FDBAE', '#D6C2FF', '#FF9E80'];
+const PRAISE = ['Správně!', 'Výborně!', 'Super!', 'Paráda!', 'Bezva!'];
+function numAcc(n, g) {
+  if (n === 1) return { m: 'jeden', ma: 'jednoho', f: 'jednu', n: 'jedno' }[g];
+  if (n === 2) return g === 'f' || g === 'n' ? 'dvě' : 'dva';
+  return NUM_WORDS[n];
+}
+const noun = (n, t) => t[2][n === 1 ? 0 : n <= 4 ? 1 : 2];
+const phrase = (n, t) => `${numAcc(n, t[1])} ${noun(n, t)}`;
+const repeatEmoji = (e, c) => Array.from({ length: c }, () => `<span>${e}</span>`).join('');
+function nearCounts(n, k) {
+  const pool = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].filter(c => c !== n).sort((a, b) => Math.abs(a - n) - Math.abs(b - n)).slice(0, 4);
+  return pool.sort(() => Math.random() - .5).slice(0, k);
+}
+
+let N = null;
+function clearTimers() { if (N && N.timers) { N.timers.forEach(clearTimeout); N.timers = []; } }
+function later(fn, ms) { const id = setTimeout(() => { if (current === 'count' && N) fn(); }, ms); N.timers.push(id); }
+function startCount() { show('count'); showNumPick(); }
+function showNumPick() {
+  clearTimers(); N = null;
+  $('#numTitle').textContent = 'Čísla'; $('#cntDots').innerHTML = '';
+  $('#numPick').hidden = false; $('#numPlay').hidden = true;
+  const done = new Set(store.get('zd-num', []));
+  $('#numGrid').innerHTML = NUM_WORDS.slice(1).map((w, i) => {
+    const n = i + 1;
+    return `<button class="num-tile" data-n="${n}" style="background:${TILE_COLORS[i % TILE_COLORS.length]}" aria-label="Číslo ${n}">
+      ${done.has(n) ? '<span class="badge">⭐</span>' : ''}<b>${n}</b><span class="pips">${'<i></i>'.repeat(n)}</span></button>`;
+  }).join('');
+}
+$('#numGrid').addEventListener('click', ev => { const b = ev.target.closest('.num-tile'); if (!b) return; sfx.pick(); learnNumber(+b.dataset.n); });
+$('#numBack').addEventListener('click', () => { if (!$('#numPlay').hidden) showNumPick(); else { clearTimers(); N = null; goHome(); } });
+$('#cntPrompt').addEventListener('click', () => { if (N && N.sayText) say(N.sayText); });
+
+function learnNumber(n) {
+  clearTimers();
+  N = { n, step: 0, tasks: ['A', 'B', 'C', 'A'], timers: [], last: null, locked: true };
+  $('#numTitle').textContent = `Číslo ${n}`;
+  $('#numPick').hidden = true; $('#numPlay').hidden = false;
+  numIntro();
+}
+function pickThing() { let t; do { t = THINGS[rand(THINGS.length)]; } while (t === N.last); N.last = t; return t; }
+function setPrompt(html, text) { $('#cntPrompt').innerHTML = html; N.sayText = text; say(text); }
+
+function numIntro() {
+  const { n } = N, t = pickThing();
+  renderDots($('#cntDots'), N.tasks.length, 0);
+  N.type = 'intro'; N.thing = t;
+  const f = $('#cntField'); f.className = 'cnt-field';
+  f.innerHTML = `<div class="num-intro"><div class="num-hero">${n}</div><div class="num-word">${NUM_WORDS[n]}</div><div class="num-row" id="numRow"></div></div>`;
+  $('#cntAnswers').innerHTML = '<button class="btn primary play-btn" id="playBtn">Hrajeme!</button>';
+  setPrompt(`Tohle je číslo <b>${n}</b>`, `Tohle je číslo ${NUM_WORDS[n]}.`);
+  for (let i = 1; i <= n; i++) {
+    later(() => {
+      const row = $('#numRow'); if (!row) return;
+      row.insertAdjacentHTML('beforeend', `<span>${t[0]}</span>`);
+      tone(380 + i * 60, .12); say(NUM_WORDS[i]);
+      if (i === n) later(() => say(`Číslo ${NUM_WORDS[n]}!`), 900);
+    }, 1500 + (i - 1) * 850);
+  }
+}
+function nextTask() {
+  clearTimers();
+  renderDots($('#cntDots'), N.tasks.length, N.step);
+  if (N.step >= N.tasks.length) { finishNumber(); return; }
+  N.locked = false; N.sel = 0;
+  const t = pickThing(); N.thing = t; N.type = N.tasks[N.step];
+  const f = $('#cntField'); $('#cntAnswers').innerHTML = '';
+  const { n } = N;
+  if (N.type === 'A') {
+    const counts = [n, ...nearCounts(n, 2)].sort(() => Math.random() - .5);
+    f.className = 'cnt-field groups';
+    f.innerHTML = counts.map(c => `<button class="grp" data-c="${c}" aria-label="${c}"><span class="grp-in">${repeatEmoji(t[0], c)}</span></button>`).join('');
+    setPrompt(`Najdi <b>${n}</b> ${noun(n, t)}`, `Najdi ${phrase(n, t)}.`);
+  } else if (N.type === 'B') {
+    const total = Math.min(n + 2 + rand(3), 16), cols = 4, rows = 4;
+    const cells = [...Array(cols * rows).keys()].sort(() => Math.random() - .5).slice(0, total);
+    f.className = 'cnt-field';
+    f.innerHTML = cells.map(cell => itemHtml(t, cell, cols, rows)).join('');
+    setPrompt(`Ťukni na <b>${n}</b> ${noun(n, t)}`, `Ťukni na ${phrase(n, t)}.`);
+  } else {
+    const cols = 4, rows = 3;
+    const cells = [...Array(cols * rows).keys()].sort(() => Math.random() - .5).slice(0, n);
+    f.className = 'cnt-field';
+    f.innerHTML = cells.map(cell => itemHtml(t, cell, cols, rows)).join('');
+    const opts = [n, ...nearCounts(n, 2)].sort((a, b) => a - b);
+    $('#cntAnswers').innerHTML = opts.map(v => `<button class="ans" data-v="${v}">${v}</button>`).join('');
+    setPrompt(`Kolik je tu ${t[2][2]}?`, `Kolik je tu ${t[2][2]}?`);
+  }
+}
+function itemHtml(t, cell, cols, rows) {
+  const x = ((cell % cols) + .5) / cols * 100 + (Math.random() - .5) * 8;
+  const y = (Math.floor(cell / cols) + .5) / rows * 100 + (Math.random() - .5) * 6;
+  return `<button class="cnt-item" style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%">${t[0]}</button>`;
+}
+function taskSuccess(text) {
+  N.locked = true; sfx.snap();
+  const pr = PRAISE[rand(PRAISE.length)];
+  $('#cntPrompt').innerHTML = `${pr} ${text || ''}`; N.sayText = pr;
+  say(pr + (text ? ' ' + text : ''));
+  N.step++; renderDots($('#cntDots'), N.tasks.length, N.step);
+  later(nextTask, 1700);
+}
+function taskWrong(el) { el.classList.add('bad'); el.disabled = true; tone(180, .22, 'sine', .12); say('Zkus to znovu'); }
+
+$('#cntField').addEventListener('click', ev => {
+  if (!N) return;
+  if (N.type === 'intro') { const h = ev.target.closest('.num-hero'); if (h) { bounce(h); say(`Tohle je číslo ${NUM_WORDS[N.n]}.`); } return; }
+  if (N.locked) { const it = ev.target.closest('.cnt-item'); if (it) bounce(it); return; }
+  if (N.type === 'A') {
+    const g = ev.target.closest('.grp'); if (!g || g.disabled) return;
+    if (+g.dataset.c === N.n) { g.classList.add('ok'); taskSuccess(); } else taskWrong(g);
+    return;
+  }
+  const it = ev.target.closest('.cnt-item'); if (!it) return;
+  if (it.querySelector('.num')) { bounce(it); return; }
+  N.sel++;
+  it.insertAdjacentHTML('beforeend', `<span class="num">${N.sel}</span>`);
+  bounce(it); tone(380 + N.sel * 60, .12); say(NUM_WORDS[N.sel] || String(N.sel));
+  if (N.type === 'B' && N.sel === N.n) { N.locked = true; later(() => taskSuccess(), 700); }
+});
+$('#cntAnswers').addEventListener('click', ev => {
+  if (!N) return;
+  if (ev.target.closest('#playBtn')) { sfx.pick(); nextTask(); return; }
+  const b = ev.target.closest('.ans'); if (!b || N.locked || b.disabled) return;
+  if (+b.dataset.v === N.n) {
+    b.classList.add('ok');
+    let k = N.sel;
+    $('#cntField').querySelectorAll('.cnt-item').forEach(it => { if (!it.querySelector('.num')) it.insertAdjacentHTML('beforeend', `<span class="num">${++k}</span>`); bounce(it); });
+    taskSuccess(`Je jich ${NUM_WORDS[N.n]}.`);
+  } else taskWrong(b);
+});
+function finishNumber() {
+  const n = N.n;
+  const done = new Set(store.get('zd-num', [])); done.add(n); store.set('zd-num', [...done]);
+  sfx.win(); confetti(); say(`Hurá! Umíš číslo ${NUM_WORDS[n]}!`);
+  const again = fnN => () => { show('count'); learnNumber(fnN); };
+  showWin(`<span class="num-hero" style="font-size:120px">${n}</span>`, `Umíš číslo ${n}!`, 'Za to je hvězdička ⭐', [
+    n < 10 ? { label: `Další číslo: ${n + 1}`, cls: 'primary', fn: again(n + 1) } : { label: 'Začít zase od 1', cls: 'primary', fn: again(1) },
+    { label: 'Ještě jednou', cls: '', fn: again(n) },
+    { label: 'Vybrat číslo', cls: '', fn: () => { show('count'); showNumPick(); } }
+  ]);
+}
+$('#goCount').addEventListener('click', () => { ac(); startCount(); });
+
+/* ---------- ALPHABET ---------- */
+const LETTERS = [
+  ['A', [['🍍','ANANAS'],['🚗','AUTO']]], ['B', [['🍌','BANÁN'],['🎈','BALÓNEK']]], ['C', [['🍋','CITRON'],['🧅','CIBULE']]],
+  ['Č', [['🧢','ČEPICE'],['🍫','ČOKOLÁDA']]], ['D', [['🐬','DELFÍN'],['🎂','DORT'],['🏠','DŮM']]], ['E', [['🧝','ELF']]],
+  ['F', [['⚽','FOTBAL'],['📷','FOŤÁK']]], ['G', [['🦍','GORILA']]], ['H', [['🦛','HROCH'],['🍐','HRUŠKA'],['🍄','HOUBA']]],
+  ['CH', [['🐙','CHOBOTNICE'],['🍞','CHLEBA']]], ['I', [['💉','INJEKCE']]], ['J', [['🦔','JEŽEK'],['🍎','JABLKO'],['🍓','JAHODA']]],
+  ['K', [['🐈','KOČKA'],['🚲','KOLO'],['🎩','KLOBOUK']]], ['L', [['🦁','LEV'],['✈️','LETADLO'],['⛵','LOĎ']]],
+  ['M', [['🐁','MYŠ'],['🥕','MRKEV'],['🌙','MĚSÍC']]], ['N', [['🦏','NOSOROŽEC'],['✂️','NŮŽKY']]],
+  ['O', [['🐑','OVCE'],['🐒','OPICE'],['👁️','OKO']]], ['P', [['🐕','PES'],['🦜','PAPOUŠEK'],['🐦','PTÁK']]],
+  ['R', [['🐟','RYBA'],['🚀','RAKETA'],['🌹','RŮŽE']]], ['Ř', [['⛓️','ŘETĚZ']]], ['S', [['🐘','SLON'],['☀️','SLUNCE'],['🧀','SÝR']]],
+  ['Š', [['🐌','ŠNEK'],['🧣','ŠÁLA']]], ['T', [['🐯','TYGR'],['🚜','TRAKTOR'],['🎺','TRUMPETA']]], ['U', [['👂','UCHO']]],
+  ['V', [['🐺','VLK'],['🚂','VLAK'],['🐝','VČELA']]], ['Z', [['🦓','ZEBRA'],['🍦','ZMRZLINA'],['🏰','ZÁMEK']]],
+  ['Ž', [['🐸','ŽÁBA'],['🦒','ŽIRAFA'],['🐢','ŽELVA']]]
+];
+const spoken = L => L === 'CH' ? 'chá' : L.toLowerCase();
+const capL = L => L.length > 1 ? L[0] + L.slice(1).toLowerCase() : L;
+let abcMode = 'learn', abcSel = 0, abcWord = 0, Q = null;
+function startAbc() { show('abc'); setAbcMode(store.get('zd-abc', 'learn')); }
+function setAbcMode(m) {
+  abcMode = m; store.set('zd-abc', m);
+  $('#abcSeg').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === m)));
+  $('#abcLearn').hidden = m !== 'learn'; $('#abcQuiz').hidden = m !== 'quiz'; $('#abcDots').hidden = m !== 'quiz';
+  if (m === 'learn') renderLearn(); else startQuiz();
+}
+function renderLearn() {
+  $('#abcGrid').innerHTML = LETTERS.map(([L], i) => `<button class="abc-key" data-i="${i}" aria-pressed="${i === abcSel}">${capL(L)}</button>`).join('');
+  renderAbcCard();
+}
+function renderAbcCard() {
+  const [L, words] = LETTERS[abcSel], [em, w] = words[abcWord % words.length];
+  $('#abcCard').innerHTML = `<span class="abc-big">${capL(L)} <small>${L.toLowerCase()}</small></span><span class="abc-emoji">${em}</span>
+    <span class="abc-word"><span class="first">${w.slice(0, L.length)}</span>${w.slice(L.length)}</span>`;
+}
+function sayLearn() { const [L, words] = LETTERS[abcSel]; say(`${spoken(L)}. ${words[abcWord % words.length][1].toLowerCase()}`); }
+$('#abcGrid').addEventListener('click', ev => {
+  const b = ev.target.closest('.abc-key'); if (!b) return;
+  abcSel = +b.dataset.i; abcWord = 0;
+  $('#abcGrid').querySelectorAll('.abc-key').forEach(k => k.setAttribute('aria-pressed', String(k === b)));
+  renderAbcCard(); sayLearn(); tone(620, .06, 'sine', .1);
+  $('#abcCard').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+});
+$('#abcCard').addEventListener('click', () => { abcWord++; renderAbcCard(); sayLearn(); });
+$('#abcSeg').addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; sfx.pick(); setAbcMode(b.dataset.m); });
+
+function startQuiz() { Q = { round: 0, total: 6, last: -1 }; nextQuiz(); }
+function nextQuiz() {
+  renderDots($('#abcDots'), Q.total, Q.round);
+  let li; do { li = rand(LETTERS.length); } while (li === Q.last);
+  Q.last = li;
+  const [L, words] = LETTERS[li], [em, w] = words[rand(words.length)];
+  Object.assign(Q, { L, w, locked: false });
+  $('#abcQCard').innerHTML = `<span class="abc-emoji">${em}</span><span class="abc-word"><span class="blank">${L}</span>${w.slice(L.length)}</span>`;
+  const opts = new Set([L]);
+  while (opts.size < 3) {
+    const o = LETTERS[rand(LETTERS.length)][0];
+    if (w.startsWith(o)) continue; // e.g. C for CHOBOTNICE would also be "right"
+    opts.add(o);
+  }
+  $('#abcAnswers').innerHTML = [...opts].sort(() => Math.random() - .5).map(o => `<button class="ans" data-l="${o}">${o}</button>`).join('');
+  say(`Na jaké písmeno začíná ${w.toLowerCase()}?`);
+}
+$('#abcQCard').addEventListener('click', () => { if (Q) say(`Na jaké písmeno začíná ${Q.w.toLowerCase()}?`); });
+$('#abcAnswers').addEventListener('click', ev => {
+  const b = ev.target.closest('.ans'); if (!b || !Q || Q.locked || b.disabled) return;
+  if (b.dataset.l === Q.L) {
+    Q.locked = true; b.classList.add('ok'); sfx.snap();
+    const blank = $('#abcQCard .blank'); if (blank) blank.outerHTML = `<span class="first pop">${Q.L}</span>`;
+    say(`${spoken(Q.L)} jako ${Q.w.toLowerCase()}`);
+    Q.round++; renderDots($('#abcDots'), Q.total, Q.round);
+    setTimeout(() => { if (current !== 'abc' || abcMode !== 'quiz') return; Q.round >= Q.total ? finishQuiz() : nextQuiz(); }, 1900);
+  } else {
+    b.classList.add('bad'); b.disabled = true; tone(180, .22, 'sine', .12); say('Zkus to znovu');
+  }
+});
+function finishQuiz() {
+  sfx.win(); confetti(); say('Výborně! Znáš písmenka!');
+  showWin('<span role="img" aria-label="Pohár">🏆</span>', 'Výborně!', `Všech ${Q.total} slov je uhodnuto.`, [
+    { label: 'Hrát znovu', cls: 'primary', fn: () => { show('abc'); startQuiz(); } },
+    { label: 'Poznávat písmenka', cls: '', fn: () => { show('abc'); setAbcMode('learn'); } },
+    { label: 'Domů', cls: '', fn: goHome }
+  ]);
+}
+$('#goAbc').addEventListener('click', () => { ac(); startAbc(); });
+
+/* ---------- BOOT ---------- */
+if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices(); } catch (e) {} }
+document.addEventListener('gesturestart', ev => ev.preventDefault());
+document.addEventListener('dblclick', ev => ev.preventDefault(), { passive: false });
+renderMute();
+renderHome();
+drawHomeArt();
+})();
+</script>
+
+</body>
+</html>
