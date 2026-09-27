@@ -80,6 +80,8 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .hero-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .mascot{font-size:clamp(64px,19vw,124px);line-height:1;cursor:pointer;animation:bob 3s ease-in-out infinite;filter:drop-shadow(0 8px 10px rgba(180,90,200,.35))}
 @keyframes bob{50%{transform:translateY(-10px) rotate(-5deg)}}
+.scene-bg{position:fixed;left:0;right:0;bottom:0;height:30vh;z-index:0;pointer-events:none}
+.scene-bg svg{width:100%;height:100%;display:block}
 .twinkles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
 .twinkles i{position:absolute;font-style:normal;line-height:1;text-shadow:0 0 6px rgba(255,255,255,.9),0 0 14px rgba(200,140,255,.7);animation:twinkle 2.4s ease-in-out infinite}
 @keyframes twinkle{0%,100%{opacity:.15;transform:scale(.5) rotate(0)}50%{opacity:1;transform:scale(1.15) rotate(25deg)}}
@@ -169,7 +171,11 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .trace-box{position:relative;background:#fff;border-radius:28px;box-shadow:0 5px 0 var(--shadow);flex:none}
 .trace-box canvas{position:absolute;inset:0;border-radius:28px}
 .trace-box .ti{touch-action:none}
-.trace-box.bad{animation:shake .4s;box-shadow:0 0 0 5px #FF5A5A,0 5px 0 var(--shadow)}
+.trace-box{overflow:hidden;box-shadow:0 5px 0 var(--shadow),inset 0 0 0 4px rgba(255,255,255,.55)}
+.tsvg{width:100%;height:100%;display:block;touch-action:none}
+.tsvg path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.tsvg text{pointer-events:none}
+.trace-box.hint{animation:shake .35s}
 .trace-top{display:flex;align-items:center;gap:10px;padding:0 16px 10px;flex:none}
 .trace-word{flex:1;min-width:0;text-align:center;font-size:clamp(20px,6vw,28px);font-weight:800;letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .trace-word .em{font-size:1.4em;vertical-align:-.15em;margin-right:6px}
@@ -277,6 +283,7 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 </head>
 <body>
 
+<div class="scene-bg" id="sceneBg" aria-hidden="true"></div>
 <div class="twinkles" id="twinkles" aria-hidden="true"></div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs id="glitterDefs"></defs></svg>
 <div id="app">
@@ -1413,119 +1420,143 @@ const fontsReady = (document.fonts && document.fonts.load)
   ? Promise.race([document.fonts.load('800 100px "Baloo 2"'), new Promise(r => setTimeout(r, 1500))]).catch(() => {})
   : Promise.resolve();
 let activeTrace = null; // { rebuild } of the tracer on screen, for orientation changes
-// look of the guide and the brush (hue0/span: brush colour range; span 360 = full rainbow)
-const TRACE_THEME = { fill: ['#FCE4F5', '#E7DBFF'], ring: ['#F07CC4', '#9B6BE8'], dots: ['#FFFFFF', '#FFC9EA', '#D2BCFF', '#FFF0B3'], shadow: 'rgba(155,90,230,.25)', hue0: 0, span: 360 };
-// Shows a big faint glyph; the child paints over it with a brush as wide as the glyph's stroke.
-// Done only when nearly the whole glyph is covered AND almost all paint lies on (or right next to)
-// the glyph, so scribbling over the area does not count.
-function makeTracer(host, text, onDone) {
-  host.innerHTML = '<div class="trace-box"><canvas class="tg"></canvas><canvas class="ti"></canvas></div>';
-  const box = host.firstChild, g = box.children[0], ink = box.children[1];
-  const W = Math.max(160, Math.floor(Math.min(host.clientWidth - 8, host.clientHeight - 8, 560)));
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  box.style.width = box.style.height = W + 'px';
-  [g, ink].forEach(cv => { cv.width = cv.height = Math.round(W * dpr); cv.style.width = cv.style.height = W + 'px'; });
-  const gx = g.getContext('2d'), ix = ink.getContext('2d');
-  gx.setTransform(dpr, 0, 0, dpr, 0, 0); ix.setTransform(dpr, 0, 0, dpr, 0, 0);
-  // size by the glyph's real ink box (the font has tall line spacing)
-  let F = W * .8;
-  gx.font = `700 ${F}px ${TRACE_FONT}`;
-  const m0 = gx.measureText(text);
-  const gh = (m0.actualBoundingBoxAscent || F * .7) + (m0.actualBoundingBoxDescent || 0);
-  const gw = (m0.actualBoundingBoxLeft || 0) + (m0.actualBoundingBoxRight || m0.width);
-  F *= Math.min(W * .72 / gh, W * .82 / gw);
-  const font = `700 ${F}px ${TRACE_FONT}`;
-  gx.font = font; gx.textAlign = 'center'; gx.textBaseline = 'alphabetic';
-  const m = gx.measureText(text);
-  const asc = m.actualBoundingBoxAscent || F * .7, desc = m.actualBoundingBoxDescent || 0;
-  const ty = W / 2 + (asc - desc) / 2;
-  // stroke width of the font at this size (width of a capital I), the brush matches it
-  const mi = gx.measureText('I');
-  const stem = Math.max(8, ((mi.actualBoundingBoxLeft || 0) + (mi.actualBoundingBoxRight || mi.width * .5)) * .92);
-  const brush = stem * 1.15;
-  // sampling masks at 1x: the glyph itself, and a dilated glyph that counts as "on the line"
-  const mk = (dilate) => {
-    const cv = document.createElement('canvas'); cv.width = cv.height = W;
-    const c2 = cv.getContext('2d'); c2.font = font; c2.textAlign = 'center'; c2.textBaseline = 'alphabetic';
-    c2.fillText(text, W / 2, ty);
-    if (dilate) { c2.lineWidth = dilate; c2.lineJoin = 'round'; c2.strokeText(text, W / 2, ty); }
-    return c2.getImageData(0, 0, W, W).data;
-  };
-  const glyph = mk(0), near = mk(stem * 1.3);
-  const step = Math.max(3, Math.round(W / 90));
-  const onPts = [], nearPts = [], offPts = [];
-  for (let y = 0; y < W; y += step) for (let x = 0; x < W; x += step) {
-    const i = (y * W + x) * 4 + 3;
-    if (glyph[i] > 128) onPts.push([x, y]); else if (near[i] > 40) nearPts.push([x, y]); else offPts.push([x, y]);
-  }
-  // guide: soft glittery glyph with a single clean outline. The font's contours overlap
-  // (e.g. H), so the outline is built by dilating the filled glyph instead of strokeText.
-  const PW = g.width;
-  const off = () => { const cv = document.createElement('canvas'); cv.width = cv.height = PW; return [cv, cv.getContext('2d')]; };
-  const [A, ax] = off();
-  ax.setTransform(dpr, 0, 0, dpr, 0, 0); ax.font = font; ax.textAlign = 'center'; ax.textBaseline = 'alphabetic'; ax.fillText(text, W / 2, ty);
-  const [Fl, flx] = off();
-  flx.drawImage(A, 0, 0); flx.globalCompositeOperation = 'source-in';
-  const gr = flx.createLinearGradient(0, 0, PW, PW); gr.addColorStop(0, TRACE_THEME.fill[0]); gr.addColorStop(1, TRACE_THEME.fill[1]);
-  flx.fillStyle = gr; flx.fillRect(0, 0, PW, PW);
-  flx.globalCompositeOperation = 'source-atop';
-  const rs = seeded(hash(text));
-  for (let i = 0; i < 70; i++) { flx.fillStyle = TRACE_THEME.dots[i % 4]; sparkle4(flx, rs() * PW, rs() * PW, (2 + rs() * 5) * dpr); }
-  const [Rg, rgx] = off();
-  const rad = Math.max(3, F * .022) * dpr;
-  for (const rr of [rad * .35, rad * .7, rad]) for (let i = 0; i < 28; i++) { const a = i / 28 * Math.PI * 2; rgx.drawImage(A, Math.cos(a) * rr, Math.sin(a) * rr); }
-  rgx.globalCompositeOperation = 'source-in';
-  const rg = rgx.createLinearGradient(0, 0, PW, PW); rg.addColorStop(0, TRACE_THEME.ring[0]); rg.addColorStop(1, TRACE_THEME.ring[1]);
-  rgx.fillStyle = rg; rgx.fillRect(0, 0, PW, PW);
-  rgx.globalCompositeOperation = 'destination-out'; rgx.drawImage(A, 0, 0);
-  gx.save(); gx.setTransform(1, 0, 0, 1, 0, 0);
-  gx.shadowColor = TRACE_THEME.shadow; gx.shadowBlur = 16 * dpr; gx.shadowOffsetY = 6 * dpr; gx.drawImage(Fl, 0, 0);
-  gx.shadowColor = 'transparent'; gx.drawImage(Rg, 0, 0);
-  gx.restore();
-  // painting
-  ix.lineCap = 'round'; ix.lineJoin = 'round'; ix.lineWidth = brush;
-  let last = null, hue = Math.random() * 360, done = false, pid = null, warned = 0;
-  const brushHue = () => TRACE_THEME.span >= 360 ? hue : TRACE_THEME.hue0 + (Math.sin(hue / 18) + 1) / 2 * TRACE_THEME.span;
-  const pos = ev => { const r = ink.getBoundingClientRect(); return [(ev.clientX - r.left) * W / r.width, (ev.clientY - r.top) * W / r.height]; };
-  const glitterDots = (x, y) => {
-    for (let k = 0; k < 3; k++) {
-      ix.fillStyle = k ? 'rgba(255,255,255,.9)' : `hsl(${(brushHue() + 30) % 360} 100% 85%)`;
-      const a = Math.random() * 6.28, r = Math.random() * brush * .4, s = 1 + Math.random() * 2.2;
-      ix.fillRect(x + Math.cos(a) * r, y + Math.sin(a) * r, s, s);
-    }
-  };
-  const seg = (a, b) => {
-    ix.strokeStyle = `hsl(${brushHue()} 92% 60%)`; hue = (hue + 5) % 360;
-    ix.beginPath(); ix.moveTo(a[0], a[1]); ix.lineTo(b[0], b[1]); ix.stroke();
-    glitterDots(b[0], b[1]);
-  };
-  ink.addEventListener('pointerdown', ev => {
-    if (done) return; ev.preventDefault(); pid = ev.pointerId;
-    try { ink.setPointerCapture(pid); } catch (e) {}
-    last = pos(ev); seg(last, [last[0] + .1, last[1] + .1]);
+// look of the tracing board: road colours, progress colours and the marker that drives along
+const TRACE_THEME = { board: 'linear-gradient(150deg,#DCCBFF,#A9D8FF)', road: '#FFFFFF', edge: 'rgba(120,80,200,.35)', center: '#CDB8F5', start: '#FF7FC4', prog: ['#FF7FC4', '#B36BFF', '#5BB8F5'], marker: '🦄' };
+// Stroke order for tracing, in a 100-wide box (cap top y≈10, baseline y≈120). Each entry is
+// one stroke, drawn in the direction a child should trace it.
+const GLYPHS = {
+  '0': ['M50 12 C20 12 14 45 14 66 C14 90 22 120 50 120 C78 120 86 90 86 66 C86 45 80 12 50 12'],
+  '1': ['M28 38 L60 10 L60 120'],
+  '2': ['M20 36 C22 14 40 10 52 10 C72 10 82 22 82 38 C82 58 60 76 20 120 L84 120'],
+  '3': ['M22 24 C32 10 76 6 78 34 C80 56 56 62 44 62 C64 62 84 72 84 94 C84 124 34 124 18 104'],
+  '4': ['M60 10 L14 88 L88 88', 'M66 48 L66 120'],
+  '5': ['M80 10 L30 10 L24 60 C40 50 84 48 84 88 C84 124 32 124 18 104'],
+  '6': ['M74 18 C58 6 22 10 18 64 C14 108 36 120 52 120 C74 120 84 104 84 88 C84 68 70 58 52 58 C34 58 20 70 18 86'],
+  '7': ['M16 10 L84 10 L38 120'],
+  '8': ['M50 62 C22 60 20 10 50 10 C80 10 78 60 50 62 C18 64 16 120 50 120 C84 120 82 64 50 62'],
+  '9': ['M82 42 C82 20 70 10 50 10 C30 10 18 24 18 42 C18 60 34 72 50 72 C68 72 82 62 82 42 L80 120'],
+  A: ['M50 10 L14 120', 'M50 10 L86 120', 'M28 80 L72 80'],
+  B: ['M22 10 L22 120', 'M22 10 L54 10 C80 10 80 62 54 62 L22 62', 'M22 62 L58 62 C88 62 88 120 58 120 L22 120'],
+  C: ['M82 28 C72 12 60 10 50 10 C26 10 14 38 14 66 C14 96 28 120 52 120 C64 120 76 114 84 100'],
+  D: ['M22 10 L22 120', 'M22 10 L46 10 C84 10 86 40 86 65 C86 92 80 120 46 120 L22 120'],
+  E: ['M80 10 L22 10 L22 120 L82 120', 'M22 64 L70 64'],
+  F: ['M80 10 L22 10 L22 120', 'M22 62 L68 62'],
+  G: ['M82 28 C72 12 60 10 50 10 C26 10 14 38 14 66 C14 96 28 120 52 120 C70 120 84 108 84 86 L84 70 L56 70'],
+  H: ['M20 10 L20 120', 'M80 10 L80 120', 'M20 64 L80 64'],
+  I: ['M50 10 L50 120'],
+  J: ['M72 10 L72 90 C72 112 60 120 46 120 C32 120 22 112 20 98'],
+  K: ['M22 10 L22 120', 'M78 10 L24 72', 'M40 54 L82 120'],
+  L: ['M24 10 L24 120 L80 120'],
+  M: ['M16 120 L20 10 L50 86 L80 10 L84 120'],
+  N: ['M20 120 L20 10 L80 120 L80 10'],
+  O: ['M50 10 C22 10 12 40 12 65 C12 92 24 120 50 120 C76 120 88 92 88 65 C88 40 78 10 50 10'],
+  P: ['M22 10 L22 120', 'M22 10 L54 10 C84 10 84 66 54 66 L22 66'],
+  R: ['M22 10 L22 120', 'M22 10 L54 10 C84 10 84 66 54 66 L22 66', 'M50 66 L84 120'],
+  S: ['M80 26 C72 12 60 10 48 10 C28 10 18 22 18 36 C18 70 82 56 82 92 C82 110 68 120 48 120 C34 120 22 114 16 102'],
+  T: ['M12 10 L88 10', 'M50 10 L50 120'],
+  U: ['M18 10 L18 84 C18 108 32 120 50 120 C68 120 82 108 82 84 L82 10'],
+  V: ['M12 10 L50 120 L88 10'],
+  Z: ['M16 10 L84 10 L16 120 L86 120']
+};
+const CARON = 'M32 -18 L50 -2 L68 -18';
+function glyphStrokes(text) {
+  const keys = /^ch$/i.test(text) ? ['C', 'H'] : [...text.toUpperCase()];
+  const strokes = []; let caron = false;
+  keys.forEach((k, i) => {
+    const base = { 'Č': 'C', 'Ř': 'R', 'Š': 'S', 'Ž': 'Z' }[k];
+    (base ? [...GLYPHS[base], CARON] : GLYPHS[k] || GLYPHS.O).forEach(d => strokes.push({ d, dx: i * 112 }));
+    if (base) caron = true;
   });
-  ink.addEventListener('pointermove', ev => {
-    if (done || ev.pointerId !== pid || !last) return; ev.preventDefault();
-    const p2 = pos(ev); seg(last, p2); last = p2;
-    if (Math.random() < .12) sparkleAt(ev.clientX, ev.clientY, 1);
-  });
-  const up = ev => {
-    if (ev.pointerId !== pid) return; pid = null; last = null;
-    if (done) return;
-    const d = ix.getImageData(0, 0, ink.width, ink.height).data, cw = ink.width;
-    const inked = ([x, y]) => d[(Math.round(y * dpr) * cw + Math.round(x * dpr)) * 4 + 3] > 20;
-    const on = onPts.filter(inked).length, nr = nearPts.filter(inked).length, off = offPts.filter(inked).length;
-    const coverage = onPts.length ? on / onPts.length : 0, precision = (on + nr) / Math.max(1, on + nr + off);
-    if (coverage >= .82 && precision >= .9) { done = true; onDone(); return; }
-    // scribbling: lots of paint off the line -> explain and start over
-    if ((coverage >= .6 && precision < .9) || off > onPts.length * .35) {
-      if (Date.now() - warned > 1500) { warned = Date.now(); say('Jezdi prstem jen po čáře. Zkus to znovu.'); tone(200, .25, 'sine', .1); }
-      box.classList.add('bad'); setTimeout(() => { box.classList.remove('bad'); ix.clearRect(0, 0, W, W); }, 450);
-    }
-  };
-  ink.addEventListener('pointerup', up); ink.addEventListener('pointercancel', up);
-  return { clear() { ix.clearRect(0, 0, W, W); done = false; } };
+  return { strokes, n: keys.length, caron };
 }
+// The glyph is drawn as a road; the child drags the marker (car / unicorn) along each stroke in
+// order and direction. The marker only moves forward along the road, so scribbling cannot succeed.
+function makeTracer(host, text, onDone) {
+  const { strokes, n, caron } = glyphStrokes(text);
+  host.innerHTML = '<div class="trace-box"><svg class="tsvg"></svg></div>';
+  const box = host.firstChild, svg = box.firstChild;
+  const W = Math.max(160, Math.floor(Math.min(host.clientWidth - 8, host.clientHeight - 8, 560)));
+  box.style.width = box.style.height = W + 'px';
+  box.style.background = TRACE_THEME.board;
+  const R = n > 1 ? 21 : 17, pad = 24;
+  const x0 = -pad, x1 = 100 + (n - 1) * 112 + pad, y0 = (caron ? -26 : 4) - pad, y1 = 124 + pad;
+  const side = Math.max(x1 - x0, y1 - y0), cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+  svg.setAttribute('viewBox', `${cx - side / 2} ${cy - side / 2} ${side} ${side}`);
+  const gid = 'tp' + Math.random().toString(36).slice(2, 8), P = TRACE_THEME.prog;
+  const layer = (cls, extra) => strokes.map(st => `<path class="${cls}" d="${st.d}" transform="translate(${st.dx} 0)" ${extra}/>`).join('');
+  svg.innerHTML = `<defs><linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="1">${P.map((c, i) => `<stop offset="${i / Math.max(1, P.length - 1)}" stop-color="${c}"/>`).join('')}</linearGradient></defs>` +
+    layer('t-edge', `stroke="${TRACE_THEME.edge}" stroke-width="${R + 7}"`) +
+    layer('t-road', `stroke="${TRACE_THEME.road}" stroke-width="${R}"`) +
+    layer('t-mid', `stroke="${TRACE_THEME.center}" stroke-width="2.2" stroke-dasharray="6 7"`) +
+    layer('t-prog', `stroke="url(#${gid})" stroke-width="${R * .78}" stroke-dasharray="0 9999"`) +
+    `<g class="t-arrow"><circle r="${R * .62}" fill="${TRACE_THEME.start}" stroke="#fff" stroke-width="2.5"/><path d="M${-R * .22} ${-R * .3} L${R * .32} 0 L${-R * .22} ${R * .3} Z" fill="#fff"/></g>` +
+    `<text class="t-car" text-anchor="middle" dominant-baseline="central" font-size="${R * 2}">${TRACE_THEME.marker}</text>` +
+    `<text class="t-hand" font-size="${R * 1.9}" opacity="0">👆</text>`;
+  const STEP = 1.5;
+  const data = [...svg.querySelectorAll('.t-road')].map((el, i) => {
+    const L = el.getTotalLength(), pts = [];
+    for (let s = 0; s < L; s += STEP) { const q = el.getPointAtLength(s); pts.push([q.x + strokes[i].dx, q.y]); }
+    const q = el.getPointAtLength(L); pts.push([q.x + strokes[i].dx, q.y]);
+    return { L, pts };
+  });
+  const progEls = [...svg.querySelectorAll('.t-prog')], arrow = svg.querySelector('.t-arrow'), car = svg.querySelector('.t-car'), hand = svg.querySelector('.t-hand');
+  let si = 0, pi = 0, drag = null, done = false, lastMove = Date.now();
+  const angleAt = (pts, i) => { const a = pts[Math.max(0, i - 3)], b = pts[Math.min(pts.length - 1, i + 3)]; return Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI; };
+  const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+  function render() {
+    progEls.forEach((el, i) => el.setAttribute('stroke-dasharray', `${i < si ? data[i].L + 6 : i === si ? pi * STEP : 0} 9999`));
+    if (done) { car.setAttribute('opacity', 0); arrow.setAttribute('opacity', 0); return; }
+    const pts = data[si].pts, p = pts[pi], a = angleAt(pts, pi);
+    const k = Math.min(pts.length - 1, pi + Math.round(R * 1.6 / STEP)), ak = angleAt(pts, k);
+    arrow.setAttribute('transform', `translate(${pts[k][0]} ${pts[k][1]}) rotate(${ak})`);
+    arrow.setAttribute('opacity', drag === null ? 1 : 0);
+    // emoji vehicles face left: mirror them when driving right, and keep them upright
+    const right = Math.cos(a * Math.PI / 180) >= 0;
+    car.setAttribute('transform', `translate(${p[0]} ${p[1]}) rotate(${right ? a : a - 180}) scale(${right ? -1 : 1} 1)`);
+  }
+  const toPt = ev => { const q = svg.createSVGPoint(); q.x = ev.clientX; q.y = ev.clientY; const r = q.matrixTransform(svg.getScreenCTM().inverse()); return [r.x, r.y]; };
+  function nextStroke() {
+    tone(660, .08); tone(880, .1, 'triangle', .1, .06);
+    drag = null;
+    if (si < data.length - 1) { si++; pi = 0; lastMove = Date.now(); }
+    else { done = true; render(); onDone(); }
+  }
+  svg.addEventListener('pointerdown', ev => {
+    if (done) return; ev.preventDefault();
+    const q = toPt(ev);
+    if (dist(q, data[si].pts[pi]) > R * 2) { box.classList.remove('hint'); void box.offsetWidth; box.classList.add('hint'); lastMove = 0; return; }
+    drag = ev.pointerId; lastMove = Date.now();
+    try { svg.setPointerCapture(drag); } catch (e) {}
+    tone(520, .05, 'sine', .07); render();
+  });
+  svg.addEventListener('pointermove', ev => {
+    if (drag !== ev.pointerId || done) return; ev.preventDefault();
+    const q = toPt(ev), pts = data[si].pts, lim = Math.min(pts.length - 1, pi + Math.ceil(R * 2.4 / STEP));
+    let best = -1, bd = 1e9;
+    for (let j = pi; j <= lim; j++) { const dd = dist(q, pts[j]); if (dd < bd) { bd = dd; best = j; } }
+    if (bd > R * 2.3) { drag = null; tone(220, .12, 'sine', .08); render(); return; } // left the road: the marker waits
+    if (bd < R * 1.15 && best > pi) {
+      pi = best; lastMove = Date.now();
+      if (Math.random() < .15) sparkleAt(ev.clientX, ev.clientY, 1);
+      if (pi >= pts.length - 3) nextStroke();
+      render();
+    }
+  });
+  const up = ev => { if (drag === ev.pointerId) { drag = null; render(); } };
+  svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', up);
+  // idle hint: a hand slides along the next part of the road
+  (function hintLoop(t) {
+    if (!svg.isConnected) return;
+    if (!done && drag === null && Date.now() - lastMove > 2200) {
+      const pts = data[si].pts, k = Math.min(pts.length - 1, pi + Math.floor(((t || 0) / 1600 % 1) * 50));
+      hand.setAttribute('x', pts[k][0] - R * .35); hand.setAttribute('y', pts[k][1] + R * 1.7); hand.setAttribute('opacity', .92);
+    } else hand.setAttribute('opacity', 0);
+    requestAnimationFrame(hintLoop);
+  })();
+  render();
+  return { clear() { si = 0; pi = 0; done = false; drag = null; lastMove = Date.now(); render(); } };
+}
+
 let trT;
 window.addEventListener('resize', () => { clearTimeout(trT); trT = setTimeout(() => { if (activeTrace) activeTrace.rebuild(); }, 250); });
 
@@ -1814,7 +1845,11 @@ function finishQuiz() {
 }
 $('#goAbc').addEventListener('click', () => { ac(); startAbc(); });
 
+/* ---------- SCENERY ---------- */
+const SCENE_SVG = `<svg viewBox="0 0 400 160" preserveAspectRatio="xMidYMax slice"><path d="M-20 92 Q60 58 140 84 T300 76 T420 80 V170 H-20Z" fill="#E2F5DC"/><g fill="#F0E2FF"><rect x="286" y="46" width="44" height="40"/><rect x="276" y="32" width="16" height="54"/><rect x="324" y="32" width="16" height="54"/><path d="M276 32 L284 14 L292 32Z M324 32 L332 14 L340 32Z M298 46 L308 24 L318 46Z"/></g><path d="M-20 124 Q90 96 200 118 T420 110 V170 H-20Z" fill="#C6EDBD"/><g fill="#fff"><circle cx="40" cy="134" r="3"/><circle cx="120" cy="140" r="2.5"/><circle cx="250" cy="136" r="3"/><circle cx="350" cy="142" r="2.5"/></g><g fill="#FFB3DA"><circle cx="70" cy="146" r="3.5"/><circle cx="190" cy="150" r="3"/><circle cx="310" cy="148" r="3.5"/></g></svg>`;
+
 /* ---------- BOOT ---------- */
+$('#sceneBg').innerHTML = SCENE_SVG;
 if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => { czVoice = null; czechVoice(); }; } catch (e) {} }
 document.addEventListener('gesturestart', ev => ev.preventDefault());
 document.addEventListener('dblclick', ev => ev.preventDefault(), { passive: false });
