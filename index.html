@@ -1583,6 +1583,11 @@ function makeTracer(host, text, onDone, opts = {}) {
     `<g class="t-arrow"><circle r="${R * .62}" fill="${TH.start}" stroke="#fff" stroke-width="2.5"/><path d="M${-R * .22} ${-R * .3} L${R * .32} 0 L${-R * .22} ${R * .3} Z" fill="#fff"/></g>` +
     `<text class="t-car" text-anchor="middle" dominant-baseline="central" font-size="${R * 2}">${TH.marker}</text>` +
     `<text class="t-hand" font-size="${R * 1.9}" opacity="0">👆</text>`;
+  if (opts.strokes) { // custom pictures: fit their own outline to the board
+    const bb = svg.querySelector('.t-road').getBBox(), p2 = R * 1.6;
+    const sd = Math.max(bb.width, bb.height) + p2 * 2;
+    svg.setAttribute('viewBox', `${bb.x + bb.width / 2 - sd / 2} ${bb.y + bb.height / 2 - sd / 2} ${sd} ${sd}`);
+  }
   const STEP = 1.5;
   const data = [...svg.querySelectorAll('.t-road')].map((el, i) => {
     const L = el.getTotalLength(), pts = [];
@@ -1591,7 +1596,7 @@ function makeTracer(host, text, onDone, opts = {}) {
     return { L, pts };
   });
   const progEls = [...svg.querySelectorAll('.t-prog')], arrow = svg.querySelector('.t-arrow'), car = svg.querySelector('.t-car'), hand = svg.querySelector('.t-hand');
-  if (opts.dots) arrow.insertAdjacentHTML('beforebegin', data.map(dd => { let h = ''; for (let k = 0; k < dd.pts.length; k += Math.round(16 / STEP)) h += `<circle class="t-dot" cx="${dd.pts[k][0]}" cy="${dd.pts[k][1]}" r="${R * .42}"/>`; return h; }).join(''));
+  if (opts.dots) arrow.insertAdjacentHTML('beforebegin', data.map(dd => { let h = ''; for (let k = 0; k < dd.pts.length; k += Math.round(20 / STEP)) h += `<circle class="t-dot" cx="${dd.pts[k][0]}" cy="${dd.pts[k][1]}" r="${R * .42}"/>`; return h; }).join(''));
   let si = 0, pi = 0, drag = null, done = false, lastMove = Date.now();
   const angleAt = (pts, i) => { const a = pts[Math.max(0, i - 3)], b = pts[Math.min(pts.length - 1, i + 3)]; return Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI; };
   const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
