@@ -1,6 +1,6 @@
 # Zvířátková dílna
 
-Hra pro předškoláky na iPhone: puzzle se zvířátky, omalovánky, učení čísel 1–10 a česká abeceda.
+Hra pro předškoláky na iPhone: jednorožci a třpytky, puzzle se zvířátky, omalovánky, učení čísel 1–10 a česká abeceda.
 
 Hrát: https://michalondracekbt.github.io/zviratkova-dilna/
 
