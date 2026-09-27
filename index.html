@@ -226,7 +226,24 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .ctile svg .r{stroke-width:6}
 
 /* PUZZLE */
-.pz-area{position:relative;flex:1;overflow:hidden;touch-action:none;margin:0 0 4px}
+.pz-area{position:relative;flex:1;overflow:hidden;touch-action:none;margin:0 12px 12px;border-radius:28px;box-shadow:0 6px 0 var(--shadow)}
+.pz-bg{position:absolute;pointer-events:none}
+.pz-sil{position:absolute;pointer-events:none;transition:opacity .6s}
+.pz-sil.gone{opacity:0}
+.pz-piece{position:absolute;left:0;top:0;pointer-events:none;will-change:transform;filter:drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff) drop-shadow(0 6px 8px rgba(20,30,50,.3))}
+.pz-piece.placed{filter:none}
+.pz-piece.anim{transition:transform .22s cubic-bezier(.3,1.3,.6,1)}
+.pz-piece.wiggle{animation:shake .5s}
+.pz-hint{position:absolute;left:0;top:0;pointer-events:none;opacity:0;animation:pzHint 1.6s ease-in-out;filter:brightness(2.2) drop-shadow(0 0 10px #fff)}
+@keyframes pzHint{20%,70%{opacity:.8}}
+.pz-area.done .pz-piece{animation:boing .5s}
+.seg.icons.two{grid-template-columns:repeat(2,1fr)}
+.seg.icons.two button{min-height:62px}
+.ex-stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:0 12px 12px}
+#exStage>svg{width:100%;height:100%;display:block;touch-action:none}
+.trace-box{container-type:size}
+.t-dot{fill:#fff;stroke:rgba(0,40,80,.25);stroke-width:1.5}
+.dots-reveal{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:120px;font-size:52cqmin;line-height:1;pointer-events:none;animation:pop .5s cubic-bezier(.3,1.5,.6,1)}
 .board{position:absolute;border-radius:8px;background:rgba(255,255,255,.6);box-shadow:inset 0 0 0 3px rgba(32,48,71,.12);z-index:0;overflow:hidden}
 .board img{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
 .board .ghost{opacity:.22;transition:opacity .2s}
@@ -330,7 +347,8 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
       <h2>Puzzle</h2>
       <div class="stars">⭐ <span id="starCount2">0</span></div>
     </div>
-    <div class="seg-row">
+    <div class="seg-row"><div class="seg icons two" id="pzMode"></div></div>
+    <div class="seg-row" id="diffRow">
       <span class="seg-label">Dílků:</span>
       <div class="seg" id="diffSeg"></div>
     </div>
@@ -348,6 +366,16 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
       <button class="btn" id="shuffleBtn" aria-label="Zamíchat"><svg viewBox="0 0 24 24"><path d="M3 7h4c4 0 6 10 10 10h4M3 17h4c1.6 0 2.8-1.6 4-3.5M13 9.5C14.2 8 15.4 7 17 7h4M18 4l3 3-3 3M18 14l3 3-3 3"/></svg></button>
     </div>
     <div class="pz-area" id="pzArea"></div>
+  </section>
+
+  <!-- EXTRA GAME (connect the dots / race track) -->
+  <section id="extra" class="screen" hidden>
+    <div class="topbar">
+      <button class="btn" data-back="pickPuzzle" aria-label="Zpět"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <h2 id="exTitle"></h2>
+      <span class="pz-progress" id="exProgress"></span>
+    </div>
+    <div class="ex-stage" id="exStage"></div>
   </section>
 
   <!-- COLORING PICKER -->
@@ -622,7 +650,7 @@ function drawGlitter(ctx, S, rnd, n, night) {
   ctx.globalAlpha = 1;
 }
 function drawMirrored(ctx, e, cx, cy, size) { ctx.save(); ctx.translate(cx, 0); ctx.scale(-1, 1); drawEmoji(ctx, e, 0, cy, size); ctx.restore(); }
-function drawScene(ctx, S, a) {
+function drawScene(ctx, S, a, noAnimal) {
   const h = sceneOf(a); const rnd = seeded(hash(a.e + a.name));
   const g = ctx.createLinearGradient(0, 0, 0, S);
   g.addColorStop(0, h.sky[0]); g.addColorStop(1, h.sky[1]);
@@ -659,10 +687,12 @@ function drawScene(ctx, S, a) {
   });
   (h.extra || []).forEach(([e, x, y, sz]) => drawEmoji(ctx, e, S * x, S * y, S * sz));
   if (h.glitter) drawGlitter(ctx, S, rnd, h.glitterN || 50, h.night);
-  if (h.two) { drawEmoji(ctx, a.e, S * .3, S * .56, S * .42); drawMirrored(ctx, a.e, S * .7, S * .56, S * .42); }
-  else if (h.mirror) drawMirrored(ctx, a.e, S * .55, S * .52, S * .6);
-  else drawEmoji(ctx, a.e, S * .5, S * .52, S * .6);
-  if (h.crown) drawEmoji(ctx, '👑', S * .5, S * .2, S * .17);
+  if (!noAnimal) {
+    if (h.two) { drawEmoji(ctx, a.e, S * .3, S * .56, S * .42); drawMirrored(ctx, a.e, S * .7, S * .56, S * .42); }
+    else if (h.mirror) drawMirrored(ctx, a.e, S * .55, S * .52, S * .6);
+    else drawEmoji(ctx, a.e, S * .5, S * .52, S * .6);
+    if (h.crown) drawEmoji(ctx, '👑', S * .5, S * .2, S * .17);
+  }
   if (h.glitter) drawGlitter(ctx, S, rnd, 12, h.night);
 }
 
@@ -1017,12 +1047,15 @@ function renderHome() {
 }
 function drawHomeArt() {
   const cv = $('#artPuzzle'), ctx = cv.getContext('2d'), S = cv.width;
-  drawScene(ctx, S, ANIMALS[0]);
-  const n = 3, s = S / n, E = makeEdges(n);
-  ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,.95)';
-  for (let r = 0; r < n; r++) for (let q = 0; q < n; q++) {
-    ctx.save(); ctx.translate(q * s - s * .3, r * s - s * .3); ctx.stroke(piecePath(r, q, s, s * .3, n, E)); ctx.restore();
-  }
+  const a0 = ANIMALS.find(a => a.e === '🦊') || ANIMALS[0];
+  drawScene(ctx, S, a0, true);
+  const t = document.createElement('canvas'); t.width = t.height = S; const tx = t.getContext('2d');
+  drawEmoji(tx, a0.e, S / 2, S / 2, S * .62);
+  const dk = document.createElement('canvas'); dk.width = dk.height = S; const dx = dk.getContext('2d');
+  dx.drawImage(t, 0, 0); dx.globalCompositeOperation = 'source-atop'; dx.fillStyle = 'rgba(25,20,55,.7)'; dx.fillRect(0, 0, S, S);
+  ctx.drawImage(dk, 0, 0);
+  ctx.save(); ctx.beginPath(); ctx.rect(0, 0, S * .56, S); ctx.clip(); ctx.drawImage(t, 0, 0); ctx.restore();
+  ctx.save(); ctx.translate(S * .1, -S * .06); ctx.rotate(.18); ctx.beginPath(); ctx.rect(S * .56, 0, S, S); ctx.clip(); ctx.drawImage(t, 0, 0); ctx.restore();
   const holder = $('#artColor');
   holder.innerHTML = pageSvg(PAGES.find(pg => pg.id === 'uni-baby'));
   const svg = holder.querySelector('svg');
@@ -1035,16 +1068,28 @@ $('#goPuzzle').addEventListener('click', () => { ac(); renderPuzzlePicker(); sho
 $('#goColor').addEventListener('click', () => { ac(); renderColorPicker(); show('pickColor'); });
 
 /* ---------- PUZZLE PICKER ---------- */
-const DIFFS = [4, 9, 16, 25];
-let diff = store.get('zd-diff', 9); if (!DIFFS.includes(diff)) diff = 9;
+const DIFFS = [4, 6, 9, 12];
+const GRID = { 4: [2, 2], 6: [3, 2], 9: [3, 3], 12: [4, 3] };
+let diff = store.get('zd-diff2', 6); if (!DIFFS.includes(diff)) diff = 6;
 let cat = store.get('zd-cat', 'uni');
+let pzMode = store.get('zd-pzmode', 'puzzle');
+const PZ_MODES = [['puzzle', '🧩', 'Puzzle'], ['dots', '✏️', 'Spojovačka']];
 function filtered() { return cat === 'all' ? ANIMALS : ANIMALS.filter(a => a.hab === cat); }
 function renderPuzzlePicker() {
   const solved = solvedSet();
   $('#starCount2').textContent = `${solved.size} / ${ANIMALS.length}`;
+  $('#pzMode').innerHTML = PZ_MODES.map(([id, ico, nm]) => `<button data-m="${id}" aria-pressed="${id === pzMode}"><span class="ico">${ico}</span>${nm}</button>`).join('');
+  const dots = pzMode === 'dots';
+  $('#diffRow').hidden = dots; $('#catChips').hidden = dots;
+  if (dots) {
+    const doneDots = new Set(store.get('zd-dots', []));
+    $('#animalGrid').innerHTML = DOTS.map((d, i) => `<button class="tile" data-dot="${i}" style="background:linear-gradient(#9BE3F5,#3BA4D0)">
+      ${doneDots.has(d.id) ? '<span class="badge">⭐</span>' : ''}<span class="em">${d.e}</span><span class="nm">${d.name}</span></button>`).join('');
+    return;
+  }
   $('#diffSeg').innerHTML = DIFFS.map(d => {
-    const k = Math.sqrt(d);
-    return `<button data-d="${d}" aria-pressed="${d === diff}"><span class="gridico" style="grid-template-columns:repeat(${k},1fr)">${'<i></i>'.repeat(d)}</span>${d}</button>`;
+    const [c, r] = GRID[d];
+    return `<button data-d="${d}" aria-pressed="${d === diff}"><span class="gridico" style="grid-template-columns:repeat(${c},1fr)">${'<i></i>'.repeat(c * r)}</span>${d}</button>`;
   }).join('');
   $('#catChips').innerHTML = CATS.map(([id, nm]) => `<button class="chip" data-c="${id}" aria-pressed="${id === cat}">${nm}</button>`).join('');
   $('#animalGrid').innerHTML = filtered().map(a => {
@@ -1053,169 +1098,172 @@ function renderPuzzlePicker() {
       ${a.icon ? `<span class="sub">${a.icon}</span>` : ''}${solved.has(akey(a)) ? '<span class="badge">⭐</span>' : ''}<span class="em">${a.e}</span><span class="nm">${a.short || a.name}</span></button>`;
   }).join('');
 }
-$('#diffSeg').addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; diff = +b.dataset.d; store.set('zd-diff', diff); sfx.pick(); renderPuzzlePicker(); });
+$('#pzMode').addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; pzMode = b.dataset.m; store.set('zd-pzmode', pzMode); sfx.pick(); renderPuzzlePicker(); });
+$('#diffSeg').addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; diff = +b.dataset.d; store.set('zd-diff2', diff); sfx.pick(); renderPuzzlePicker(); });
 $('#catChips').addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; cat = b.dataset.c; store.set('zd-cat', cat); sfx.pick(); renderPuzzlePicker(); });
-$('#animalGrid').addEventListener('click', ev => { const b = ev.target.closest('.tile'); if (!b) return; openPuzzle(ANIMALS[+b.dataset.i]); });
+$('#animalGrid').addEventListener('click', ev => {
+  const b = ev.target.closest('.tile'); if (!b) return;
+  if (b.dataset.dot != null) openDots(DOTS[+b.dataset.dot]); else openPuzzle(ANIMALS[+b.dataset.i]);
+});
 
-/* ---------- PUZZLE ---------- */
+/* ---------- PUZZLE (silhouette + shaped pieces) ---------- */
+// The animal is shown as a dark silhouette in its scene; the coloured animal is cut along wavy
+// lines into pieces that lie around it, turned a little. Each piece carries only the animal's
+// own pixels, so the pieces follow the animal's outline.
 let P = null;
-let hint = store.get('zd-hint', true);
-const hitCtx = document.createElement('canvas').getContext('2d');
-
-function makeEdges(n) {
-  const h = [], v = [];
-  for (let r = 0; r < n; r++) { h[r] = []; v[r] = []; for (let q = 0; q < n; q++) { h[r][q] = Math.random() < .5 ? 1 : -1; v[r][q] = Math.random() < .5 ? 1 : -1; } }
-  return { h, v };
-}
-function edge(path, ax, ay, bx, by, t) {
-  if (!t) { path.lineTo(bx, by); return; }
-  const dx = bx - ax, dy = by - ay, nx = dy, ny = -dx;
-  const P2 = (u, v) => [ax + dx * u + nx * v * t, ay + dy * u + ny * v * t];
-  path.lineTo(...P2(.37, 0));
-  path.bezierCurveTo(...P2(.42, 0), ...P2(.45, .05), ...P2(.41, .11));
-  path.bezierCurveTo(...P2(.35, .2), ...P2(.42, .27), ...P2(.5, .27));
-  path.bezierCurveTo(...P2(.58, .27), ...P2(.65, .2), ...P2(.59, .11));
-  path.bezierCurveTo(...P2(.55, .05), ...P2(.58, 0), ...P2(.63, 0));
-  path.lineTo(bx, by);
-}
-function piecePath(r, q, s, pad, n, E) {
-  const top = r === 0 ? 0 : -E.h[r][q];
-  const bottom = r === n - 1 ? 0 : E.h[r + 1][q];
-  const left = q === 0 ? 0 : -E.v[r][q];
-  const right = q === n - 1 ? 0 : E.v[r][q + 1];
-  const path = new Path2D(), x0 = pad, y0 = pad, x1 = pad + s, y1 = pad + s;
-  path.moveTo(x0, y0);
-  edge(path, x0, y0, x1, y0, top); edge(path, x1, y0, x1, y1, right);
-  edge(path, x1, y1, x0, y1, bottom); edge(path, x0, y1, x0, y0, left);
-  path.closePath();
-  return path;
-}
 function openPuzzle(a) {
   ac();
-  const n = Math.sqrt(diff);
-  P = { animal: a, n, edges: makeEdges(n), placed: new Set(), done: false, zTop: 10, drags: new Map() };
+  P = { animal: a, diff, seed: Math.random(), zTop: 10, drag: null, done: false };
   $('#pzTitle').textContent = a.name;
   show('puzzle');
   requestAnimationFrame(() => requestAnimationFrame(buildPuzzle));
 }
-function setPos(p) { p.el.style.transform = `translate3d(${p.x}px,${p.y}px,0)${p.lift ? ' scale(1.06)' : ''}`; }
-function updateProgress() { $('#pzProgress').textContent = `${P.placed.size}/${P.n * P.n}`; }
 function buildPuzzle() {
-  const area = $('#pzArea'); area.innerHTML = '';
+  const area = $('#pzArea'); area.innerHTML = ''; area.classList.remove('done');
   const W = area.clientWidth, H = area.clientHeight; if (!W || !H) return;
-  P.W = W; P.H = H;
-  const n = P.n; let bs, bx, by, scat;
-  if (W >= H * 1.1) {
-    bs = Math.floor(Math.min(H - 24, W * .52)); bx = 16; by = Math.round((H - bs) / 2);
-    scat = { x0: bx + bs + 14, y0: 8, x1: W - 8, y1: H - 8 };
-  } else {
-    bs = Math.floor(Math.min(W - 32, H * .54)); bx = Math.round((W - bs) / 2); by = 8;
-    scat = { x0: 8, y0: by + bs + 12, x1: W - 8, y1: H - 6 };
-  }
-  const s = bs / n, pad = Math.ceil(s * .3), pw = s + 2 * pad;
+  Object.assign(P, { W, H, placed: 0, done: false, drag: null });
   const dpr = Math.min(window.devicePixelRatio || 1, 3);
-  const src = document.createElement('canvas'); src.width = src.height = Math.round(bs * dpr);
-  drawScene(src.getContext('2d'), src.width, P.animal);
-  const url = src.toDataURL('image/jpeg', .9);
-  const board = document.createElement('div');
-  board.className = 'board' + (hint ? '' : ' nohint') + (P.done ? ' done' : '');
-  Object.assign(board.style, { left: bx + 'px', top: by + 'px', width: bs + 'px', height: bs + 'px' });
-  board.innerHTML = `<img class="ghost" alt="" src="${url}"><img class="full" alt="${P.animal.name}" src="${url}">`;
-  area.appendChild(board);
-  P.board = board; P.s = s; P.pad = pad; P.scat = scat;
-  P.pieces = [];
-  for (let r = 0; r < n; r++) for (let q = 0; q < n; q++) {
-    const path = piecePath(r, q, s, pad, n, P.edges);
-    const cv = document.createElement('canvas');
-    cv.width = cv.height = Math.ceil(pw * dpr); cv.style.width = cv.style.height = pw + 'px'; cv.className = 'piece';
-    const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.save(); ctx.clip(path); ctx.drawImage(src, pad - q * s, pad - r * s, bs, bs); ctx.restore();
-    ctx.lineWidth = 2.5; ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.stroke(path);
-    ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(32,48,71,.35)'; ctx.stroke(path);
-    const idx = r * n + q;
-    const pc = { idx, el: cv, path, w: pw, tx: bx + q * s - pad, ty: by + r * s - pad, x: 0, y: 0, z: 0, placed: P.placed.has(idx), lift: false };
-    if (pc.placed) { pc.x = pc.tx; pc.y = pc.ty; pc.z = 1; cv.classList.add('placed'); }
-    cv.style.zIndex = pc.z;
-    area.appendChild(cv);
-    P.pieces.push(pc);
+  const S = Math.max(W, H), bg = document.createElement('canvas');
+  bg.width = bg.height = Math.round(S * Math.min(dpr, 2)); bg.className = 'pz-bg';
+  Object.assign(bg.style, { width: S + 'px', height: S + 'px', left: (W - S) / 2 + 'px', top: (H - S) / 2 + 'px' });
+  drawScene(bg.getContext('2d'), bg.width, P.animal, true);
+  area.appendChild(bg);
+  const land = W > H * 1.1;
+  const A = Math.floor(land ? Math.min(H * .8, W * .5) : Math.min(W * .84, H * .52));
+  const ax = land ? Math.round(W * .05) : Math.round((W - A) / 2), ay = land ? Math.round((H - A) / 2) : Math.round(H * .03);
+  Object.assign(P, { A, ax, ay, land });
+  const AP = Math.round(A * dpr);
+  const src = document.createElement('canvas'); src.width = src.height = AP;
+  drawEmoji(src.getContext('2d'), P.animal.e, AP / 2, AP / 2, AP * .8);
+  const sil = document.createElement('canvas'); sil.width = sil.height = AP;
+  const sx = sil.getContext('2d'); sx.drawImage(src, 0, 0); sx.globalCompositeOperation = 'source-atop'; sx.fillStyle = 'rgba(25,20,55,.7)'; sx.fillRect(0, 0, AP, AP);
+  sil.className = 'pz-sil'; Object.assign(sil.style, { width: A + 'px', height: A + 'px', left: ax + 'px', top: ay + 'px' });
+  area.appendChild(sil); P.sil = sil;
+  const [cols, rows] = GRID[P.diff];
+  const rnd = seeded(Math.floor(P.seed * 1e9));
+  const wav = (k, n) => ({ base: k / n, amp: .035 + rnd() * .045, f: .8 + rnd() * 1.4, ph: rnd() * 6.28 });
+  const vc = Array.from({ length: cols - 1 }, (_, k) => wav(k + 1, cols)), hc = Array.from({ length: rows - 1 }, (_, k) => wav(k + 1, rows));
+  const d = src.getContext('2d').getImageData(0, 0, AP, AP).data;
+  const cellOf = (x, y) => {
+    const u = x / AP, v = y / AP; let c = 0, r = 0;
+    for (const w of vc) if (u > w.base + w.amp * Math.sin(v * Math.PI * 2 * w.f + w.ph)) c++;
+    for (const w of hc) if (v > w.base + w.amp * Math.sin(u * Math.PI * 2 * w.f + w.ph)) r++;
+    return r * cols + c;
+  };
+  const owner = new Int16Array(AP * AP).fill(-1), count = new Array(cols * rows).fill(0);
+  let total = 0;
+  for (let y = 0; y < AP; y++) for (let x = 0; x < AP; x++) { const i = y * AP + x; if (d[i * 4 + 3] > 16) { const k = cellOf(x, y); owner[i] = k; count[k]++; total++; } }
+  // tiny fragments join their biggest neighbour
+  const map = count.map((_, k) => k);
+  const nb = k => { const r = Math.floor(k / cols), c = k % cols; return [[r, c - 1], [r, c + 1], [r - 1, c], [r + 1, c]].filter(([a, b]) => a >= 0 && b >= 0 && a < rows && b < cols).map(([a, b]) => a * cols + b); };
+  count.forEach((n, k) => { if (n > 0 && n < total * .045) { const t = nb(k).filter(j => count[j] > 0).sort((a, b) => count[b] - count[a])[0]; if (t != null) { map[k] = t; count[t] += n; count[k] = 0; } } });
+  const resolve = k => { while (map[k] !== k) k = map[k]; return k; };
+  const boxes = {};
+  for (let y = 0; y < AP; y++) for (let x = 0; x < AP; x++) {
+    const i = y * AP + x; if (owner[i] < 0) continue;
+    const k = resolve(owner[i]); owner[i] = k;
+    const b = boxes[k] || (boxes[k] = { x0: x, y0: y, x1: x, y1: y });
+    if (x < b.x0) b.x0 = x; if (x > b.x1) b.x1 = x; if (y < b.y0) b.y0 = y; if (y > b.y1) b.y1 = y;
   }
-  scatter();
-  P.pieces.forEach(setPos);
-  updateProgress();
-  $('#hintBtn').classList.toggle('on', hint);
+  P.pieces = Object.keys(boxes).map(key => {
+    const k = +key, b = boxes[k], w = b.x1 - b.x0 + 1, h = b.y1 - b.y0 + 1;
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    const cx = cv.getContext('2d'), out = cx.createImageData(w, h);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const si = (b.y0 + y) * AP + b.x0 + x;
+      if (owner[si] === k) { const o = (y * w + x) * 4, s4 = si * 4; out.data[o] = d[s4]; out.data[o + 1] = d[s4 + 1]; out.data[o + 2] = d[s4 + 2]; out.data[o + 3] = d[s4 + 3]; }
+    }
+    cx.putImageData(out, 0, 0);
+    cv.className = 'pz-piece'; cv.style.width = w / dpr + 'px'; cv.style.height = h / dpr + 'px';
+    area.appendChild(cv);
+    return { el: cv, alpha: out.data, cw: w, ch: h, w: w / dpr, h: h / dpr, tx: ax + b.x0 / dpr, ty: ay + b.y0 / dpr, x: 0, y: 0, rot: 0, z: 0, placed: false, lift: false };
+  });
+  scatterPieces();
+  $('#pzProgress').textContent = `0/${P.pieces.length}`;
 }
-function scatter(animate) {
-  const free = P.pieces.filter(p => !p.placed);
-  const { s, pad, scat, W, H } = P;
-  const rw = Math.max(1, scat.x1 - scat.x0), rh = Math.max(1, scat.y1 - scat.y0);
-  const m = free.length; if (!m) return;
+function setPiece(p) { p.el.style.transform = `translate3d(${p.x}px,${p.y}px,0) rotate(${p.rot}deg)${p.lift ? ' scale(1.06)' : ''}`; }
+function scatterPieces(animate) {
+  const { W, H, A, ax, ay, land } = P;
+  const reg = land ? { x0: ax + A + 10, y0: 10, x1: W - 10, y1: H - 10 } : { x0: 10, y0: ay + A + 6, x1: W - 10, y1: H - 10 };
+  const free = P.pieces.filter(p => !p.placed), m = free.length; if (!m) return;
+  const rw = reg.x1 - reg.x0, rh = Math.max(60, reg.y1 - reg.y0);
   const cols = Math.max(1, Math.round(Math.sqrt(m * rw / rh))), rows = Math.ceil(m / cols);
-  const cw = rw / cols, ch = rh / rows;
-  const order = free.map((p, i) => i).sort(() => Math.random() - .5);
+  const order = free.map((_, i) => i).sort(() => Math.random() - .5);
   free.forEach((p, i) => {
-    const cell = order[i], cc = cell % cols, cr = Math.floor(cell / cols);
-    let cx = scat.x0 + cc * cw + cw / 2 + (Math.random() - .5) * cw * .3;
-    let cy = scat.y0 + cr * ch + ch / 2 + (Math.random() - .5) * ch * .3;
-    let x = cx - s / 2, y = cy - s / 2;
-    x = Math.max(0, Math.min(W - s, x)); y = Math.max(0, Math.min(H - s, y));
-    p.x = x - pad; p.y = y - pad;
+    const cell = order[i], cx = reg.x0 + (cell % cols + .5) * rw / cols, cy = reg.y0 + (Math.floor(cell / cols) + .5) * rh / rows;
+    p.x = Math.max(-p.w * .25, Math.min(W - p.w * .75, cx - p.w / 2 + (Math.random() - .5) * 16));
+    p.y = Math.max(-p.h * .2, Math.min(H - p.h * .7, cy - p.h / 2 + (Math.random() - .5) * 16));
+    p.rot = Math.round((Math.random() - .5) * 56);
     p.z = ++P.zTop; p.el.style.zIndex = p.z;
     if (animate) { p.el.classList.add('anim'); setTimeout(() => p.el.classList.remove('anim'), 260); }
-    setPos(p);
+    setPiece(p);
   });
+}
+function hitPiece(p, x, y) {
+  const cx = p.x + p.w / 2, cy = p.y + p.h / 2, a = -p.rot * Math.PI / 180, dx = x - cx, dy = y - cy;
+  const lx = dx * Math.cos(a) - dy * Math.sin(a) + p.w / 2, ly = dx * Math.sin(a) + dy * Math.cos(a) + p.h / 2;
+  if (lx < -8 || ly < -8 || lx > p.w + 8 || ly > p.h + 8) return false;
+  const px = Math.floor(lx / p.w * p.cw), py = Math.floor(ly / p.h * p.ch), r = Math.round(p.cw / p.w * 8);
+  for (let oy = -r; oy <= r; oy += Math.max(1, r >> 1)) for (let ox = -r; ox <= r; ox += Math.max(1, r >> 1)) {
+    const X = px + ox, Y = py + oy;
+    if (X >= 0 && Y >= 0 && X < p.cw && Y < p.ch && p.alpha[(Y * p.cw + X) * 4 + 3] > 20) return true;
+  }
+  return false;
 }
 function localXY(ev) { const r = $('#pzArea').getBoundingClientRect(); return [ev.clientX - r.left, ev.clientY - r.top]; }
 $('#pzArea').addEventListener('pointerdown', ev => {
-  if (!P || P.done || !P.pieces) return;
+  if (!P || P.done || !P.pieces || P.drag) return;
   const [x, y] = localXY(ev);
-  const cand = P.pieces.filter(p => !p.placed && !p.dragId).sort((a, b) => b.z - a.z);
-  for (const p of cand) {
-    const lx = x - p.x, ly = y - p.y;
-    if (lx < 0 || ly < 0 || lx > p.w || ly > p.w) continue;
-    const inCore = lx >= P.pad && ly >= P.pad && lx <= P.pad + P.s && ly <= P.pad + P.s;
-    if (inCore || hitCtx.isPointInPath(p.path, lx, ly)) {
-      ev.preventDefault();
-      p.dragId = ev.pointerId; p.ox = lx; p.oy = ly; p.lift = true;
-      p.z = ++P.zTop; p.el.style.zIndex = p.z; p.el.classList.add('lift'); p.el.classList.remove('anim');
-      P.drags.set(ev.pointerId, p);
-      try { $('#pzArea').setPointerCapture(ev.pointerId); } catch (e) {}
-      setPos(p); sfx.pick();
-      return;
-    }
-  }
+  const p = P.pieces.filter(q => !q.placed).sort((a, b) => b.z - a.z).find(q => hitPiece(q, x, y));
+  if (!p) return;
+  ev.preventDefault();
+  P.drag = { p, id: ev.pointerId, ox: x - p.x, oy: y - p.y };
+  p.lift = true; p.rot = 0; p.z = ++P.zTop; p.el.style.zIndex = p.z;
+  p.el.classList.add('anim', 'lift'); setTimeout(() => p.el.classList.remove('anim'), 200);
+  try { $('#pzArea').setPointerCapture(ev.pointerId); } catch (e) {}
+  setPiece(p); sfx.pick();
 });
 $('#pzArea').addEventListener('pointermove', ev => {
-  if (!P) return; const p = P.drags.get(ev.pointerId); if (!p) return;
+  const d = P && P.drag; if (!d || ev.pointerId !== d.id) return;
   ev.preventDefault();
-  const [x, y] = localXY(ev);
-  p.x = Math.max(-P.pad, Math.min(P.W - P.s - P.pad, x - p.ox));
-  p.y = Math.max(-P.pad, Math.min(P.H - P.s - P.pad, y - p.oy));
-  setPos(p);
-  if (Math.random() < .3) sparkleAt(ev.clientX, ev.clientY, 1);
+  const [x, y] = localXY(ev), p = d.p;
+  p.x = Math.max(-p.w * .5, Math.min(P.W - p.w * .5, x - d.ox));
+  p.y = Math.max(-p.h * .5, Math.min(P.H - p.h * .5, y - d.oy));
+  setPiece(p);
+  if (Math.random() < .25) sparkleAt(ev.clientX, ev.clientY, 1);
 });
 function endDrag(ev) {
-  if (!P) return; const p = P.drags.get(ev.pointerId); if (!p) return;
-  P.drags.delete(ev.pointerId); p.dragId = null; p.lift = false; p.el.classList.remove('lift');
-  const d = Math.hypot(p.x - p.tx, p.y - p.ty);
-  if (d < Math.max(P.s * .3, 24)) {
-    p.x = p.tx; p.y = p.ty; p.placed = true; P.placed.add(p.idx);
-    p.z = 1; p.el.classList.add('anim', 'placed');
-    setTimeout(() => { p.el.style.zIndex = 1; p.el.classList.remove('anim'); }, 220);
-    sfx.snap(); updateProgress(); sparkleAt(ev.clientX, ev.clientY, 18);
-    if (P.placed.size === P.n * P.n) finishPuzzle();
+  const d = P && P.drag; if (!d || ev.pointerId !== d.id) return;
+  P.drag = null;
+  const p = d.p; p.lift = false; p.el.classList.remove('lift');
+  if (Math.hypot(p.x - p.tx, p.y - p.ty) < Math.max(30, Math.min(p.w, p.h) * .35)) {
+    p.x = p.tx; p.y = p.ty; p.rot = 0; p.placed = true;
+    p.el.classList.add('anim', 'placed'); p.el.style.zIndex = 2;
+    setTimeout(() => p.el.classList.remove('anim'), 240);
+    P.placed++; sfx.snap(); sparkleAt(ev.clientX, ev.clientY, 18);
+    $('#pzProgress').textContent = `${P.placed}/${P.pieces.length}`;
+    if (P.placed === P.pieces.length) finishPuzzle();
   }
-  setPos(p);
+  setPiece(p);
 }
 $('#pzArea').addEventListener('pointerup', endDrag);
 $('#pzArea').addEventListener('pointercancel', endDrag);
-$('#hintBtn').addEventListener('click', () => { hint = !hint; store.set('zd-hint', hint); $('#hintBtn').classList.toggle('on', hint); if (P && P.board) P.board.classList.toggle('nohint', !hint); });
-$('#shuffleBtn').addEventListener('click', () => { if (P && !P.done) { scatter(true); sfx.pick(); } });
-
+// hint: the next piece briefly shows where it belongs
+$('#hintBtn').addEventListener('click', () => {
+  if (!P || P.done || !P.pieces) return;
+  const p = P.pieces.find(q => !q.placed); if (!p) return;
+  const g = document.createElement('canvas'); g.width = p.cw; g.height = p.ch; g.getContext('2d').drawImage(p.el, 0, 0);
+  g.className = 'pz-hint'; Object.assign(g.style, { width: p.w + 'px', height: p.h + 'px', transform: `translate3d(${p.tx}px,${p.ty}px,0)` });
+  $('#pzArea').appendChild(g); setTimeout(() => g.remove(), 1600);
+  p.el.classList.remove('wiggle'); void p.el.offsetWidth; p.el.classList.add('wiggle');
+  tone(700, .08, 'sine', .08);
+});
+$('#shuffleBtn').addEventListener('click', () => { if (P && !P.done && P.pieces) { scatterPieces(true); sfx.pick(); } });
 function finishPuzzle() {
   P.done = true;
   const solved = solvedSet(); solved.add(akey(P.animal)); store.set('zd-solved', [...solved]);
   setTimeout(() => {
-    P.board.classList.add('done');
+    P.sil.classList.add('gone'); $('#pzArea').classList.add('done');
     sfx.win(); confetti(); say(P.animal.name);
     setTimeout(() => {
       const a = P.animal;
@@ -1226,19 +1274,61 @@ function finishPuzzle() {
         page ? { label: `🎨 Vybarvit: ${page.name}`, cls: '', fn: () => openColor(page) } : null,
         { label: 'Vybrat jiné zvířátko', cls: '', fn: () => { renderPuzzlePicker(); show('pickPuzzle'); } }
       ].filter(Boolean), () => say(a.name));
-    }, 1100);
+    }, 1300);
   }, 250);
 }
-
 let rsT;
 window.addEventListener('resize', () => {
   clearTimeout(rsT);
   rsT = setTimeout(() => {
-    if (current !== 'puzzle' || !P) return;
+    if (current !== 'puzzle' || !P || P.done) return;
     const a = $('#pzArea');
     if (Math.abs(a.clientWidth - P.W) > 20 || Math.abs(a.clientHeight - P.H) > 60) buildPuzzle();
   }, 200);
 });
+
+/* ---------- SPOJOVAČKA (connect the dots) ---------- */
+// The child leads a shell along a dotted outline; when the loop is closed, the picture appears.
+function starD(cx, cy, R, r) { let s = ''; for (let i = 0; i <= 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, q = i % 2 ? r : R; s += (i ? 'L' : 'M') + (cx + q * Math.cos(a)).toFixed(1) + ' ' + (cy + q * Math.sin(a)).toFixed(1) + ' '; } return s; }
+const DOTS = [
+  { id: 'fish', name: 'Rybka', e: '🐠', d: 'M22 66 C32 38 62 36 78 58 L96 42 L94 90 L78 74 C62 96 32 94 22 66 Z' },
+  { id: 'star', name: 'Hvězdička', e: '⭐', d: starD(50, 68, 52, 22) },
+  { id: 'heart', name: 'Srdíčko', e: '💖', d: 'M50 112 C20 90 8 70 10 50 C12 30 30 22 42 28 C46 30 49 34 50 38 C51 34 54 30 58 28 C70 22 88 30 90 50 C92 70 80 90 50 112 Z' },
+  { id: 'house', name: 'Domeček', e: '🏠', d: 'M14 120 L14 60 L50 20 L86 60 L86 120 Z' },
+  { id: 'butterfly', name: 'Motýlek', e: '🦋', d: 'M50 40 C30 10 4 20 10 50 C14 66 34 66 50 60 C30 70 20 100 40 104 C50 106 50 80 50 70 C50 80 50 106 60 104 C80 100 70 70 50 60 C66 66 86 66 90 50 C96 20 70 10 50 40 Z' },
+  { id: 'cat', name: 'Kočička', e: '🐱', d: 'M20 110 C10 80 14 50 22 34 L20 8 L42 26 C48 24 52 24 58 26 L80 8 L78 34 C86 50 90 80 80 110 C60 124 40 124 20 110 Z' },
+  { id: 'whale', name: 'Velryba', e: '🐳', d: 'M10 76 C10 46 46 36 70 48 C80 54 84 62 86 70 L98 56 L96 90 L84 80 C76 100 50 108 30 100 C18 96 10 88 10 76 Z' },
+  { id: 'duck', name: 'Kachnička', e: '🦆', d: 'M20 90 C20 110 70 116 86 96 C96 84 90 70 78 74 C72 60 66 50 70 38 C72 26 60 16 48 20 C38 24 36 36 42 46 L28 48 L40 56 C30 62 20 72 20 90 Z' },
+  { id: 'snail', name: 'Šnek', e: '🐌', d: 'M8 112 L90 112 C98 112 98 98 90 96 C92 80 96 70 90 60 C84 50 70 56 72 70 C74 84 56 98 40 96 C20 94 10 76 16 58 C22 40 44 34 56 46 C66 56 60 72 48 72 C38 72 34 60 42 56' },
+  { id: 'rocket', name: 'Raketa', e: '🚀', d: 'M50 8 C68 26 72 50 70 80 L84 100 L84 116 L66 104 L34 104 L16 116 L16 100 L30 80 C28 50 32 26 50 8 Z' }
+];
+const DOT_THEME = { board: 'radial-gradient(circle at 18% 22%,rgba(255,255,255,.35) 0 7px,transparent 8px),radial-gradient(circle at 84% 34%,rgba(255,255,255,.3) 0 5px,transparent 6px),radial-gradient(circle at 70% 84%,rgba(255,255,255,.3) 0 9px,transparent 10px),linear-gradient(#6FD3EA,#1D7FB6)',
+  road: 'rgba(255,255,255,.28)', edge: 'rgba(255,255,255,.12)', center: 'rgba(255,255,255,.85)', start: '#FF7FC4', prog: ['#FFFFFF', '#FFF3A0'], marker: '🐚' };
+function openDots(item) {
+  ac(); show('extra');
+  $('#exTitle').textContent = item.name; $('#exProgress').textContent = '';
+  const host = $('#exStage');
+  const run = () => {
+    if (current !== 'extra') return;
+    makeTracer(host, null, () => {
+      host.querySelector('.trace-box').insertAdjacentHTML('beforeend', `<div class="dots-reveal">${item.e}</div>`);
+      const done = new Set(store.get('zd-dots', [])); done.add(item.id); store.set('zd-dots', [...done]);
+      sfx.win(); confetti(); say(item.name);
+      setTimeout(() => {
+        if (current !== 'extra') return;
+        const next = DOTS[(DOTS.indexOf(item) + 1) % DOTS.length];
+        showWin(`<span role="img" aria-label="${item.name}">${item.e}</span>`, `${item.name}!`, 'Obrázek je hotový.', [
+          { label: `Další: ${next.e} ${next.name}`, cls: 'primary', fn: () => openDots(next) },
+          { label: 'Ještě jednou', cls: '', fn: () => openDots(item) },
+          { label: 'Vybrat jiný obrázek', cls: '', fn: () => { renderPuzzlePicker(); show('pickPuzzle'); } }
+        ], () => say(item.name));
+      }, 1700);
+    }, { strokes: [item.d], theme: DOT_THEME, dots: true, road: 12 });
+  };
+  activeTrace = { rebuild: run };
+  requestAnimationFrame(() => requestAnimationFrame(run));
+  say('Spoj tečky a uvidíš obrázek.');
+}
 
 /* ---------- WIN + CONFETTI ---------- */
 function showWin(art, title, sub, buttons, onArt) {
@@ -1471,26 +1561,27 @@ function glyphStrokes(text) {
 }
 // The glyph is drawn as a road; the child drags the marker (car / unicorn) along each stroke in
 // order and direction. The marker only moves forward along the road, so scribbling cannot succeed.
-function makeTracer(host, text, onDone) {
-  const { strokes, n, caron } = glyphStrokes(text);
+function makeTracer(host, text, onDone, opts = {}) {
+  const TH = opts.theme || TRACE_THEME;
+  const { strokes, n, caron } = opts.strokes ? { strokes: opts.strokes.map(d => ({ d, dx: 0 })), n: 1, caron: false } : glyphStrokes(text);
   host.innerHTML = '<div class="trace-box"><svg class="tsvg"></svg></div>';
   const box = host.firstChild, svg = box.firstChild;
   const W = Math.max(160, Math.floor(Math.min(host.clientWidth - 8, host.clientHeight - 8, 560)));
   box.style.width = box.style.height = W + 'px';
-  box.style.background = TRACE_THEME.board;
-  const R = n > 1 ? 21 : 17, pad = 24;
+  box.style.background = TH.board;
+  const R = opts.road || (n > 1 ? 21 : 17), pad = 24;
   const x0 = -pad, x1 = 100 + (n - 1) * 112 + pad, y0 = (caron ? -26 : 4) - pad, y1 = 124 + pad;
   const side = Math.max(x1 - x0, y1 - y0), cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
   svg.setAttribute('viewBox', `${cx - side / 2} ${cy - side / 2} ${side} ${side}`);
-  const gid = 'tp' + Math.random().toString(36).slice(2, 8), P = TRACE_THEME.prog;
+  const gid = 'tp' + Math.random().toString(36).slice(2, 8), P = TH.prog;
   const layer = (cls, extra) => strokes.map(st => `<path class="${cls}" d="${st.d}" transform="translate(${st.dx} 0)" ${extra}/>`).join('');
   svg.innerHTML = `<defs><linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="1">${P.map((c, i) => `<stop offset="${i / Math.max(1, P.length - 1)}" stop-color="${c}"/>`).join('')}</linearGradient></defs>` +
-    layer('t-edge', `stroke="${TRACE_THEME.edge}" stroke-width="${R + 7}"`) +
-    layer('t-road', `stroke="${TRACE_THEME.road}" stroke-width="${R}"`) +
-    layer('t-mid', `stroke="${TRACE_THEME.center}" stroke-width="2.2" stroke-dasharray="6 7"`) +
+    layer('t-edge', `stroke="${TH.edge}" stroke-width="${R + 7}"`) +
+    layer('t-road', `stroke="${TH.road}" stroke-width="${R}"`) +
+    layer('t-mid', `stroke="${TH.center}" stroke-width="2.2" stroke-dasharray="6 7"`) +
     layer('t-prog', `stroke="url(#${gid})" stroke-width="${R * .78}" stroke-dasharray="0 9999"`) +
-    `<g class="t-arrow"><circle r="${R * .62}" fill="${TRACE_THEME.start}" stroke="#fff" stroke-width="2.5"/><path d="M${-R * .22} ${-R * .3} L${R * .32} 0 L${-R * .22} ${R * .3} Z" fill="#fff"/></g>` +
-    `<text class="t-car" text-anchor="middle" dominant-baseline="central" font-size="${R * 2}">${TRACE_THEME.marker}</text>` +
+    `<g class="t-arrow"><circle r="${R * .62}" fill="${TH.start}" stroke="#fff" stroke-width="2.5"/><path d="M${-R * .22} ${-R * .3} L${R * .32} 0 L${-R * .22} ${R * .3} Z" fill="#fff"/></g>` +
+    `<text class="t-car" text-anchor="middle" dominant-baseline="central" font-size="${R * 2}">${TH.marker}</text>` +
     `<text class="t-hand" font-size="${R * 1.9}" opacity="0">👆</text>`;
   const STEP = 1.5;
   const data = [...svg.querySelectorAll('.t-road')].map((el, i) => {
@@ -1500,6 +1591,7 @@ function makeTracer(host, text, onDone) {
     return { L, pts };
   });
   const progEls = [...svg.querySelectorAll('.t-prog')], arrow = svg.querySelector('.t-arrow'), car = svg.querySelector('.t-car'), hand = svg.querySelector('.t-hand');
+  if (opts.dots) arrow.insertAdjacentHTML('beforebegin', data.map(dd => { let h = ''; for (let k = 0; k < dd.pts.length; k += Math.round(16 / STEP)) h += `<circle class="t-dot" cx="${dd.pts[k][0]}" cy="${dd.pts[k][1]}" r="${R * .42}"/>`; return h; }).join(''));
   let si = 0, pi = 0, drag = null, done = false, lastMove = Date.now();
   const angleAt = (pts, i) => { const a = pts[Math.max(0, i - 3)], b = pts[Math.min(pts.length - 1, i + 3)]; return Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI; };
   const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
