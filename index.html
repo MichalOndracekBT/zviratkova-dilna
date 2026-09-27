@@ -1160,7 +1160,7 @@ function finishPuzzle() {
       const page = PAGES.find(pg => pg.e === a.e);
       showWin(`<span role="img" aria-label="${a.name}">${a.e}</span>`, `${a.name}!`, 'Hurá, máš to složené.', [
         { label: `Další: ${next.e} ${next.name}`, cls: 'primary', fn: () => openPuzzle(next) },
-        page ? { label: `Vybarvit ${page.name.toLowerCase()}`, cls: '', fn: () => openColor(page) } : null,
+        page ? { label: `🎨 Vybarvit: ${page.name}`, cls: '', fn: () => openColor(page) } : null,
         { label: 'Vybrat jiné zvířátko', cls: '', fn: () => { renderPuzzlePicker(); show('pickPuzzle'); } }
       ].filter(Boolean), () => say(a.name));
     }, 1100);
