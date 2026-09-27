@@ -112,7 +112,11 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .mode-sub{display:block;font-size:15px;font-weight:600;opacity:.8;margin-top:3px}
 
 /* COUNTING */
-.cnt-field{position:relative;flex:1;min-height:0;margin:0 16px;border-radius:28px;overflow:hidden;background:linear-gradient(#BFE6FF,#EAF8FF 62%,#8FD16A 62%)}
+#count{background:linear-gradient(165deg,#FFE6F4 0%,#EDE0FF 50%,#D8EEFF 100%)}
+.cnt-field{position:relative;flex:1;min-height:0;margin:0 16px;border-radius:32px;overflow:hidden;container-type:size;
+  background:radial-gradient(circle at 12% 18%,rgba(255,255,255,.9) 0 18px,transparent 19px),radial-gradient(circle at 88% 30%,rgba(255,255,255,.7) 0 10px,transparent 11px),radial-gradient(circle at 78% 86%,rgba(255,255,255,.75) 0 14px,transparent 15px),rgba(255,255,255,.38);
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.8),0 10px 30px rgba(150,90,200,.15)}
+.cnt-item{z-index:1}
 .cnt-item{position:absolute;translate:-50% -50%;font-size:clamp(40px,min(14vw,9vh),88px);line-height:1;padding:6px}
 .cnt-item.tapped{animation:boing .35s}
 .cnt-item .num{position:absolute;right:-4px;top:-4px;background:var(--tomato);color:#fff;font-size:20px;font-weight:800;min-width:32px;height:32px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:"Baloo 2",ui-rounded,system-ui,sans-serif;box-shadow:0 2px 0 rgba(0,0,0,.15)}
@@ -142,11 +146,14 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .num-word{font-size:clamp(28px,8vw,40px);font-weight:800}
 .num-row{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;font-size:clamp(28px,8vw,44px);max-width:6.5em;min-height:1.2em;line-height:1.1}
 .num-row span{animation:boing .35s}
-.cnt-field.groups{display:flex;flex-direction:column;gap:10px;padding:10px;background:rgba(255,255,255,.45)}
-@media (orientation:landscape){.cnt-field.groups{flex-direction:row}}
-.grp{flex:1;min-height:0;background:var(--card);border-radius:22px;box-shadow:0 4px 0 var(--shadow);display:flex;align-items:center;justify-content:center;padding:6px}
-.grp-in{display:flex;flex-wrap:wrap;justify-content:center;gap:0 4px;max-width:6.2em;font-size:clamp(22px,min(7vw,4.4vh),40px);line-height:1.1}
-.grp.ok{box-shadow:0 0 0 5px var(--leaf),0 4px 0 var(--shadow)}
+.cnt-field.groups{display:block}
+.grp{position:absolute;translate:-50% -50%;width:40%;width:46cqmin;aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:1;
+  background:radial-gradient(circle at 30% 24%,rgba(255,255,255,.98),rgba(255,255,255,.6) 42%,rgba(255,200,238,.4) 68%,rgba(190,160,255,.55));
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.9),inset -8px -12px 24px rgba(170,120,255,.25),0 10px 24px rgba(150,90,200,.25);animation:floaty 4s ease-in-out infinite}
+.grp.p1{animation-delay:-1.3s}.grp.p2{animation-delay:-2.6s}
+@keyframes floaty{50%{translate:-50% calc(-50% - 6px)}}
+.grp-in{display:flex;flex-wrap:wrap;justify-content:center;gap:0 2px;max-width:4.6em;font-size:22px;font-size:6.6cqmin;line-height:1.1}
+.grp.ok{box-shadow:0 0 0 6px var(--leaf),0 0 30px var(--leaf)}
 .grp.bad{animation:shake .4s;opacity:.35}
 .play-btn{height:64px;padding:0 40px;font-size:26px;border-radius:22px}
 
@@ -162,6 +169,7 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .trace-box{position:relative;background:#fff;border-radius:28px;box-shadow:0 5px 0 var(--shadow);flex:none}
 .trace-box canvas{position:absolute;inset:0;border-radius:28px}
 .trace-box .ti{touch-action:none}
+.trace-box.bad{animation:shake .4s;box-shadow:0 0 0 5px #FF5A5A,0 5px 0 var(--shadow)}
 .trace-top{display:flex;align-items:center;gap:10px;padding:0 16px 10px;flex:none}
 .trace-word{flex:1;min-width:0;text-align:center;font-size:clamp(20px,6vw,28px);font-weight:800;letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .trace-word .em{font-size:1.4em;vertical-align:-.15em;margin-right:6px}
@@ -172,7 +180,7 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .abc-quiz .abc-card{flex:1;min-height:0}
 .abc-big{font-size:clamp(64px,20vw,110px);font-weight:800;line-height:.9;color:var(--tomato)}
 .abc-big small{font-size:.6em;color:var(--plum)}
-.abc-emoji{font-size:clamp(64px,20vw,120px);line-height:1.1}
+.abc-emoji{font-size:clamp(90px,min(38vw,24vh),200px);line-height:1.1}
 .abc-word{font-size:clamp(28px,9vw,46px);font-weight:800;letter-spacing:.06em;line-height:1.1}
 .abc-word .first{color:var(--tomato)}
 .abc-word .blank{display:inline-block;min-width:1.2em;border-bottom:5px solid var(--tomato);color:transparent}
@@ -233,10 +241,20 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .r.bg{stroke:none}
 .k{fill:var(--ink);pointer-events:none}
 .l{fill:none;stroke:var(--ink);stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
-.palette{flex:none;display:flex;gap:10px;overflow-x:auto;padding:14px 16px 12px;scrollbar-width:none;background:rgba(255,255,255,.55);border-radius:28px 28px 0 0}
+.cl-dock{flex:none;background:rgba(255,255,255,.6);border-radius:28px 28px 0 0;padding:10px 16px 12px;display:flex;flex-direction:column;gap:10px}
+.tools{display:flex;align-items:center;gap:8px}
+.tool{display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 14px;border-radius:14px;background:var(--card);box-shadow:0 3px 0 var(--shadow);font-weight:800;font-size:16px}
+.tool .ico{font-size:22px}
+.tool[aria-pressed="true"]{background:var(--ink);color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.35)}
+.sizes{display:flex;gap:6px;margin-left:auto}
+.sizes button{width:44px;height:44px;border-radius:14px;background:var(--card);box-shadow:0 3px 0 var(--shadow);display:flex;align-items:center;justify-content:center}
+.sizes button i{display:block;border-radius:50%;background:var(--ink)}
+.sizes button[aria-pressed="true"]{box-shadow:0 0 0 3px var(--ink),0 3px 0 var(--shadow)}
+.palette{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:8px;max-height:136px;overflow-y:auto;padding:4px 2px;scrollbar-width:none}
 .palette::-webkit-scrollbar{display:none}
-.sw{flex:none;width:48px;height:48px;border-radius:50%;border:4px solid #fff;box-shadow:0 4px 0 var(--shadow);transition:transform .12s}
-.sw[aria-pressed="true"]{transform:translateY(-6px) scale(1.08);box-shadow:0 0 0 3px var(--ink),0 8px 0 var(--shadow)}
+.sw{width:40px;height:40px;justify-self:center;border-radius:50%;border:3px solid #fff;box-shadow:0 3px 0 var(--shadow);transition:transform .12s}
+.sw[aria-pressed="true"]{transform:scale(1.12);box-shadow:0 0 0 3px var(--ink),0 3px 0 var(--shadow)}
+.ink{fill:none;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
 
 /* WIN */
 .overlay{position:absolute;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(32,48,71,.35)}
@@ -250,6 +268,7 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .win-btns .btn{height:54px;font-size:20px;width:100%}
 
 @media (prefers-reduced-motion:reduce){
+  .grp{animation:none}
   .parade-track,.mascot,.mode::after,.twinkles i,.home-body h1 span{animation:none}
   .win-card{animation:none}
   .piece.anim{transition:none}
@@ -343,7 +362,14 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
       <button class="btn green" id="doneBtn" aria-label="Hotovo"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button>
     </div>
     <div class="cl-stage"><svg id="clSvg" viewBox="0 0 400 400" aria-label="Omalovánka"></svg></div>
-    <div class="palette" id="palette"></div>
+    <div class="cl-dock">
+      <div class="tools" id="clTools">
+        <button class="tool" data-tool="fill"><span class="ico">🪣</span>Vybarvit</button>
+        <button class="tool" data-tool="brush"><span class="ico">🖌️</span>Kreslit</button>
+        <div class="sizes" id="clSizes"><button data-size="6" aria-label="Tenký štětec"><i style="width:6px;height:6px"></i></button><button data-size="14" aria-label="Střední štětec"><i style="width:12px;height:12px"></i></button><button data-size="28" aria-label="Tlustý štětec"><i style="width:20px;height:20px"></i></button></div>
+      </div>
+      <div class="palette" id="palette"></div>
+    </div>
   </section>
 
   <!-- COUNTING -->
@@ -959,8 +985,12 @@ function swatchBg(col) {
   return `radial-gradient(circle at 30% 28%,#fff 0 2px,transparent 3px),radial-gradient(circle at 68% 62%,#fff 0 1.6px,transparent 2.6px),radial-gradient(circle at 40% 76%,rgba(255,255,255,.85) 0 1.2px,transparent 2.2px),radial-gradient(circle at 75% 25%,rgba(255,255,255,.7) 0 1px,transparent 2px),linear-gradient(135deg,${g[2]},${g[3]})`;
 }
 const swatchName = col => { const m = col.match(/^url\(#(.+)\)$/); return m ? GLITTERS.find(x => x[0] === m[1])[1] : 'Barva ' + col; };
-const PALETTE = [...GLITTERS.map(g => `url(#${g[0]})`), '#E53935','#FF7A45','#FB8C00','#FDD835','#FFF3A0','#9CCC65','#43A047','#1B7F4B','#80DEEA','#4FC3F7','#1E88E5','#3949AB',
-  '#B39DDB','#8E24AA','#F48FB1','#EC407A','#FFCCBC','#D7B98E','#8D6E63','#5D4037','#BDBDBD','#546E7A','#263238','#FFFFFF'];
+const PALETTE = [...GLITTERS.map(g => `url(#${g[0]})`),
+  '#B71C1C','#E53935','#FF6F61','#FF7A45','#FB8C00','#FFB300','#FDD835','#FFF3A0',
+  '#DCEDC8','#9CCC65','#43A047','#1B7F4B','#A7FFEB','#26A69A','#B2EBF2','#4FC3F7',
+  '#1E88E5','#3949AB','#1A237E','#E1BEE7','#B39DDB','#8E24AA','#6A1B9A','#FCE4EC',
+  '#F8BBD0','#F48FB1','#EC407A','#AD1457','#FFE0CC','#FFCCBC','#D7B98E','#A1887F',
+  '#8D6E63','#5D4037','#ECEFF1','#BDBDBD','#78909C','#37474F','#263238','#FFFFFF'];
 
 function pageSvg(pg, fills, extra = '') {
   return `<svg viewBox="0 0 400 400" ${extra}>${pg.svg}</svg>`;
@@ -1259,7 +1289,7 @@ let curColor = store.get('zd-color', PALETTE[0]);
 function renderColorPicker() {
   const g = $('#colorGrid');
   g.innerHTML = PAGES.map((pg, i) => `<button class="ctile" data-i="${i}">${pageSvg(pg)}<span class="nm">${pg.name}</span></button>`).join('');
-  g.querySelectorAll('.ctile').forEach((b, i) => applyFills(b.querySelector('svg'), store.get('zd-c-' + PAGES[i].id, null)));
+  g.querySelectorAll('.ctile').forEach((b, i) => { const sv = b.querySelector('svg'); applyFills(sv, store.get('zd-c-' + PAGES[i].id, null)); applyInk(sv, PAGES[i]); });
 }
 $('#colorGrid').addEventListener('click', ev => { const b = ev.target.closest('.ctile'); if (!b) return; openColor(PAGES[+b.dataset.i]); });
 function renderPalette() {
@@ -1271,49 +1301,104 @@ $('#palette').addEventListener('click', ev => {
   $('#palette').querySelectorAll('.sw').forEach(s => s.setAttribute('aria-pressed', String(s === b)));
   if (curColor.startsWith('url')) { tone(1200, .08, 'sine', .08); tone(1600, .12, 'sine', .07, .05); } else tone(700, .05, 'sine', .08);
 });
+let tool = store.get('zd-tool', 'fill'), brushSize = store.get('zd-brush', 14);
+function renderTools() {
+  $('#clTools').querySelectorAll('.tool').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tool === tool)));
+  $('#clSizes').hidden = tool !== 'brush';
+  $('#clSizes').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.size === brushSize)));
+}
+$('#clTools').addEventListener('click', ev => {
+  const t = ev.target.closest('.tool'), sz = ev.target.closest('#clSizes button');
+  if (t) { tool = t.dataset.tool; store.set('zd-tool', tool); }
+  else if (sz) { brushSize = +sz.dataset.size; store.set('zd-brush', brushSize); }
+  else return;
+  sfx.pick(); renderTools();
+});
+// finger drawings are kept per picture as a list of strokes
+const inkKey = pg => 'zd-ink-' + pg.id;
+function inkPath(st) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  el.setAttribute('class', 'ink'); el.setAttribute('d', st.d); el.setAttribute('stroke-width', st.w); el.style.stroke = st.c;
+  return el;
+}
+function applyInk(svgEl, pg) {
+  const strokes = store.get(inkKey(pg), []); if (!strokes.length) return;
+  const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  strokes.forEach(st => g.appendChild(inkPath(st)));
+  svgEl.appendChild(g);
+}
 function openColor(pg) {
   ac();
-  const svg = $('#clSvg'); svg.innerHTML = pg.svg;
-  C = { pg, regions: [...svg.querySelectorAll('.r')], undo: [] };
+  const svg = $('#clSvg'); svg.innerHTML = pg.svg + '<g id="clInk"></g>';
+  C = { pg, regions: [...svg.querySelectorAll('.r')], undo: [], ink: svg.querySelector('#clInk'), drawing: null };
   applyFills(svg, store.get('zd-c-' + pg.id, null));
+  store.get(inkKey(pg), []).forEach(st => C.ink.appendChild(inkPath(st)));
   $('#clTitle').textContent = pg.name;
-  renderPalette();
+  renderPalette(); renderTools();
   show('color');
-  const sel = $('#palette .sw[aria-pressed="true"]'); if (sel) sel.scrollIntoView({ inline: 'center', block: 'nearest' });
+  const sel = $('#palette .sw[aria-pressed="true"]'); if (sel) sel.scrollIntoView({ block: 'nearest' });
 }
 function saveColor() { store.set('zd-c-' + C.pg.id, C.regions.map(el => el.style.fill || null)); }
+function saveInk() { store.set(inkKey(C.pg), [...C.ink.children].map(el => ({ d: el.getAttribute('d'), c: el.style.stroke, w: +el.getAttribute('stroke-width') }))); }
+function clPt(ev) { const svg = $('#clSvg'), pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; return pt.matrixTransform(svg.getScreenCTM().inverse()); }
 $('#clSvg').addEventListener('pointerdown', ev => {
   if (!C) return;
+  if (tool === 'brush') {
+    if (C.drawing) return;
+    ev.preventDefault();
+    const q = clPt(ev), el = inkPath({ d: `M${q.x.toFixed(1)} ${q.y.toFixed(1)} l0.1 0`, w: brushSize, c: curColor });
+    C.ink.appendChild(el);
+    C.drawing = { el, id: ev.pointerId, x: q.x, y: q.y };
+    try { $('#clSvg').setPointerCapture(ev.pointerId); } catch (e) {}
+    return;
+  }
   const el = ev.target.closest && ev.target.closest('.r'); if (!el) return;
   ev.preventDefault();
   const i = C.regions.indexOf(el); if (i < 0) return;
   const prev = el.style.fill || '';
   el.style.fill = curColor;
   if (el.style.fill === prev) return;
-  C.undo.push([[i, prev]]); sfx.paint(); saveColor(); sparkleAt(ev.clientX, ev.clientY, 12);
+  C.undo.push({ t: 'fill', list: [[i, prev]] }); sfx.paint(); saveColor(); sparkleAt(ev.clientX, ev.clientY, 12);
 });
+$('#clSvg').addEventListener('pointermove', ev => {
+  const d = C && C.drawing; if (!d || ev.pointerId !== d.id) return;
+  ev.preventDefault();
+  const q = clPt(ev); if (Math.hypot(q.x - d.x, q.y - d.y) < 1.5) return;
+  d.el.setAttribute('d', d.el.getAttribute('d') + ` L${q.x.toFixed(1)} ${q.y.toFixed(1)}`); d.x = q.x; d.y = q.y;
+});
+function endInk(ev) {
+  const d = C && C.drawing; if (!d || ev.pointerId !== d.id) return;
+  C.drawing = null; C.undo.push({ t: 'ink', el: d.el }); saveInk(); tone(500 + Math.random() * 200, .05, 'sine', .06);
+}
+$('#clSvg').addEventListener('pointerup', endInk);
+$('#clSvg').addEventListener('pointercancel', endInk);
 $('#undoBtn').addEventListener('click', () => {
   if (!C || !C.undo.length) return;
-  C.undo.pop().forEach(([i, prev]) => { C.regions[i].style.fill = prev; });
-  saveColor(); tone(300, .08, 'sine', .1);
+  const u = C.undo.pop();
+  if (u.t === 'fill' || u.t === 'clear') u.list.forEach(([i, prev]) => { C.regions[i].style.fill = prev; });
+  if (u.t === 'ink') u.el.remove();
+  if (u.t === 'clear') u.inks.forEach(el => C.ink.appendChild(el));
+  saveColor(); saveInk(); tone(300, .08, 'sine', .1);
 });
 $('#clearBtn').addEventListener('click', () => {
   if (!C) return;
-  const batch = C.regions.map((el, i) => [i, el.style.fill || '']).filter(([, f]) => f);
-  if (!batch.length) return;
-  C.undo.push(batch); C.regions.forEach(el => { el.style.fill = ''; }); saveColor(); tone(220, .15, 'sine', .1);
+  const list = C.regions.map((el, i) => [i, el.style.fill || '']).filter(([, f]) => f), inks = [...C.ink.children];
+  if (!list.length && !inks.length) return;
+  C.undo.push({ t: 'clear', list, inks });
+  C.regions.forEach(el => { el.style.fill = ''; }); inks.forEach(el => el.remove());
+  saveColor(); saveInk(); tone(220, .15, 'sine', .1);
 });
 $('#doneBtn').addEventListener('click', () => {
   if (!C) return;
   sfx.win(); confetti(); say('Krása! ' + C.pg.name);
   const pg = C.pg, i = PAGES.indexOf(pg), next = PAGES[(i + 1) % PAGES.length];
-  const art = pageSvg(pg);
-  showWin(art, 'Krása!', `${pg.name} je hotová. Obrázek si pamatuju.`, [
+  showWin(pageSvg(pg), 'Krása!', `${pg.name} je hotová. Obrázek si pamatuju.`, [
     { label: `Další: ${next.name}`, cls: 'primary', fn: () => openColor(next) },
     { label: 'Ještě vybarvovat', cls: '', fn: () => { $('#win').hidden = true; } },
     { label: 'Všechny obrázky', cls: '', fn: () => { renderColorPicker(); show('pickColor'); } }
   ], () => say(pg.name));
-  applyFills($('#winArt svg'), C.regions.map(el => el.style.fill || null));
+  const w = $('#winArt svg');
+  applyFills(w, C.regions.map(el => el.style.fill || null)); applyInk(w, pg);
 });
 
 /* ---------- SHARED ---------- */
@@ -1328,8 +1413,11 @@ const fontsReady = (document.fonts && document.fonts.load)
   ? Promise.race([document.fonts.load('800 100px "Baloo 2"'), new Promise(r => setTimeout(r, 1500))]).catch(() => {})
   : Promise.resolve();
 let activeTrace = null; // { rebuild } of the tracer on screen, for orientation changes
-// Shows a big faint glyph with a dashed outline; the child paints over it with a rainbow brush.
-// Done when most of the glyph is covered and the paint stays mostly on the glyph.
+// look of the guide and the brush (hue0/span: brush colour range; span 360 = full rainbow)
+const TRACE_THEME = { fill: ['#FCE4F5', '#E7DBFF'], ring: ['#F07CC4', '#9B6BE8'], dots: ['#FFFFFF', '#FFC9EA', '#D2BCFF', '#FFF0B3'], shadow: 'rgba(155,90,230,.25)', hue0: 0, span: 360 };
+// Shows a big faint glyph; the child paints over it with a brush as wide as the glyph's stroke.
+// Done only when nearly the whole glyph is covered AND almost all paint lies on (or right next to)
+// the glyph, so scribbling over the area does not count.
 function makeTracer(host, text, onDone) {
   host.innerHTML = '<div class="trace-box"><canvas class="tg"></canvas><canvas class="ti"></canvas></div>';
   const box = host.firstChild, g = box.children[0], ink = box.children[1];
@@ -1341,17 +1429,20 @@ function makeTracer(host, text, onDone) {
   gx.setTransform(dpr, 0, 0, dpr, 0, 0); ix.setTransform(dpr, 0, 0, dpr, 0, 0);
   // size by the glyph's real ink box (the font has tall line spacing)
   let F = W * .8;
-  gx.font = `800 ${F}px ${TRACE_FONT}`;
+  gx.font = `700 ${F}px ${TRACE_FONT}`;
   const m0 = gx.measureText(text);
   const gh = (m0.actualBoundingBoxAscent || F * .7) + (m0.actualBoundingBoxDescent || 0);
   const gw = (m0.actualBoundingBoxLeft || 0) + (m0.actualBoundingBoxRight || m0.width);
   F *= Math.min(W * .72 / gh, W * .82 / gw);
-  const font = `800 ${F}px ${TRACE_FONT}`;
+  const font = `700 ${F}px ${TRACE_FONT}`;
   gx.font = font; gx.textAlign = 'center'; gx.textBaseline = 'alphabetic';
   const m = gx.measureText(text);
   const asc = m.actualBoundingBoxAscent || F * .7, desc = m.actualBoundingBoxDescent || 0;
   const ty = W / 2 + (asc - desc) / 2;
-  const brush = F * .16;
+  // stroke width of the font at this size (width of a capital I), the brush matches it
+  const mi = gx.measureText('I');
+  const stem = Math.max(8, ((mi.actualBoundingBoxLeft || 0) + (mi.actualBoundingBoxRight || mi.width * .5)) * .92);
+  const brush = stem;
   // sampling masks at 1x: the glyph itself, and a dilated glyph that counts as "on the line"
   const mk = (dilate) => {
     const cv = document.createElement('canvas'); cv.width = cv.height = W;
@@ -1360,12 +1451,12 @@ function makeTracer(host, text, onDone) {
     if (dilate) { c2.lineWidth = dilate; c2.lineJoin = 'round'; c2.strokeText(text, W / 2, ty); }
     return c2.getImageData(0, 0, W, W).data;
   };
-  const glyph = mk(0), near = mk(brush * 1.2);
-  const step = Math.max(3, Math.round(W / 80));
-  const onPts = [], offPts = [];
+  const glyph = mk(0), near = mk(stem * 1.1);
+  const step = Math.max(3, Math.round(W / 90));
+  const onPts = [], nearPts = [], offPts = [];
   for (let y = 0; y < W; y += step) for (let x = 0; x < W; x += step) {
     const i = (y * W + x) * 4 + 3;
-    if (glyph[i] > 128) onPts.push([x, y]); else if (near[i] < 60) offPts.push([x, y]);
+    if (glyph[i] > 128) onPts.push([x, y]); else if (near[i] > 40) nearPts.push([x, y]); else offPts.push([x, y]);
   }
   // guide: soft glittery glyph with a single clean outline. The font's contours overlap
   // (e.g. H), so the outline is built by dilating the filled glyph instead of strokeText.
@@ -1375,35 +1466,36 @@ function makeTracer(host, text, onDone) {
   ax.setTransform(dpr, 0, 0, dpr, 0, 0); ax.font = font; ax.textAlign = 'center'; ax.textBaseline = 'alphabetic'; ax.fillText(text, W / 2, ty);
   const [Fl, flx] = off();
   flx.drawImage(A, 0, 0); flx.globalCompositeOperation = 'source-in';
-  const gr = flx.createLinearGradient(0, 0, PW, PW); gr.addColorStop(0, '#FCE4F5'); gr.addColorStop(1, '#E7DBFF');
+  const gr = flx.createLinearGradient(0, 0, PW, PW); gr.addColorStop(0, TRACE_THEME.fill[0]); gr.addColorStop(1, TRACE_THEME.fill[1]);
   flx.fillStyle = gr; flx.fillRect(0, 0, PW, PW);
   flx.globalCompositeOperation = 'source-atop';
   const rs = seeded(hash(text));
-  for (let i = 0; i < 70; i++) { flx.fillStyle = ['#FFFFFF', '#FFC9EA', '#D2BCFF', '#FFF0B3'][i % 4]; sparkle4(flx, rs() * PW, rs() * PW, (2 + rs() * 5) * dpr); }
+  for (let i = 0; i < 70; i++) { flx.fillStyle = TRACE_THEME.dots[i % 4]; sparkle4(flx, rs() * PW, rs() * PW, (2 + rs() * 5) * dpr); }
   const [Rg, rgx] = off();
   const rad = Math.max(3, F * .022) * dpr;
   for (const rr of [rad * .35, rad * .7, rad]) for (let i = 0; i < 28; i++) { const a = i / 28 * Math.PI * 2; rgx.drawImage(A, Math.cos(a) * rr, Math.sin(a) * rr); }
   rgx.globalCompositeOperation = 'source-in';
-  const rg = rgx.createLinearGradient(0, 0, PW, PW); rg.addColorStop(0, '#F07CC4'); rg.addColorStop(1, '#9B6BE8');
+  const rg = rgx.createLinearGradient(0, 0, PW, PW); rg.addColorStop(0, TRACE_THEME.ring[0]); rg.addColorStop(1, TRACE_THEME.ring[1]);
   rgx.fillStyle = rg; rgx.fillRect(0, 0, PW, PW);
   rgx.globalCompositeOperation = 'destination-out'; rgx.drawImage(A, 0, 0);
   gx.save(); gx.setTransform(1, 0, 0, 1, 0, 0);
-  gx.shadowColor = 'rgba(155,90,230,.25)'; gx.shadowBlur = 16 * dpr; gx.shadowOffsetY = 6 * dpr; gx.drawImage(Fl, 0, 0);
+  gx.shadowColor = TRACE_THEME.shadow; gx.shadowBlur = 16 * dpr; gx.shadowOffsetY = 6 * dpr; gx.drawImage(Fl, 0, 0);
   gx.shadowColor = 'transparent'; gx.drawImage(Rg, 0, 0);
   gx.restore();
   // painting
   ix.lineCap = 'round'; ix.lineJoin = 'round'; ix.lineWidth = brush;
-  let last = null, hue = Math.random() * 360, done = false, pid = null;
+  let last = null, hue = Math.random() * 360, done = false, pid = null, warned = 0;
+  const brushHue = () => TRACE_THEME.span >= 360 ? hue : TRACE_THEME.hue0 + (Math.sin(hue / 18) + 1) / 2 * TRACE_THEME.span;
   const pos = ev => { const r = ink.getBoundingClientRect(); return [(ev.clientX - r.left) * W / r.width, (ev.clientY - r.top) * W / r.height]; };
   const glitterDots = (x, y) => {
     for (let k = 0; k < 3; k++) {
-      ix.fillStyle = k ? 'rgba(255,255,255,.9)' : `hsl(${(hue + 40) % 360} 100% 85%)`;
+      ix.fillStyle = k ? 'rgba(255,255,255,.9)' : `hsl(${(brushHue() + 30) % 360} 100% 85%)`;
       const a = Math.random() * 6.28, r = Math.random() * brush * .4, s = 1 + Math.random() * 2.2;
       ix.fillRect(x + Math.cos(a) * r, y + Math.sin(a) * r, s, s);
     }
   };
   const seg = (a, b) => {
-    ix.strokeStyle = `hsl(${hue} 90% 66%)`; hue = (hue + 5) % 360;
+    ix.strokeStyle = `hsl(${brushHue()} 92% 60%)`; hue = (hue + 5) % 360;
     ix.beginPath(); ix.moveTo(a[0], a[1]); ix.lineTo(b[0], b[1]); ix.stroke();
     glitterDots(b[0], b[1]);
   };
@@ -1422,8 +1514,14 @@ function makeTracer(host, text, onDone) {
     if (done) return;
     const d = ix.getImageData(0, 0, ink.width, ink.height).data, cw = ink.width;
     const inked = ([x, y]) => d[(Math.round(y * dpr) * cw + Math.round(x * dpr)) * 4 + 3] > 20;
-    const on = onPts.filter(inked).length, off = offPts.filter(inked).length;
-    if (onPts.length && on / onPts.length >= .75 && off <= on * .6) { done = true; onDone(); }
+    const on = onPts.filter(inked).length, nr = nearPts.filter(inked).length, off = offPts.filter(inked).length;
+    const coverage = onPts.length ? on / onPts.length : 0, precision = (on + nr) / Math.max(1, on + nr + off);
+    if (coverage >= .82 && precision >= .9) { done = true; onDone(); return; }
+    // scribbling: lots of paint off the line -> explain and start over
+    if ((coverage >= .6 && precision < .9) || off > onPts.length * .35) {
+      if (Date.now() - warned > 1500) { warned = Date.now(); say('Jezdi prstem jen po čáře. Zkus to znovu.'); tone(200, .25, 'sine', .1); }
+      box.classList.add('bad'); setTimeout(() => { box.classList.remove('bad'); ix.clearRect(0, 0, W, W); }, 450);
+    }
   };
   ink.addEventListener('pointerup', up); ink.addEventListener('pointercancel', up);
   return { clear() { ix.clearRect(0, 0, W, W); done = false; } };
@@ -1531,7 +1629,8 @@ function nextTask() {
   if (N.type === 'A') {
     const counts = [n, ...nearCounts(n, 2)].sort(() => Math.random() - .5);
     f.className = 'cnt-field groups';
-    f.innerHTML = counts.map(c => `<button class="grp" data-c="${c}" aria-label="${c}"><span class="grp-in">${repeatEmoji(t[0], c)}</span></button>`).join('');
+    const POS = [[27, 27], [73, 40], [40, 75]];
+    f.innerHTML = counts.map((c, k) => `<button class="grp p${k}" data-c="${c}" aria-label="${c}" style="left:${POS[k][0]}%;top:${POS[k][1]}%"><span class="grp-in">${repeatEmoji(t[0], c)}</span></button>`).join('');
     setPrompt(`Najdi <b>${n}</b> ${noun(n, t)}`, `Najdi ${phrase(n, t)}.`);
   } else if (N.type === 'B') {
     const total = Math.min(n + 2 + rand(3), 16), cols = 4, rows = 4;
