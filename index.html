@@ -1292,10 +1292,13 @@ function makeTracer(host, text, onDone) {
   [g, ink].forEach(cv => { cv.width = cv.height = Math.round(W * dpr); cv.style.width = cv.style.height = W + 'px'; });
   const gx = g.getContext('2d'), ix = ink.getContext('2d');
   gx.setTransform(dpr, 0, 0, dpr, 0, 0); ix.setTransform(dpr, 0, 0, dpr, 0, 0);
+  // size by the glyph's real ink box (the font has tall line spacing)
   let F = W * .8;
   gx.font = `800 ${F}px ${TRACE_FONT}`;
-  const tw = gx.measureText(text).width;
-  if (tw > W * .84) F *= W * .84 / tw;
+  const m0 = gx.measureText(text);
+  const gh = (m0.actualBoundingBoxAscent || F * .7) + (m0.actualBoundingBoxDescent || 0);
+  const gw = (m0.actualBoundingBoxLeft || 0) + (m0.actualBoundingBoxRight || m0.width);
+  F *= Math.min(W * .72 / gh, W * .82 / gw);
   const font = `800 ${F}px ${TRACE_FONT}`;
   gx.font = font; gx.textAlign = 'center'; gx.textBaseline = 'alphabetic';
   const m = gx.measureText(text);
@@ -1318,7 +1321,7 @@ function makeTracer(host, text, onDone) {
     if (glyph[i] > 128) onPts.push([x, y]); else if (near[i] < 60) offPts.push([x, y]);
   }
   // guide
-  gx.fillStyle = 'rgba(179,107,255,.15)'; gx.fillText(text, W / 2, ty);
+  gx.fillStyle = 'rgba(179,107,255,.2)'; gx.fillText(text, W / 2, ty);
   gx.setLineDash([F * .035, F * .03]); gx.lineWidth = Math.max(2.5, F * .014); gx.lineJoin = 'round';
   gx.strokeStyle = 'rgba(155,90,230,.75)'; gx.strokeText(text, W / 2, ty);
   // painting
