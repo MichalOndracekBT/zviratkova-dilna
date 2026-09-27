@@ -5,8 +5,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Zvířátka">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#F7E9FF">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <style>
@@ -45,7 +46,23 @@ body{
 button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer;touch-action:manipulation}
 button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 #app{position:relative;z-index:1;height:100%;max-width:1100px;margin:0 auto}
-.screen{position:absolute;inset:0;display:flex;flex-direction:column}
+.screen{position:absolute;inset:0 0 var(--tab-h) 0;display:flex;flex-direction:column}
+/* app-style bottom navigation */
+:root{--tab-h:68px}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:50;display:grid;grid-template-columns:repeat(5,1fr);
+  padding:6px max(8px,env(safe-area-inset-left,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-right,0px));
+  background:rgba(255,255,255,.86);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border-radius:24px 24px 0 0;box-shadow:0 -4px 20px rgba(90,50,140,.14)}
+.tabbar button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;height:56px;border-radius:18px;font-size:11px;font-weight:700;color:var(--muted);min-width:0}
+.tabbar .ti{font-size:25px;line-height:1.1;transition:transform .15s}
+.tabbar .tl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.tabbar button[aria-current="page"]{background:linear-gradient(145deg,#FFE0F2,#EADCFF);color:var(--tomato)}
+.tabbar button[aria-current="page"] .ti{transform:scale(1.15) translateY(-1px)}
+.install{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:20px;padding:10px 12px;box-shadow:0 4px 0 var(--shadow);font-weight:600;font-size:15px;line-height:1.25}
+.install .big{font-size:30px;flex:none}
+.install .share{display:inline-flex;vertical-align:-4px;width:20px;height:20px}
+.install .share svg{width:20px;height:20px;stroke:var(--sky);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.install .x{flex:none;width:36px;height:36px;border-radius:12px;background:#F3ECFF;font-size:18px;font-weight:800}
 .topbar{display:flex;align-items:center;gap:10px;padding:10px 16px;flex:none}
 .topbar h2{margin:0;font-size:24px;font-weight:800;line-height:1;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px 28px}
@@ -261,6 +278,11 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
       <button class="btn" id="muteBtn" aria-label="Zvuk"></button>
     </div>
     <div class="home-body">
+      <div class="install" id="installHint" hidden>
+        <span class="big">📲</span>
+        <span>Chceš hru jako aplikaci bez lišt prohlížeče? Ťukni na <span class="share"><svg viewBox="0 0 24 24"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M6 11H5v10h14V11h-1"/></svg></span> a vyber <b>Přidat na plochu</b>.</span>
+        <button class="x" id="installClose" aria-label="Zavřít">✕</button>
+      </div>
       <div class="hero-row"><h1>Zvířátková <span>dílna</span></h1><div class="mascot" id="mascot" role="img" aria-label="Jednorožec">🦄</div></div>
       <p class="lead">Jednorožci, třpytky, zvířátka, čísla i písmenka.</p>
       <div class="modes">
@@ -382,6 +404,14 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
     </div>
   </section>
 
+  <nav class="tabbar" id="tabbar" aria-label="Hlavní menu">
+    <button data-go="home"><span class="ti">🏠</span><span class="tl">Domů</span></button>
+    <button data-go="puzzle"><span class="ti">🧩</span><span class="tl">Puzzle</span></button>
+    <button data-go="color"><span class="ti">🎨</span><span class="tl">Omalovánky</span></button>
+    <button data-go="count"><span class="ti">🔢</span><span class="tl">Čísla</span></button>
+    <button data-go="abc"><span class="ti">🔤</span><span class="tl">Abeceda</span></button>
+  </nav>
+
   <div class="overlay" id="win" hidden>
     <div class="win-card">
       <div class="win-art" id="winArt"></div>
@@ -494,7 +524,11 @@ $('#muteBtn').addEventListener('click', () => { muted = !muted; store.set('zd-mu
 
 /* ---------- NAV ---------- */
 let current = 'home';
-function show(id) { document.querySelectorAll('.screen').forEach(s => { s.hidden = s.id !== id; }); current = id; $('#win').hidden = true; }
+const TAB_OF = { home: 'home', pickPuzzle: 'puzzle', puzzle: 'puzzle', pickColor: 'color', color: 'color', count: 'count', abc: 'abc' };
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => { s.hidden = s.id !== id; }); current = id; $('#win').hidden = true;
+  document.querySelectorAll('#tabbar button').forEach(b => { if (b.dataset.go === TAB_OF[id]) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
+}
 document.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', () => {
   const to = b.dataset.back;
   if (to === 'home') renderHome();
@@ -1687,9 +1721,28 @@ document.addEventListener('pointerdown', ev => { if (!reduceMotion) sparkleAt(ev
   $('#twinkles').innerHTML = h;
 })();
 $('#mascot').addEventListener('click', ev => { bounce(ev.currentTarget); sparkleAt(ev.clientX, ev.clientY, 24); say('Ahoj! Já jsem jednorožec!'); });
+$('#tabbar').addEventListener('click', ev => {
+  const b = ev.target.closest('button'); if (!b) return;
+  ac(); sfx.pick(); activeTrace = null;
+  const go = b.dataset.go;
+  if (go === 'home') goHome();
+  else if (go === 'puzzle') { renderPuzzlePicker(); show('pickPuzzle'); }
+  else if (go === 'color') { renderColorPicker(); show('pickColor'); }
+  else if (go === 'count') startCount();
+  else if (go === 'abc') startAbc();
+});
+(function installHint() {
+  const standalone = navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
+  let framed = false; try { framed = window.self !== window.top; } catch (e) { framed = true; }
+  const touch = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Mac/.test(navigator.platform));
+  if (standalone || framed || !touch || store.get('zd-install-hidden', false)) return;
+  $('#installHint').hidden = false;
+  $('#installClose').addEventListener('click', () => { $('#installHint').hidden = true; store.set('zd-install-hidden', true); });
+})();
 renderMute();
 renderHome();
 drawHomeArt();
+show('home');
 })();
 </script>
 

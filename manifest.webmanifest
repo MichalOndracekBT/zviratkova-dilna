@@ -1,0 +1,12 @@
+{
+  "name": "Zvířátková dílna",
+  "short_name": "Zvířátka",
+  "lang": "cs",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#F7E9FF",
+  "theme_color": "#F7E9FF",
+  "icons": [{ "src": "apple-touch-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }]
+}
