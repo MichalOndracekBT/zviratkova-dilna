@@ -49,10 +49,10 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .screen{position:absolute;inset:0 0 var(--tab-h) 0;display:flex;flex-direction:column}
 /* app-style bottom navigation */
 :root{--tab-h:68px}
-.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:50;display:grid;grid-template-columns:repeat(5,1fr);
+/* anchored to the bottom of #app (not fixed): iOS home-screen apps place fixed elements unreliably */
+.tabbar{position:absolute;left:0;right:0;bottom:calc(-1 * env(safe-area-inset-bottom,0px));z-index:50;display:grid;grid-template-columns:repeat(5,1fr);
   padding:6px max(8px,env(safe-area-inset-left,0px)) max(8px,env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-right,0px));
   background:rgba(255,255,255,.86);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
-  margin-bottom:calc(-1 * var(--vgap,0px));
   border-radius:24px 24px 0 0;box-shadow:0 -4px 20px rgba(90,50,140,.14)}
 .tabbar button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;height:56px;border-radius:18px;font-size:11px;font-weight:700;color:var(--muted);min-width:0}
 .tabbar .ti{font-size:25px;line-height:1.1;transition:transform .15s}
