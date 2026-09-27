@@ -144,6 +144,17 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .grp.bad{animation:shake .4s;opacity:.35}
 .play-btn{height:64px;padding:0 40px;font-size:26px;border-radius:22px}
 
+/* TRACING */
+.cnt-field.tracing{background:transparent;display:flex;align-items:center;justify-content:center;overflow:visible}
+.trace-host{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;margin:0 16px}
+.trace-box{position:relative;background:#fff;border-radius:28px;box-shadow:0 5px 0 var(--shadow);flex:none}
+.trace-box canvas{position:absolute;inset:0;border-radius:28px}
+.trace-box .ti{touch-action:none}
+.trace-top{display:flex;align-items:center;gap:10px;padding:0 16px 10px;flex:none}
+.trace-word{flex:1;min-width:0;text-align:center;font-size:clamp(20px,6vw,28px);font-weight:800;letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trace-word .em{font-size:1.4em;vertical-align:-.15em;margin-right:6px}
+.trace-word .first{color:var(--tomato)}
+
 /* ALPHABET */
 .abc-card{margin:0 16px;background:var(--card);border-radius:28px;box-shadow:0 5px 0 var(--shadow);padding:14px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex:none;text-align:center}
 .abc-quiz .abc-card{flex:1;min-height:0}
@@ -343,7 +354,7 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
       <div class="dots" id="abcDots"></div>
     </div>
     <div class="seg-row">
-      <div class="seg" id="abcSeg"><button data-m="learn">Poznávat</button><button data-m="quiz">Hádat</button></div>
+      <div class="seg" id="abcSeg"><button data-m="learn">Poznávat</button><button data-m="quiz">Hádat</button><button data-m="trace">Obtahovat</button></div>
     </div>
     <div class="abc-pane" id="abcLearn">
       <button class="abc-card" id="abcCard" aria-label="Přehrát"></button>
@@ -353,6 +364,15 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
       <button class="abc-card" id="abcQCard" aria-label="Přehrát otázku"></button>
       <div class="prompt">Na jaké písmeno to začíná?</div>
       <div class="answers" id="abcAnswers"></div>
+    </div>
+    <div class="abc-pane" id="abcTrace" hidden>
+      <div class="trace-top">
+        <button class="btn" id="trPrev" aria-label="Předchozí písmeno"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <button class="trace-word" id="trWord" aria-label="Přehrát"></button>
+        <button class="btn" id="trNext" aria-label="Další písmeno"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+      </div>
+      <div class="trace-host" id="trHost"></div>
+      <div class="answers"><button class="btn" id="trClear"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 108-8 8.5 8.5 0 00-6 2.5L4 8"/><path d="M4 3v5h5"/></svg>Smazat</button></div>
     </div>
   </section>
 
@@ -1253,7 +1273,93 @@ $('#doneBtn').addEventListener('click', () => {
 const rand = n => Math.floor(Math.random() * n);
 function renderDots(el, total, done) { el.innerHTML = Array.from({ length: total }, (_, i) => `<i class="${i < done ? 'on' : ''}"></i>`).join(''); }
 function bounce(el) { el.classList.remove('tapped'); void el.offsetWidth; el.classList.add('tapped'); }
-function goHome() { renderHome(); show('home'); }
+function goHome() { activeTrace = null; renderHome(); show('home'); }
+
+/* ---------- TRACING ---------- */
+const TRACE_FONT = '"Baloo 2", ui-rounded, "Arial Rounded MT Bold", system-ui, sans-serif';
+const fontsReady = (document.fonts && document.fonts.load)
+  ? Promise.race([document.fonts.load('800 100px "Baloo 2"'), new Promise(r => setTimeout(r, 1500))]).catch(() => {})
+  : Promise.resolve();
+let activeTrace = null; // { rebuild } of the tracer on screen, for orientation changes
+// Shows a big faint glyph with a dashed outline; the child paints over it with a rainbow brush.
+// Done when most of the glyph is covered and the paint stays mostly on the glyph.
+function makeTracer(host, text, onDone) {
+  host.innerHTML = '<div class="trace-box"><canvas class="tg"></canvas><canvas class="ti"></canvas></div>';
+  const box = host.firstChild, g = box.children[0], ink = box.children[1];
+  const W = Math.max(160, Math.floor(Math.min(host.clientWidth - 8, host.clientHeight - 8, 560)));
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  box.style.width = box.style.height = W + 'px';
+  [g, ink].forEach(cv => { cv.width = cv.height = Math.round(W * dpr); cv.style.width = cv.style.height = W + 'px'; });
+  const gx = g.getContext('2d'), ix = ink.getContext('2d');
+  gx.setTransform(dpr, 0, 0, dpr, 0, 0); ix.setTransform(dpr, 0, 0, dpr, 0, 0);
+  let F = W * .8;
+  gx.font = `800 ${F}px ${TRACE_FONT}`;
+  const tw = gx.measureText(text).width;
+  if (tw > W * .84) F *= W * .84 / tw;
+  const font = `800 ${F}px ${TRACE_FONT}`;
+  gx.font = font; gx.textAlign = 'center'; gx.textBaseline = 'alphabetic';
+  const m = gx.measureText(text);
+  const asc = m.actualBoundingBoxAscent || F * .7, desc = m.actualBoundingBoxDescent || 0;
+  const ty = W / 2 + (asc - desc) / 2;
+  const brush = F * .16;
+  // sampling masks at 1x: the glyph itself, and a dilated glyph that counts as "on the line"
+  const mk = (dilate) => {
+    const cv = document.createElement('canvas'); cv.width = cv.height = W;
+    const c2 = cv.getContext('2d'); c2.font = font; c2.textAlign = 'center'; c2.textBaseline = 'alphabetic';
+    c2.fillText(text, W / 2, ty);
+    if (dilate) { c2.lineWidth = dilate; c2.lineJoin = 'round'; c2.strokeText(text, W / 2, ty); }
+    return c2.getImageData(0, 0, W, W).data;
+  };
+  const glyph = mk(0), near = mk(brush * 1.2);
+  const step = Math.max(3, Math.round(W / 80));
+  const onPts = [], offPts = [];
+  for (let y = 0; y < W; y += step) for (let x = 0; x < W; x += step) {
+    const i = (y * W + x) * 4 + 3;
+    if (glyph[i] > 128) onPts.push([x, y]); else if (near[i] < 60) offPts.push([x, y]);
+  }
+  // guide
+  gx.fillStyle = 'rgba(179,107,255,.15)'; gx.fillText(text, W / 2, ty);
+  gx.setLineDash([F * .035, F * .03]); gx.lineWidth = Math.max(2.5, F * .014); gx.lineJoin = 'round';
+  gx.strokeStyle = 'rgba(155,90,230,.75)'; gx.strokeText(text, W / 2, ty);
+  // painting
+  ix.lineCap = 'round'; ix.lineJoin = 'round'; ix.lineWidth = brush;
+  let last = null, hue = Math.random() * 360, done = false, pid = null;
+  const pos = ev => { const r = ink.getBoundingClientRect(); return [(ev.clientX - r.left) * W / r.width, (ev.clientY - r.top) * W / r.height]; };
+  const glitterDots = (x, y) => {
+    for (let k = 0; k < 3; k++) {
+      ix.fillStyle = k ? 'rgba(255,255,255,.9)' : `hsl(${(hue + 40) % 360} 100% 85%)`;
+      const a = Math.random() * 6.28, r = Math.random() * brush * .4, s = 1 + Math.random() * 2.2;
+      ix.fillRect(x + Math.cos(a) * r, y + Math.sin(a) * r, s, s);
+    }
+  };
+  const seg = (a, b) => {
+    ix.strokeStyle = `hsl(${hue} 90% 66%)`; hue = (hue + 5) % 360;
+    ix.beginPath(); ix.moveTo(a[0], a[1]); ix.lineTo(b[0], b[1]); ix.stroke();
+    glitterDots(b[0], b[1]);
+  };
+  ink.addEventListener('pointerdown', ev => {
+    if (done) return; ev.preventDefault(); pid = ev.pointerId;
+    try { ink.setPointerCapture(pid); } catch (e) {}
+    last = pos(ev); seg(last, [last[0] + .1, last[1] + .1]);
+  });
+  ink.addEventListener('pointermove', ev => {
+    if (done || ev.pointerId !== pid || !last) return; ev.preventDefault();
+    const p2 = pos(ev); seg(last, p2); last = p2;
+    if (Math.random() < .12) sparkleAt(ev.clientX, ev.clientY, 1);
+  });
+  const up = ev => {
+    if (ev.pointerId !== pid) return; pid = null; last = null;
+    if (done) return;
+    const d = ix.getImageData(0, 0, ink.width, ink.height).data, cw = ink.width;
+    const inked = ([x, y]) => d[(Math.round(y * dpr) * cw + Math.round(x * dpr)) * 4 + 3] > 20;
+    const on = onPts.filter(inked).length, off = offPts.filter(inked).length;
+    if (onPts.length && on / onPts.length >= .62 && off <= on * .6) { done = true; onDone(); }
+  };
+  ink.addEventListener('pointerup', up); ink.addEventListener('pointercancel', up);
+  return { clear() { ix.clearRect(0, 0, W, W); done = false; } };
+}
+let trT;
+window.addEventListener('resize', () => { clearTimeout(trT); trT = setTimeout(() => { if (activeTrace) activeTrace.rebuild(); }, 250); });
 
 /* ---------- NUMBERS ---------- */
 const NUM_WORDS = ['', 'jedna', 'dva', 'tři', 'čtyři', 'pět', 'šest', 'sedm', 'osm', 'devět', 'deset'];
@@ -1303,12 +1409,12 @@ function showNumPick() {
   }).join('');
 }
 $('#numGrid').addEventListener('click', ev => { const b = ev.target.closest('.num-tile'); if (!b) return; sfx.pick(); learnNumber(+b.dataset.n); });
-$('#numBack').addEventListener('click', () => { if (!$('#numPlay').hidden) showNumPick(); else { clearTimers(); N = null; goHome(); } });
+$('#numBack').addEventListener('click', () => { activeTrace = null; if (!$('#numPlay').hidden) showNumPick(); else { clearTimers(); N = null; goHome(); } });
 $('#cntPrompt').addEventListener('click', () => { if (N && N.sayText) say(N.sayText); });
 
 function learnNumber(n) {
   clearTimers();
-  N = { n, step: 0, tasks: ['A', 'B', 'C', 'A'], timers: [], last: null, locked: true };
+  N = { n, step: 0, tasks: ['T', 'A', 'B', 'C', 'T'], timers: [], last: null, locked: true };
   $('#numTitle').textContent = `Číslo ${n}`;
   $('#numPick').hidden = true; $('#numPlay').hidden = false;
   numIntro();
@@ -1335,13 +1441,23 @@ function numIntro() {
   }
 }
 function nextTask() {
-  clearTimers();
+  clearTimers(); activeTrace = null;
   renderDots($('#cntDots'), N.tasks.length, N.step);
   if (N.step >= N.tasks.length) { finishNumber(); return; }
   N.locked = false; N.sel = 0;
   const t = pickThing(); N.thing = t; N.type = N.tasks[N.step];
   const f = $('#cntField'); $('#cntAnswers').innerHTML = '';
   const { n } = N;
+  if (N.type === 'T') {
+    f.className = 'cnt-field tracing'; f.innerHTML = '';
+    $('#cntAnswers').innerHTML = '<button class="btn" id="traceClear"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 108-8 8.5 8.5 0 00-6 2.5L4 8"/><path d="M4 3v5h5"/></svg>Smazat</button>';
+    setPrompt(`Obtáhni prstem číslo <b>${n}</b>`, `Obtáhni prstem číslo ${NUM_WORDS[n]}.`);
+    const task = N, stepNo = N.step;
+    const build = () => { if (N === task && N.step === stepNo && N.type === 'T' && current === 'count') N.tracer = makeTracer(f, String(n), () => taskSuccess('Krásně obtaženo!')); };
+    fontsReady.then(build);
+    activeTrace = { rebuild: build };
+    return;
+  }
   if (N.type === 'A') {
     const counts = [n, ...nearCounts(n, 2)].sort(() => Math.random() - .5);
     f.className = 'cnt-field groups';
@@ -1380,6 +1496,7 @@ function taskWrong(el) { el.classList.add('bad'); el.disabled = true; tone(180, 
 
 $('#cntField').addEventListener('click', ev => {
   if (!N) return;
+  if (N.type === 'T') return;
   if (N.type === 'intro') { const h = ev.target.closest('.num-hero'); if (h) { bounce(h); say(`Tohle je číslo ${NUM_WORDS[N.n]}.`); } return; }
   if (N.locked) { const it = ev.target.closest('.cnt-item'); if (it) bounce(it); return; }
   if (N.type === 'A') {
@@ -1397,6 +1514,7 @@ $('#cntField').addEventListener('click', ev => {
 $('#cntAnswers').addEventListener('click', ev => {
   if (!N) return;
   if (ev.target.closest('#playBtn')) { sfx.pick(); nextTask(); return; }
+  if (ev.target.closest('#traceClear')) { if (N.tracer && !N.locked) { N.tracer.clear(); tone(300, .08, 'sine', .1); } return; }
   const b = ev.target.closest('.ans'); if (!b || N.locked || b.disabled) return;
   if (+b.dataset.v === N.n) {
     b.classList.add('ok');
@@ -1439,8 +1557,9 @@ function startAbc() { show('abc'); setAbcMode(store.get('zd-abc', 'learn')); }
 function setAbcMode(m) {
   abcMode = m; store.set('zd-abc', m);
   $('#abcSeg').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === m)));
-  $('#abcLearn').hidden = m !== 'learn'; $('#abcQuiz').hidden = m !== 'quiz'; $('#abcDots').hidden = m !== 'quiz';
-  if (m === 'learn') renderLearn(); else startQuiz();
+  $('#abcLearn').hidden = m !== 'learn'; $('#abcQuiz').hidden = m !== 'quiz'; $('#abcTrace').hidden = m !== 'trace'; $('#abcDots').hidden = m !== 'quiz';
+  activeTrace = null;
+  if (m === 'learn') renderLearn(); else if (m === 'trace') startTrace(true); else startQuiz();
 }
 function renderLearn() {
   $('#abcGrid').innerHTML = LETTERS.map(([L], i) => `<button class="abc-key" data-i="${i}" aria-pressed="${i === abcSel}">${capL(L)}</button>`).join('');
@@ -1461,6 +1580,30 @@ $('#abcGrid').addEventListener('click', ev => {
 });
 $('#abcCard').addEventListener('click', () => { abcWord++; renderAbcCard(); sayLearn(); });
 $('#abcSeg').addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; sfx.pick(); setAbcMode(b.dataset.m); });
+
+let TR = null;
+function startTrace(speak) {
+  const [L, words] = LETTERS[abcSel], [em, w] = words[0];
+  $('#trWord').innerHTML = `<span class="em">${em}</span><span class="first">${w.slice(0, L.length)}</span>${w.slice(L.length)}`;
+  const host = $('#trHost'); host.innerHTML = '';
+  const sel = abcSel;
+  const build = () => {
+    if (current !== 'abc' || abcMode !== 'trace' || abcSel !== sel) return;
+    TR = makeTracer(host, capL(L), () => {
+      sfx.win(); sparkleAt(innerWidth / 2, innerHeight / 2, 40);
+      say(`Výborně! ${spoken(L)} jako ${w.toLowerCase()}.`);
+      const traced = new Set(store.get('zd-traced', [])); traced.add(L); store.set('zd-traced', [...traced]);
+      setTimeout(() => { if (current === 'abc' && abcMode === 'trace' && abcSel === sel) { abcSel = (abcSel + 1) % LETTERS.length; startTrace(true); } }, 2200);
+    });
+  };
+  fontsReady.then(build);
+  activeTrace = { rebuild: build };
+  if (speak) say(`Obtáhni písmeno ${spoken(L)}. ${spoken(L)} jako ${w.toLowerCase()}.`);
+}
+$('#trPrev').addEventListener('click', () => { abcSel = (abcSel - 1 + LETTERS.length) % LETTERS.length; sfx.pick(); startTrace(true); });
+$('#trNext').addEventListener('click', () => { abcSel = (abcSel + 1) % LETTERS.length; sfx.pick(); startTrace(true); });
+$('#trClear').addEventListener('click', () => { if (TR) { TR.clear(); tone(300, .08, 'sine', .1); } });
+$('#trWord').addEventListener('click', () => { const [L, words] = LETTERS[abcSel]; say(`${spoken(L)} jako ${words[0][1].toLowerCase()}`); });
 
 function startQuiz() { Q = { round: 0, total: 6, last: -1 }; nextQuiz(); }
 function nextQuiz() {
