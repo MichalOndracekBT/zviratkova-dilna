@@ -144,6 +144,12 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .grp.bad{animation:shake .4s;opacity:.35}
 .play-btn{height:64px;padding:0 40px;font-size:26px;border-radius:22px}
 
+/* icon tabs: big pictures so pre-readers can find their way */
+.seg.icons{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.seg.icons button{height:auto;min-height:74px;flex-direction:column;justify-content:center;gap:0;padding:6px 4px;border-radius:20px;font-size:14px;line-height:1.1;box-shadow:0 4px 0 var(--shadow)}
+.seg.icons .ico{font-size:34px;line-height:1.15}
+.seg.icons button[aria-pressed="true"]{background:linear-gradient(145deg,#FF7FC4,#B36BFF);color:#fff;box-shadow:0 4px 0 #8E4FCF;transform:translateY(-2px)}
+
 /* TRACING */
 .cnt-field.tracing{background:transparent;display:flex;align-items:center;justify-content:center;overflow:visible}
 .trace-host{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;margin:0 16px}
@@ -354,7 +360,7 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
       <div class="dots" id="abcDots"></div>
     </div>
     <div class="seg-row">
-      <div class="seg" id="abcSeg"><button data-m="learn">Poznávat</button><button data-m="quiz">Hádat</button><button data-m="trace">Obtahovat</button></div>
+      <div class="seg icons" id="abcSeg"><button data-m="learn" aria-label="Poznávat"><span class="ico">👀</span>Poznávat</button><button data-m="quiz" aria-label="Hádat"><span class="ico">🤔</span>Hádat</button><button data-m="trace" aria-label="Obtahovat"><span class="ico">✏️</span>Obtahovat</button></div>
     </div>
     <div class="abc-pane" id="abcLearn">
       <button class="abc-card" id="abcCard" aria-label="Přehrát"></button>
