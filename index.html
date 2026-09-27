@@ -165,6 +165,32 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .seg.icons .ico{font-size:34px;line-height:1.15}
 .seg.icons button[aria-pressed="true"]{background:linear-gradient(145deg,#FF7FC4,#B36BFF);color:#fff;box-shadow:0 4px 0 #8E4FCF;transform:translateY(-2px)}
 
+
+/* number scenes */
+.cnt-field::before,.cnt-field::after{position:absolute;pointer-events:none;font-size:30px;font-size:13cqmin;line-height:1;z-index:0}
+.cnt-field::before{content:var(--d1,'');left:3%;bottom:3%}
+.cnt-field::after{content:var(--d2,'');right:3%;top:3%}
+.cnt-field.tracing::before,.cnt-field.tracing::after{content:none}
+.cnt-field.tracing{background:transparent!important;box-shadow:none}
+.cnt-field[data-scene]{box-shadow:0 6px 0 var(--shadow),inset 0 0 0 3px rgba(255,255,255,.6)}
+.cnt-field[data-scene="meadow"]{--d1:'🌼';--d2:'☀️';background:radial-gradient(ellipse 90% 45% at 25% 100%,#8FD16A 0 60%,transparent 61%),radial-gradient(ellipse 90% 40% at 85% 100%,#7BC257 0 60%,transparent 61%),linear-gradient(#BFE6FF,#EAF8FF)}
+.cnt-field[data-scene="garden"]{--d1:'🌻';--d2:'🐝';background:linear-gradient(#fff,#fff) 0 51%/100% 1.4% no-repeat,repeating-linear-gradient(90deg,#fff 0 9px,transparent 9px 26px) 0 47%/100% 12% no-repeat,linear-gradient(#CDEBFF 0 54%,#8FD16A 54%)}
+.cnt-field[data-scene="farm"]{--d1:'🌾';--d2:'🏡';background:linear-gradient(#BFE6FF 0 44%,#F2D27A 44% 52%,#E3B85C 52% 60%,#F2D27A 60% 68%,#E3B85C 68% 76%,#F2D27A 76% 84%,#E3B85C 84%)}
+.cnt-field[data-scene="sea"]{--d1:'🐚';--d2:'☀️';background:repeating-radial-gradient(ellipse 30px 8px at 50% 50%,rgba(255,255,255,.25) 0 2px,transparent 3px 16px) 0 55%/100% 45% no-repeat,linear-gradient(#BDE9FF 0 40%,#5CC0EE 40%,#1F86C9)}
+.cnt-field[data-scene="sky"]{--d1:'☁️';--d2:'🌤️';background:radial-gradient(circle at 18% 30%,#fff 0 20px,transparent 21px),radial-gradient(circle at 27% 27%,#fff 0 26px,transparent 27px),radial-gradient(circle at 76% 72%,#fff 0 22px,transparent 23px),radial-gradient(circle at 85% 69%,#fff 0 16px,transparent 17px),linear-gradient(#7CC4FF,#D6EEFF)}
+.cnt-field[data-scene="night"]{--d1:'✨';--d2:'🌙';background:radial-gradient(1.5px 1.5px at 20px 30px,#fff 60%,transparent),radial-gradient(1px 1px at 90px 80px,#fff 60%,transparent),radial-gradient(1.6px 1.6px at 150px 20px,#fff 60%,transparent),radial-gradient(1px 1px at 60px 140px,#fff 60%,transparent) 0 0/180px 180px,linear-gradient(#1B2250,#3B3F8F)}
+.cnt-field[data-scene="space"]{--d1:'🪐';--d2:'🚀';background:radial-gradient(1.5px 1.5px at 20px 30px,#fff 60%,transparent),radial-gradient(1px 1px at 90px 80px,#fff 60%,transparent),radial-gradient(1.6px 1.6px at 150px 20px,#cfe3ff 60%,transparent),radial-gradient(1px 1px at 60px 140px,#fff 60%,transparent) 0 0/180px 180px,radial-gradient(circle at 85% 10%,rgba(124,77,255,.5),transparent 45%),linear-gradient(#0B1233,#1B2A6B)}
+.cnt-field[data-scene="fairy"]{--d1:'🌈';--d2:'✨';background:radial-gradient(circle at 20% 20%,rgba(255,255,255,.8) 0 10px,transparent 11px),radial-gradient(circle at 80% 76%,rgba(255,255,255,.7) 0 14px,transparent 15px),linear-gradient(160deg,#FFD6EE,#E6D8FF 50%,#D2EEFF)}
+.cnt-field[data-scene="city"]{--d1:'🚦';--d2:'🏢';background:repeating-linear-gradient(90deg,#fff 0 18px,transparent 18px 38px) 0 89%/100% 2% no-repeat,linear-gradient(#6B7584,#6B7584) 0 100%/100% 24% no-repeat,linear-gradient(#E6EBF1,#E6EBF1) 0 76%/100% 3% no-repeat,linear-gradient(#A9BEDA,#A9BEDA) 6% 73%/16% 30% no-repeat,linear-gradient(#B8CBE3,#B8CBE3) 27% 73%/12% 42% no-repeat,linear-gradient(#A9BEDA,#A9BEDA) 50% 73%/18% 26% no-repeat,linear-gradient(#B8CBE3,#B8CBE3) 74% 73%/13% 38% no-repeat,linear-gradient(#A9BEDA,#A9BEDA) 95% 73%/10% 30% no-repeat,linear-gradient(#C9E6FF,#EAF6FF)}
+.cnt-field[data-scene="race"]{--d1:'🏁';--d2:'🏆';background:repeating-linear-gradient(90deg,#E53935 0 14px,#fff 14px 28px) 0 57%/100% 2.5% no-repeat,repeating-linear-gradient(90deg,#E53935 0 14px,#fff 14px 28px) 0 86%/100% 2.5% no-repeat,linear-gradient(#5B6573,#5B6573) 0 72%/100% 27% no-repeat,linear-gradient(#BFE6FF 0 30%,#74C94F 30%)}
+.cnt-field[data-scene="bike"]{--d1:'🌳';--d2:'🚴';background:radial-gradient(ellipse 120% 30% at 50% 100%,#E9D3A8 0 58%,transparent 60%),radial-gradient(ellipse 110% 50% at 50% 100%,#8FD16A 0 70%,transparent 71%),linear-gradient(#BFE6FF,#EAF8FF)}
+.cnt-field[data-scene="rails"]{--d1:'🌲';--d2:'⛰️';background:repeating-linear-gradient(90deg,#8D6E63 0 7px,transparent 7px 22px) 0 86%/100% 8% no-repeat,linear-gradient(#90A4AE,#90A4AE) 0 84%/100% 1.4% no-repeat,linear-gradient(#90A4AE,#90A4AE) 0 91%/100% 1.4% no-repeat,radial-gradient(ellipse 100% 45% at 50% 100%,#8FD16A 0 70%,transparent 71%),linear-gradient(#BFE6FF,#EAF8FF)}
+.cnt-field[data-scene="workshop"]{--d1:'🧰';--d2:'🔩';background:radial-gradient(circle,#B0BCC8 1.6px,transparent 2.2px) 0 0/18px 18px,linear-gradient(#DDE6EF 0 72%,#B9C4CF 72%)}
+.cnt-field[data-scene="night"] .num-word,.cnt-field[data-scene="space"] .num-word{color:#fff}
+.cnt-field[data-scene="space"] .grp{background:radial-gradient(circle at 32% 26%,#9FD8FF,#2E6FD6 52%,#0B2A6B);box-shadow:inset -10px -14px 26px rgba(0,0,0,.35),0 0 26px rgba(80,160,255,.45)}
+.cnt-field[data-scene="space"] .grp.p1{background:radial-gradient(circle at 32% 26%,#FFD08A,#FF7A1A 52%,#8A2A00)}
+.cnt-field[data-scene="space"] .grp.p2{background:radial-gradient(circle at 32% 26%,#C9F7A8,#2FB36B 52%,#0B4D2C)}
+
 /* TRACING */
 .cnt-field.tracing{background:transparent;display:flex;align-items:center;justify-content:center;overflow:visible}
 .trace-host{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;margin:0 16px}
@@ -242,7 +268,12 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .ex-stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:0 12px 12px}
 #exStage>svg{width:100%;height:100%;display:block;touch-action:none}
 .trace-box{container-type:size}
-.t-dot{fill:#fff;stroke:rgba(0,40,80,.25);stroke-width:1.5}
+.t-dot{fill:#fff;stroke:rgba(0,40,80,.35);stroke-width:1}
+.t-under{opacity:.32;transition:opacity .7s}
+.t-under.show{opacity:1}
+.t-under .dt{fill:none;stroke:#2A3340;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.t-under .dw{fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round}
+.t-under .df{fill:#2A3340}
 .dots-reveal{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:120px;font-size:52cqmin;line-height:1;pointer-events:none;animation:pop .5s cubic-bezier(.3,1.5,.6,1)}
 .board{position:absolute;border-radius:8px;background:rgba(255,255,255,.6);box-shadow:inset 0 0 0 3px rgba(32,48,71,.12);z-index:0;overflow:hidden}
 .board img{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
@@ -1103,7 +1134,7 @@ $('#diffSeg').addEventListener('click', ev => { const b = ev.target.closest('but
 $('#catChips').addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; cat = b.dataset.c; store.set('zd-cat', cat); sfx.pick(); renderPuzzlePicker(); });
 $('#animalGrid').addEventListener('click', ev => {
   const b = ev.target.closest('.tile'); if (!b) return;
-  if (b.dataset.dot != null) openDots(DOTS[+b.dataset.dot]); else openPuzzle(ANIMALS[+b.dataset.i]);
+  if (b.dataset.dot != null) openDots(DOTS[+b.dataset.dot], DOTS); else openPuzzle(ANIMALS[+b.dataset.i]);
 });
 
 /* ---------- PUZZLE (silhouette + shaped pieces) ---------- */
@@ -1111,12 +1142,23 @@ $('#animalGrid').addEventListener('click', ev => {
 // lines into pieces that lie around it, turned a little. Each piece carries only the animal's
 // own pixels, so the pieces follow the animal's outline.
 let P = null;
+// sharp vector pictures of the animals (Microsoft Fluent Emoji, MIT); emoji as a fallback
+const IMG_CACHE = new Map();
+const imgCode = e => [...e].filter(ch => ch !== '\uFE0F').map(ch => ch.codePointAt(0).toString(16)).join('-');
+function animalImg(e) {
+  if (!IMG_CACHE.has(e)) IMG_CACHE.set(e, new Promise(res => {
+    const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = `img/${imgCode(e)}.svg`;
+    setTimeout(() => res(null), 4000);
+  }));
+  return IMG_CACHE.get(e);
+}
 function openPuzzle(a) {
   ac();
   P = { animal: a, diff, seed: Math.random(), zTop: 10, drag: null, done: false };
-  $('#pzTitle').textContent = a.name;
+  $('#pzTitle').textContent = a.name; $('#pzArea').innerHTML = '';
   show('puzzle');
-  requestAnimationFrame(() => requestAnimationFrame(buildPuzzle));
+  const mine = P;
+  animalImg(a.e).then(img => { if (P !== mine) return; P.img = img; requestAnimationFrame(() => requestAnimationFrame(buildPuzzle)); });
 }
 function buildPuzzle() {
   const area = $('#pzArea'); area.innerHTML = ''; area.classList.remove('done');
@@ -1129,12 +1171,15 @@ function buildPuzzle() {
   drawScene(bg.getContext('2d'), bg.width, P.animal, true);
   area.appendChild(bg);
   const land = W > H * 1.1;
-  const A = Math.floor(land ? Math.min(H * .8, W * .5) : Math.min(W * .84, H * .52));
-  const ax = land ? Math.round(W * .05) : Math.round((W - A) / 2), ay = land ? Math.round((H - A) / 2) : Math.round(H * .03);
+  const A = Math.floor(land ? Math.min(H * .9, W * .55) : Math.min(W * .96, H * .58));
+  const ax = land ? Math.round(W * .03) : Math.round((W - A) / 2), ay = land ? Math.round((H - A) / 2) : Math.round(H * .015);
   Object.assign(P, { A, ax, ay, land });
   const AP = Math.round(A * dpr);
   const src = document.createElement('canvas'); src.width = src.height = AP;
-  drawEmoji(src.getContext('2d'), P.animal.e, AP / 2, AP / 2, AP * .8);
+  const drawAnimal = useImg => { const c2 = src.getContext('2d'); c2.clearRect(0, 0, AP, AP); if (useImg && P.img) c2.drawImage(P.img, AP * .04, AP * .04, AP * .92, AP * .92); else drawEmoji(c2, P.animal.e, AP / 2, AP / 2, AP * .8); };
+  drawAnimal(true);
+  let d;
+  try { d = src.getContext('2d').getImageData(0, 0, AP, AP).data; } catch (e) { drawAnimal(false); d = src.getContext('2d').getImageData(0, 0, AP, AP).data; }
   const sil = document.createElement('canvas'); sil.width = sil.height = AP;
   const sx = sil.getContext('2d'); sx.drawImage(src, 0, 0); sx.globalCompositeOperation = 'source-atop'; sx.fillStyle = 'rgba(25,20,55,.7)'; sx.fillRect(0, 0, AP, AP);
   sil.className = 'pz-sil'; Object.assign(sil.style, { width: A + 'px', height: A + 'px', left: ax + 'px', top: ay + 'px' });
@@ -1143,7 +1188,6 @@ function buildPuzzle() {
   const rnd = seeded(Math.floor(P.seed * 1e9));
   const wav = (k, n) => ({ base: k / n, amp: .035 + rnd() * .045, f: .8 + rnd() * 1.4, ph: rnd() * 6.28 });
   const vc = Array.from({ length: cols - 1 }, (_, k) => wav(k + 1, cols)), hc = Array.from({ length: rows - 1 }, (_, k) => wav(k + 1, rows));
-  const d = src.getContext('2d').getImageData(0, 0, AP, AP).data;
   const cellOf = (x, y) => {
     const u = x / AP, v = y / AP; let c = 0, r = 0;
     for (const w of vc) if (u > w.base + w.amp * Math.sin(v * Math.PI * 2 * w.f + w.ph)) c++;
@@ -1287,49 +1331,32 @@ window.addEventListener('resize', () => {
   }, 200);
 });
 
+
 /* ---------- SPOJOVAČKA (connect the dots) ---------- */
 // The child leads a shell along a dotted outline; when the loop is closed, the picture appears.
 function starD(cx, cy, R, r) { let s = ''; for (let i = 0; i <= 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, q = i % 2 ? r : R; s += (i ? 'L' : 'M') + (cx + q * Math.cos(a)).toFixed(1) + ' ' + (cy + q * Math.sin(a)).toFixed(1) + ' '; } return s; }
 const DOTS = [
-  { id: 'fish', name: 'Rybka', e: '🐠', d: 'M22 66 C32 38 62 36 78 58 L96 42 L94 90 L78 74 C62 96 32 94 22 66 Z' },
-  { id: 'star', name: 'Hvězdička', e: '⭐', d: starD(50, 68, 52, 22) },
-  { id: 'heart', name: 'Srdíčko', e: '💖', d: 'M50 112 C20 90 8 70 10 50 C12 30 30 22 42 28 C46 30 49 34 50 38 C51 34 54 30 58 28 C70 22 88 30 90 50 C92 70 80 90 50 112 Z' },
-  { id: 'house', name: 'Domeček', e: '🏠', d: 'M14 120 L14 60 L50 20 L86 60 L86 120 Z' },
-  { id: 'butterfly', name: 'Motýlek', e: '🦋', d: 'M50 40 C30 10 4 20 10 50 C14 66 34 66 50 60 C30 70 20 100 40 104 C50 106 50 80 50 70 C50 80 50 106 60 104 C80 100 70 70 50 60 C66 66 86 66 90 50 C96 20 70 10 50 40 Z' },
-  { id: 'cat', name: 'Kočička', e: '🐱', d: 'M20 110 C10 80 14 50 22 34 L20 8 L42 26 C48 24 52 24 58 26 L80 8 L78 34 C86 50 90 80 80 110 C60 124 40 124 20 110 Z' },
-  { id: 'whale', name: 'Velryba', e: '🐳', d: 'M10 76 C10 46 46 36 70 48 C80 54 84 62 86 70 L98 56 L96 90 L84 80 C76 100 50 108 30 100 C18 96 10 88 10 76 Z' },
-  { id: 'duck', name: 'Kachnička', e: '🦆', d: 'M20 90 C20 110 70 116 86 96 C96 84 90 70 78 74 C72 60 66 50 70 38 C72 26 60 16 48 20 C38 24 36 36 42 46 L28 48 L40 56 C30 62 20 72 20 90 Z' },
-  { id: 'snail', name: 'Šnek', e: '🐌', d: 'M8 112 L90 112 C98 112 98 98 90 96 C92 80 96 70 90 60 C84 50 70 56 72 70 C74 84 56 98 40 96 C20 94 10 76 16 58 C22 40 44 34 56 46 C66 56 60 72 48 72 C38 72 34 60 42 56' },
-  { id: 'rocket', name: 'Raketa', e: '🚀', d: 'M50 8 C68 26 72 50 70 80 L84 100 L84 116 L66 104 L34 104 L16 116 L16 100 L30 80 C28 50 32 26 50 8 Z' }
+  { id: 'fish', name: 'Rybka', e: '🐠', fill: '#FFA64D', d: 'M22 66 C32 38 62 36 78 58 L96 42 L94 90 L78 74 C62 96 32 94 22 66 Z',
+    det: '<circle class="df" cx="38" cy="60" r="4"/><path class="dt" d="M26 72 Q30 74 34 71 M58 44 Q66 66 58 88 M46 50 Q52 66 46 82"/><path d="M50 40 Q60 30 70 44 Z" fill="#FF7A1A"/>' },
+  { id: 'star', name: 'Hvězdička', e: '⭐', fill: '#FFD54F', d: starD(50, 68, 52, 22),
+    det: '<circle class="df" cx="42" cy="68" r="3.5"/><circle class="df" cx="58" cy="68" r="3.5"/><path class="dt" d="M43 78 Q50 84 57 78"/>' },
+  { id: 'heart', name: 'Srdíčko', e: '💖', fill: '#FF6B9A', d: 'M50 112 C20 90 8 70 10 50 C12 30 30 22 42 28 C46 30 49 34 50 38 C51 34 54 30 58 28 C70 22 88 30 90 50 C92 70 80 90 50 112 Z',
+    det: '<path class="dw" d="M22 50 Q24 38 34 36"/>' },
+  { id: 'house', name: 'Domeček', e: '🏠', fill: '#FFCC80', d: 'M14 120 L14 60 L50 20 L86 60 L86 120 Z',
+    det: '<path d="M14 60 L50 20 L86 60 Z" fill="#E57373"/><path d="M42 120 L42 92 L58 92 L58 120 Z" fill="#8D6E63"/><path d="M22 74 H38 V88 H22 Z M62 74 H78 V88 H62 Z" fill="#90CAF9"/><path class="dt" d="M30 74 V88 M22 81 H38 M70 74 V88 M62 81 H78"/>' },
+  { id: 'butterfly', name: 'Motýlek', e: '🦋', fill: '#C084FC', d: 'M50 40 C30 10 4 20 10 50 C14 66 34 66 50 60 C30 70 20 100 40 104 C50 106 50 80 50 70 C50 80 50 106 60 104 C80 100 70 70 50 60 C66 66 86 66 90 50 C96 20 70 10 50 40 Z',
+    det: '<path class="dt" d="M50 36 L50 98 M50 36 Q44 22 38 18 M50 36 Q56 22 62 18" style="stroke-width:3"/><circle cx="28" cy="42" r="6" fill="#FFD54F"/><circle cx="72" cy="42" r="6" fill="#FFD54F"/><circle cx="38" cy="88" r="4" fill="#FFD54F"/><circle cx="62" cy="88" r="4" fill="#FFD54F"/>' },
+  { id: 'cat', name: 'Kočička', e: '🐱', fill: '#FFB74D', d: 'M20 110 C10 80 14 50 22 34 L20 8 L42 26 C48 24 52 24 58 26 L80 8 L78 34 C86 50 90 80 80 110 C60 124 40 124 20 110 Z',
+    det: '<path d="M24 16 L38 28 L26 34 Z M76 16 L62 28 L74 34 Z" fill="#FF8A80"/><circle class="df" cx="38" cy="64" r="4.5"/><circle class="df" cx="62" cy="64" r="4.5"/><path class="df" d="M46 78 L54 78 L50 83 Z"/><path class="dt" d="M34 82 L16 78 M34 88 L16 92 M66 82 L84 78 M66 88 L84 92 M50 83 Q50 90 44 90 M50 83 Q50 90 56 90"/>' },
+  { id: 'whale', name: 'Velryba', e: '🐳', fill: '#64B5F6', d: 'M10 76 C10 46 46 36 70 48 C80 54 84 62 86 70 L98 56 L96 90 L84 80 C76 100 50 108 30 100 C18 96 10 88 10 76 Z',
+    det: '<path d="M14 84 Q40 104 72 92 Q60 100 32 100 Q18 96 14 84 Z" fill="#E3F2FD"/><circle class="df" cx="28" cy="70" r="3.5"/><path class="dt" d="M40 40 Q36 26 30 24 M40 40 Q44 26 50 24 M20 80 Q26 84 32 80"/>' },
+  { id: 'duck', name: 'Kachnička', e: '🦆', fill: '#FFE082', d: 'M20 90 C20 110 70 116 86 96 C96 84 90 70 78 74 C72 60 66 50 70 38 C72 26 60 16 48 20 C38 24 36 36 42 46 L28 48 L40 56 C30 62 20 72 20 90 Z',
+    det: '<path d="M28 48 L42 44 L40 56 Z" fill="#FF9800"/><circle class="df" cx="54" cy="32" r="3.5"/><path class="dt" d="M34 86 Q52 70 72 88"/>' },
+  { id: 'snail', name: 'Šnek', e: '🐌', fill: '#BCAAA4', d: 'M8 112 L90 112 C98 112 98 98 90 96 C92 80 96 70 90 60 C84 50 70 56 72 70 C74 84 56 98 40 96 C20 94 10 76 16 58 C22 40 44 34 56 46 C66 56 60 72 48 72 C38 72 34 60 42 56',
+    det: '<circle cx="40" cy="70" r="26" fill="#FFB74D" opacity=".85"/><path class="dt" d="M88 62 L84 48 M92 62 L98 48"/><circle class="df" cx="84" cy="46" r="3"/><circle class="df" cx="98" cy="46" r="3"/>' },
+  { id: 'rocket', name: 'Raketa', e: '🚀', fill: '#ECEFF1', d: 'M50 8 C68 26 72 50 70 80 L84 100 L84 116 L66 104 L34 104 L16 116 L16 100 L30 80 C28 50 32 26 50 8 Z',
+    det: '<path d="M50 8 C60 18 66 28 68 36 L32 36 C34 28 40 18 50 8 Z" fill="#E53935"/><circle cx="50" cy="56" r="10" fill="#64B5F6"/><circle class="dt" cx="50" cy="56" r="10" fill="none"/><path d="M36 104 Q50 128 64 104 Z" fill="#FF9800"/>' }
 ];
-const DOT_THEME = { board: 'radial-gradient(circle at 18% 22%,rgba(255,255,255,.35) 0 7px,transparent 8px),radial-gradient(circle at 84% 34%,rgba(255,255,255,.3) 0 5px,transparent 6px),radial-gradient(circle at 70% 84%,rgba(255,255,255,.3) 0 9px,transparent 10px),linear-gradient(#6FD3EA,#1D7FB6)',
-  road: 'rgba(255,255,255,.28)', edge: 'rgba(255,255,255,.12)', center: 'rgba(255,255,255,.85)', start: '#FF7FC4', prog: ['#FFFFFF', '#FFF3A0'], marker: '🐚' };
-function openDots(item) {
-  ac(); show('extra');
-  $('#exTitle').textContent = item.name; $('#exProgress').textContent = '';
-  const host = $('#exStage');
-  const run = () => {
-    if (current !== 'extra') return;
-    makeTracer(host, null, () => {
-      host.querySelector('.trace-box').insertAdjacentHTML('beforeend', `<div class="dots-reveal">${item.e}</div>`);
-      const done = new Set(store.get('zd-dots', [])); done.add(item.id); store.set('zd-dots', [...done]);
-      sfx.win(); confetti(); say(item.name);
-      setTimeout(() => {
-        if (current !== 'extra') return;
-        const next = DOTS[(DOTS.indexOf(item) + 1) % DOTS.length];
-        showWin(`<span role="img" aria-label="${item.name}">${item.e}</span>`, `${item.name}!`, 'Obrázek je hotový.', [
-          { label: `Další: ${next.e} ${next.name}`, cls: 'primary', fn: () => openDots(next) },
-          { label: 'Ještě jednou', cls: '', fn: () => openDots(item) },
-          { label: 'Vybrat jiný obrázek', cls: '', fn: () => { renderPuzzlePicker(); show('pickPuzzle'); } }
-        ], () => say(item.name));
-      }, 1700);
-    }, { strokes: [item.d], theme: DOT_THEME, dots: true, road: 12 });
-  };
-  activeTrace = { rebuild: run };
-  requestAnimationFrame(() => requestAnimationFrame(run));
-  say('Spoj tečky a uvidíš obrázek.');
-}
-
 /* ---------- WIN + CONFETTI ---------- */
 function showWin(art, title, sub, buttons, onArt) {
   $('#winArt').innerHTML = art; $('#winTitle').textContent = title; $('#winSub').textContent = sub;
@@ -1575,19 +1602,22 @@ function makeTracer(host, text, onDone, opts = {}) {
   svg.setAttribute('viewBox', `${cx - side / 2} ${cy - side / 2} ${side} ${side}`);
   const gid = 'tp' + Math.random().toString(36).slice(2, 8), P = TH.prog;
   const layer = (cls, extra) => strokes.map(st => `<path class="${cls}" d="${st.d}" transform="translate(${st.dx} 0)" ${extra}/>`).join('');
-  svg.innerHTML = `<defs><linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="1">${P.map((c, i) => `<stop offset="${i / Math.max(1, P.length - 1)}" stop-color="${c}"/>`).join('')}</linearGradient></defs>` +
+  svg.innerHTML = `<defs><linearGradient id="${gid}" gradientUnits="userSpaceOnUse">${P.map((c, i) => `<stop offset="${i / Math.max(1, P.length - 1)}" stop-color="${c}"/>`).join('')}</linearGradient></defs>` +
+    (opts.under ? `<g class="t-under">${opts.under}</g>` : '') +
     layer('t-edge', `stroke="${TH.edge}" stroke-width="${R + 7}"`) +
     layer('t-road', `stroke="${TH.road}" stroke-width="${R}"`) +
     layer('t-mid', `stroke="${TH.center}" stroke-width="2.2" stroke-dasharray="6 7"`) +
     layer('t-prog', `stroke="url(#${gid})" stroke-width="${R * .78}" stroke-dasharray="0 9999"`) +
     `<g class="t-arrow"><circle r="${R * .62}" fill="${TH.start}" stroke="#fff" stroke-width="2.5"/><path d="M${-R * .22} ${-R * .3} L${R * .32} 0 L${-R * .22} ${R * .3} Z" fill="#fff"/></g>` +
-    `<text class="t-car" text-anchor="middle" dominant-baseline="central" font-size="${R * 2}">${TH.marker}</text>` +
+    `<text class="t-car" text-anchor="middle" dominant-baseline="central" font-size="${R * (opts.markerScale || 2)}">${opts.marker || TH.marker}</text>` +
     `<text class="t-hand" font-size="${R * 1.9}" opacity="0">👆</text>`;
   if (opts.strokes) { // custom pictures: fit their own outline to the board
     const bb = svg.querySelector('.t-road').getBBox(), p2 = R * 1.6;
     const sd = Math.max(bb.width, bb.height) + p2 * 2;
     svg.setAttribute('viewBox', `${bb.x + bb.width / 2 - sd / 2} ${bb.y + bb.height / 2 - sd / 2} ${sd} ${sd}`);
   }
+  { const vb = svg.viewBox.baseVal, gr = svg.querySelector('linearGradient');
+    gr.setAttribute('x1', vb.x); gr.setAttribute('y1', vb.y); gr.setAttribute('x2', vb.x + vb.width); gr.setAttribute('y2', vb.y + vb.height); }
   const STEP = 1.5;
   const data = [...svg.querySelectorAll('.t-road')].map((el, i) => {
     const L = el.getTotalLength(), pts = [];
@@ -1596,7 +1626,7 @@ function makeTracer(host, text, onDone, opts = {}) {
     return { L, pts };
   });
   const progEls = [...svg.querySelectorAll('.t-prog')], arrow = svg.querySelector('.t-arrow'), car = svg.querySelector('.t-car'), hand = svg.querySelector('.t-hand');
-  if (opts.dots) arrow.insertAdjacentHTML('beforebegin', data.map(dd => { let h = ''; for (let k = 0; k < dd.pts.length; k += Math.round(20 / STEP)) h += `<circle class="t-dot" cx="${dd.pts[k][0]}" cy="${dd.pts[k][1]}" r="${R * .42}"/>`; return h; }).join(''));
+  if (opts.dots) arrow.insertAdjacentHTML('beforebegin', data.map(dd => { let h = ''; for (let k = 0; k < dd.pts.length; k += Math.round(20 / STEP)) h += `<circle class="t-dot" cx="${dd.pts[k][0]}" cy="${dd.pts[k][1]}" r="${R * .3}"/>`; return h; }).join(''));
   let si = 0, pi = 0, drag = null, done = false, lastMove = Date.now();
   const angleAt = (pts, i) => { const a = pts[Math.max(0, i - 3)], b = pts[Math.min(pts.length - 1, i + 3)]; return Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI; };
   const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
@@ -1654,6 +1684,38 @@ function makeTracer(host, text, onDone, opts = {}) {
   return { clear() { si = 0; pi = 0; done = false; drag = null; lastMove = Date.now(); render(); } };
 }
 
+/* ---------- CONNECT THE DOTS (shared) ---------- */
+// The child leads the picture's own icon along the dotted outline; a faint picture underneath
+// shows what is being drawn, and it fills with colour when the loop is closed.
+const DOT_THEME = { board: 'radial-gradient(circle at 18% 22%,rgba(255,255,255,.3) 0 6px,transparent 7px),radial-gradient(circle at 84% 34%,rgba(255,255,255,.25) 0 4px,transparent 5px),radial-gradient(circle at 70% 86%,rgba(255,255,255,.25) 0 8px,transparent 9px),linear-gradient(#EAF6FF,#CFE6FA)',
+  road: 'rgba(255,255,255,.7)', edge: 'rgba(40,70,110,.18)', center: 'rgba(40,70,110,.45)', start: '#FF7A45', prog: ['#FF7A45', '#FFB300'], marker: '⭐' };
+function openDots(item, list) {
+  ac(); show('extra');
+  $('#exTitle').textContent = item.name; $('#exProgress').textContent = '';
+  const host = $('#exStage');
+  const under = `<path d="${item.d}" fill="${item.fill || '#FFE082'}"/>${item.det || ''}`;
+  const run = () => {
+    if (current !== 'extra') return;
+    makeTracer(host, null, () => {
+      host.querySelector('.t-under').classList.add('show');
+      const done = new Set(store.get('zd-dots', [])); done.add(item.id); store.set('zd-dots', [...done]);
+      sfx.win(); confetti(); say(item.name);
+      setTimeout(() => {
+        if (current !== 'extra') return;
+        const next = list[(list.indexOf(item) + 1) % list.length];
+        showWin(`<span role="img" aria-label="${item.name}">${item.e}</span>`, `${item.name}!`, 'Obrázek je hotový.', [
+          { label: `Další: ${next.e} ${next.name}`, cls: 'primary', fn: () => openDots(next, list) },
+          { label: 'Ještě jednou', cls: '', fn: () => openDots(item, list) },
+          { label: 'Vybrat jiný obrázek', cls: '', fn: () => { renderPuzzlePicker(); show('pickPuzzle'); } }
+        ], () => say(item.name));
+      }, 1800);
+    }, { strokes: [item.d], theme: DOT_THEME, dots: true, road: 7, marker: item.e, markerScale: 2.6, under });
+  };
+  activeTrace = { rebuild: run };
+  requestAnimationFrame(() => requestAnimationFrame(run));
+  say(`Spoj tečky. Co to bude?`);
+}
+
 let trT;
 window.addEventListener('resize', () => { clearTimeout(trT); trT = setTimeout(() => { if (activeTrace) activeTrace.rebuild(); }, 250); });
 
@@ -1674,6 +1736,8 @@ const THINGS = [
   ['👑', 'f', ['korunku', 'korunky', 'korunek']], ['🌈', 'f', ['duhu', 'duhy', 'duh']],
   ['🍭', 'n', ['lízátko', 'lízátka', 'lízátek']], ['💖', 'n', ['srdíčko', 'srdíčka', 'srdíček']], ['🧚', 'f', ['vílu', 'víly', 'víl']]
 ];
+// background scene for each thing that is counted
+const SCENE_OF = { '🍌': 'garden', '🍎': 'garden', '🍓': 'garden', '🍐': 'garden', '🥕': 'farm', '🐥': 'farm', '🐟': 'sea', '🎈': 'sky', '⭐': 'night', '🚗': 'city', '🌷': 'meadow', '🐞': 'meadow', '🐶': 'meadow', '⚽': 'meadow', '🧁': 'fairy', '🦋': 'meadow', '🍦': 'fairy', '🐸': 'meadow', '🦄': 'fairy', '💎': 'fairy', '👑': 'fairy', '🌈': 'sky', '🍭': 'fairy', '💖': 'fairy', '🧚': 'fairy' };
 const TILE_COLORS = ['#FFD36E', '#FFB3D9', '#A6F0CB', '#D9C4FF', '#9FD8FF'];
 const PRAISE = ['Správně!', 'Výborně!', 'Super!', 'Paráda!', 'Bezva!'];
 function numAcc(n, g) {
@@ -1723,7 +1787,7 @@ function numIntro() {
   const { n } = N, t = pickThing();
   renderDots($('#cntDots'), N.tasks.length, 0);
   N.type = 'intro'; N.thing = t;
-  const f = $('#cntField'); f.className = 'cnt-field';
+  const f = $('#cntField'); f.className = 'cnt-field'; f.dataset.scene = SCENE_OF[t[0]] || 'meadow';
   f.innerHTML = `<div class="num-intro"><div class="num-hero">${n}</div><div class="num-word">${NUM_WORDS[n]}</div><div class="num-row" id="numRow"></div></div>`;
   $('#cntAnswers').innerHTML = '<button class="btn primary play-btn" id="playBtn">Hrajeme!</button>';
   setPrompt(`Tohle je číslo <b>${n}</b>`, `Tohle je číslo ${NUM_WORDS[n]}.`);
@@ -1742,6 +1806,7 @@ function nextTask() {
   if (N.step >= N.tasks.length) { finishNumber(); return; }
   N.locked = false; N.sel = 0;
   const t = pickThing(); N.thing = t; N.type = N.tasks[N.step];
+  $('#cntField').dataset.scene = SCENE_OF[t[0]] || 'meadow';
   const f = $('#cntField'); $('#cntAnswers').innerHTML = '';
   const { n } = N;
   if (N.type === 'T') {
