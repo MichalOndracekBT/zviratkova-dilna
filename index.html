@@ -1320,10 +1320,30 @@ function makeTracer(host, text, onDone) {
     const i = (y * W + x) * 4 + 3;
     if (glyph[i] > 128) onPts.push([x, y]); else if (near[i] < 60) offPts.push([x, y]);
   }
-  // guide
-  gx.fillStyle = 'rgba(179,107,255,.2)'; gx.fillText(text, W / 2, ty);
-  gx.setLineDash([F * .035, F * .03]); gx.lineWidth = Math.max(2.5, F * .014); gx.lineJoin = 'round';
-  gx.strokeStyle = 'rgba(155,90,230,.75)'; gx.strokeText(text, W / 2, ty);
+  // guide: soft glittery glyph with a single clean outline. The font's contours overlap
+  // (e.g. H), so the outline is built by dilating the filled glyph instead of strokeText.
+  const PW = g.width;
+  const off = () => { const cv = document.createElement('canvas'); cv.width = cv.height = PW; return [cv, cv.getContext('2d')]; };
+  const [A, ax] = off();
+  ax.setTransform(dpr, 0, 0, dpr, 0, 0); ax.font = font; ax.textAlign = 'center'; ax.textBaseline = 'alphabetic'; ax.fillText(text, W / 2, ty);
+  const [Fl, flx] = off();
+  flx.drawImage(A, 0, 0); flx.globalCompositeOperation = 'source-in';
+  const gr = flx.createLinearGradient(0, 0, PW, PW); gr.addColorStop(0, '#FCE4F5'); gr.addColorStop(1, '#E7DBFF');
+  flx.fillStyle = gr; flx.fillRect(0, 0, PW, PW);
+  flx.globalCompositeOperation = 'source-atop';
+  const rs = seeded(hash(text));
+  for (let i = 0; i < 70; i++) { flx.fillStyle = ['#FFFFFF', '#FFC9EA', '#D2BCFF', '#FFF0B3'][i % 4]; sparkle4(flx, rs() * PW, rs() * PW, (2 + rs() * 5) * dpr); }
+  const [Rg, rgx] = off();
+  const rad = Math.max(3, F * .022) * dpr;
+  for (const rr of [rad * .35, rad * .7, rad]) for (let i = 0; i < 28; i++) { const a = i / 28 * Math.PI * 2; rgx.drawImage(A, Math.cos(a) * rr, Math.sin(a) * rr); }
+  rgx.globalCompositeOperation = 'source-in';
+  const rg = rgx.createLinearGradient(0, 0, PW, PW); rg.addColorStop(0, '#F07CC4'); rg.addColorStop(1, '#9B6BE8');
+  rgx.fillStyle = rg; rgx.fillRect(0, 0, PW, PW);
+  rgx.globalCompositeOperation = 'destination-out'; rgx.drawImage(A, 0, 0);
+  gx.save(); gx.setTransform(1, 0, 0, 1, 0, 0);
+  gx.shadowColor = 'rgba(155,90,230,.25)'; gx.shadowBlur = 16 * dpr; gx.shadowOffsetY = 6 * dpr; gx.drawImage(Fl, 0, 0);
+  gx.shadowColor = 'transparent'; gx.drawImage(Rg, 0, 0);
+  gx.restore();
   // painting
   ix.lineCap = 'round'; ix.lineJoin = 'round'; ix.lineWidth = brush;
   let last = null, hue = Math.random() * 360, done = false, pid = null;
