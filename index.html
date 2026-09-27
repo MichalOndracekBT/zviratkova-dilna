@@ -1356,7 +1356,7 @@ function makeTracer(host, text, onDone) {
     const d = ix.getImageData(0, 0, ink.width, ink.height).data, cw = ink.width;
     const inked = ([x, y]) => d[(Math.round(y * dpr) * cw + Math.round(x * dpr)) * 4 + 3] > 20;
     const on = onPts.filter(inked).length, off = offPts.filter(inked).length;
-    if (onPts.length && on / onPts.length >= .62 && off <= on * .6) { done = true; onDone(); }
+    if (onPts.length && on / onPts.length >= .75 && off <= on * .6) { done = true; onDone(); }
   };
   ink.addEventListener('pointerup', up); ink.addEventListener('pointercancel', up);
   return { clear() { ix.clearRect(0, 0, W, W); done = false; } };
