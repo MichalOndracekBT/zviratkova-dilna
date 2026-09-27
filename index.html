@@ -5,7 +5,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Zvířátka">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#F7E9FF">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -34,7 +34,7 @@ img{max-width:100%}
   --shadow:rgba(90,50,140,.18);
   color-scheme:light;
 }
-html{box-sizing:border-box;height:calc(100% + var(--vgap,0px));overflow:hidden}
+html{box-sizing:border-box;height:100%;overflow:hidden}
 *,*::before,*::after{box-sizing:inherit}
 body{
   height:100%;margin:0;color:var(--ink);background:var(--bg) linear-gradient(165deg,#FFE3F3 0%,#F3E6FF 48%,#DDF1FF 100%);
@@ -49,11 +49,11 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .screen{position:absolute;inset:0 0 var(--tab-h) 0;display:flex;flex-direction:column}
 /* app-style bottom navigation */
 :root{--tab-h:68px}
-/* anchored to the bottom of #app (not fixed): iOS home-screen apps place fixed elements unreliably */
-.tabbar{position:absolute;left:0;right:0;bottom:calc(-1 * env(safe-area-inset-bottom,0px));z-index:50;display:grid;grid-template-columns:repeat(5,1fr);
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:50;display:grid;grid-template-columns:repeat(5,1fr);
   padding:6px max(8px,env(safe-area-inset-left,0px)) max(8px,env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-right,0px));
   background:rgba(255,255,255,.86);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
   border-radius:24px 24px 0 0;box-shadow:0 -4px 20px rgba(90,50,140,.14)}
+.tabbar::after{content:"";position:absolute;left:0;right:0;top:100%;height:160px;background:rgba(255,255,255,.86)} /* fills any gap under the bar */
 .tabbar button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;height:56px;border-radius:18px;font-size:11px;font-weight:700;color:var(--muted);min-width:0}
 .tabbar .ti{font-size:25px;line-height:1.1;transition:transform .15s}
 .tabbar .tl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
@@ -1734,17 +1734,6 @@ $('#tabbar').addEventListener('click', ev => {
   else if (go === 'count') startCount();
   else if (go === 'abc') startAbc();
 });
-(function fixStandaloneGap() {
-  const standalone = navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
-  if (!standalone) return;
-  const upd = () => {
-    const portrait = innerHeight >= innerWidth;
-    const full = portrait ? Math.max(screen.width, screen.height) : Math.min(screen.width, screen.height);
-    const gap = full - innerHeight;
-    document.documentElement.style.setProperty('--vgap', (gap > 0 && gap < 80 ? gap : 0) + 'px');
-  };
-  upd(); window.addEventListener('resize', upd); window.addEventListener('orientationchange', () => setTimeout(upd, 300));
-})();
 (function installHint() {
   const standalone = navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
   let framed = false; try { framed = window.self !== window.top; } catch (e) { framed = true; }
