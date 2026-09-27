@@ -152,7 +152,7 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
   box-shadow:inset 0 0 0 2px rgba(255,255,255,.9),inset -8px -12px 24px rgba(170,120,255,.25),0 10px 24px rgba(150,90,200,.25);animation:floaty 4s ease-in-out infinite}
 .grp.p1{animation-delay:-1.3s}.grp.p2{animation-delay:-2.6s}
 @keyframes floaty{50%{translate:-50% calc(-50% - 6px)}}
-.grp-in{display:flex;flex-wrap:wrap;justify-content:center;gap:0 2px;max-width:4.6em;font-size:22px;font-size:6.6cqmin;line-height:1.1}
+.grp-in{position:relative;z-index:1;display:flex;flex-wrap:wrap;justify-content:center;gap:0 2px;max-width:3.6em;font-size:28px;font-size:8.6cqmin;line-height:1.08;filter:drop-shadow(0 0 4px rgba(255,255,255,.9))}
 .grp.ok{box-shadow:0 0 0 6px var(--leaf),0 0 30px var(--leaf)}
 .grp.bad{animation:shake .4s;opacity:.35}
 .play-btn{height:64px;padding:0 40px;font-size:26px;border-radius:22px}
@@ -1442,7 +1442,7 @@ function makeTracer(host, text, onDone) {
   // stroke width of the font at this size (width of a capital I), the brush matches it
   const mi = gx.measureText('I');
   const stem = Math.max(8, ((mi.actualBoundingBoxLeft || 0) + (mi.actualBoundingBoxRight || mi.width * .5)) * .92);
-  const brush = stem;
+  const brush = stem * 1.15;
   // sampling masks at 1x: the glyph itself, and a dilated glyph that counts as "on the line"
   const mk = (dilate) => {
     const cv = document.createElement('canvas'); cv.width = cv.height = W;
@@ -1451,7 +1451,7 @@ function makeTracer(host, text, onDone) {
     if (dilate) { c2.lineWidth = dilate; c2.lineJoin = 'round'; c2.strokeText(text, W / 2, ty); }
     return c2.getImageData(0, 0, W, W).data;
   };
-  const glyph = mk(0), near = mk(stem * 1.1);
+  const glyph = mk(0), near = mk(stem * 1.3);
   const step = Math.max(3, Math.round(W / 90));
   const onPts = [], nearPts = [], offPts = [];
   for (let y = 0; y < W; y += step) for (let x = 0; x < W; x += step) {
