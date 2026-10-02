@@ -310,6 +310,62 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .sw[aria-pressed="true"]{transform:scale(1.12);box-shadow:0 0 0 3px var(--ink),0 3px 0 var(--shadow)}
 .ink{fill:none;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
 
+/* COLORING EXTRAS */
+.cl-modes button{min-height:64px}
+.cl-hint{grid-column:1/-1;margin:0;font-weight:700;color:var(--muted);font-size:17px}
+.ctile{position:relative}
+.ctile .badge{position:absolute;top:4px;right:6px;font-size:24px;z-index:1;filter:drop-shadow(0 2px 0 rgba(0,0,0,.15))}
+.stk{cursor:grab}
+.stk.sel .r,.stk.sel .l{stroke:var(--tomato)}
+.stk.out{opacity:.35}
+.stk-in{transform-box:fill-box;transform-origin:center}
+.stk.pop .stk-in{animation:stkPop .4s cubic-bezier(.3,1.6,.6,1)}
+@keyframes stkPop{from{transform:scale(.2)}to{transform:scale(1)}}
+.palette.stk-grid{grid-template-columns:repeat(auto-fill,minmax(58px,1fr));max-height:150px}
+.stk-btn{width:58px;height:58px;justify-self:center;border-radius:16px;background:var(--card);box-shadow:0 3px 0 var(--shadow);padding:5px}
+.stk-btn:active{transform:translateY(2px)}
+.stk-btn svg{width:100%;height:100%;display:block;overflow:visible}
+.stk-btn svg .r{stroke-width:5}
+.stk-sizes{display:flex;gap:5px;margin-left:auto}
+.stk-sizes button{width:40px;height:44px;flex:none;border-radius:14px;background:var(--card);box-shadow:0 3px 0 var(--shadow);display:flex;align-items:center;justify-content:center;font-size:18px}
+.stk-sizes button[aria-pressed="true"]{box-shadow:0 0 0 3px var(--ink),0 3px 0 var(--shadow)}
+.stk-sizes button:disabled{opacity:.35}
+.stk-sizes i{display:block;font-style:normal;line-height:1}
+.nprog{display:none;font-weight:800;font-size:17px;color:var(--muted);text-align:center}
+.num-mode .nprog{display:block}
+.num-mode #clTools{display:none}
+.palette.num-grid-pal{grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:10px}
+.sw.nsw{width:54px;height:54px;display:flex;align-items:center;justify-content:center}
+.sw.nsw b{font-size:24px;font-weight:800;color:#fff;-webkit-text-stroke:5px var(--ink);paint-order:stroke fill;line-height:1}
+.sw.nsw.done{opacity:.45}
+.sw.nsw.hint{animation:nHint .8s ease 1}
+@keyframes nHint{0%,100%{transform:none}20%,60%{transform:scale(1.25) rotate(-8deg)}40%,80%{transform:scale(1.25) rotate(8deg)}}
+.nlab{fill:var(--ink);opacity:.62;font-weight:800;text-anchor:middle;dominant-baseline:central;pointer-events:none;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round;transform-box:fill-box;transform-origin:center;transition:opacity .15s}
+.nlab.on{fill:var(--tomato);opacity:1}
+.nlab.nope{animation:nNope .45s ease 1}
+@keyframes nNope{0%,100%{transform:none}25%{transform:translateX(-4px) scale(1.3)}75%{transform:translateX(4px) scale(1.3)}}
+.win-art{position:relative}
+.win-art svg{overflow:hidden}
+.win-art svg.alive-hop{animation:clHop 1.5s cubic-bezier(.3,.7,.4,1) 1;transform-origin:50% 100%}
+@keyframes clHop{0%{transform:none}10%{transform:scale(1.08,.9)}25%{transform:translateY(-24px) scale(.95,1.06)}40%{transform:scale(1.06,.94)}50%{transform:none}62%{transform:translateY(-12px)}74%{transform:scale(1.04,.96)}82%{transform:none}90%{transform:rotate(-3deg)}100%{transform:none}}
+.win-art .blink{animation:clBlink 1.8s 1;transform-box:fill-box;transform-origin:center}
+@keyframes clBlink{0%,50%,70%,100%{transform:none}57%,63%{transform:scaleY(.1)}}
+.win-art .cl-drive.go{animation:clDrive 2.6s ease-in-out 1}
+@keyframes clDrive{0%{transform:none}4%,12%,20%{transform:translateY(-2px)}8%,16%,24%{transform:translateY(1.5px)}30%{transform:translateX(-14px)}56%{transform:translateX(470px)}56.01%{transform:translateX(-470px)}86%{transform:translateX(8px)}100%{transform:none}}
+.win-art svg.alive-float{animation:clFloat 1.8s ease-in-out 1}
+@keyframes clFloat{0%,100%{transform:none}25%{transform:translateY(-12px) rotate(-3deg)}50%{transform:translateY(4px)}75%{transform:translateY(-8px) rotate(2deg)}}
+.win-art svg.alive-fly{animation:clFly 2.2s ease-in-out 1}
+@keyframes clFly{0%,100%{transform:none}10%{transform:translate(-6px,4px)}45%{transform:translate(30px,-26px) rotate(4deg)}70%{transform:translate(-10px,-8px) rotate(-3deg)}}
+.cl-bubble{position:absolute;top:-10px;right:-6px;background:#fff;color:var(--ink);font-weight:800;font-size:20px;padding:6px 12px;border-radius:18px;box-shadow:0 3px 0 var(--shadow);animation:clBubble 2.2s ease 1 forwards;pointer-events:none;white-space:nowrap}
+.cl-bubble::after{content:"";position:absolute;left:18px;bottom:-8px;border:8px solid transparent;border-top-color:#fff;border-bottom:0}
+@keyframes clBubble{0%{transform:scale(.3);opacity:0}12%{transform:scale(1.1);opacity:1}20%{transform:scale(1)}85%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){
+  .win-art svg,.win-art .cl-drive,.win-art .blink,.nlab,.sw.nsw,.stk-in{animation:none!important}
+}
+.tools{flex-wrap:wrap;row-gap:8px}
+.tools .sizes,.tools .stk-sizes{margin-left:auto}
+@media (max-width:520px){.tool{padding:0 8px;font-size:15px}.tool .ico{font-size:18px}}
+
 /* WIN */
 .overlay{position:absolute;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(32,48,71,.35)}
 .win-card{background:var(--card);border-radius:32px;padding:22px 20px 20px;width:min(360px,100%);text-align:center;box-shadow:0 8px 0 var(--shadow);animation:pop .35s cubic-bezier(.3,1.5,.6,1)}
@@ -414,7 +470,9 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
     <div class="topbar">
       <button class="btn" data-back="home" aria-label="Zpět"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
       <h2>Omalovánky</h2>
+      <div class="stars" id="clStars" hidden>⭐ <span id="clStarN">0</span></div>
     </div>
+    <div class="seg-row"><div class="seg icons cl-modes" id="clMode"></div></div>
     <div class="scroll"><div class="cgrid" id="colorGrid"></div></div>
   </section>
 
@@ -432,8 +490,11 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
       <div class="tools" id="clTools">
         <button class="tool" data-tool="fill"><span class="ico">🪣</span>Vybarvit</button>
         <button class="tool" data-tool="brush"><span class="ico">🖌️</span>Kreslit</button>
+        <button class="tool" data-tool="sticker"><span class="ico">⭐</span>Nálepky</button>
         <div class="sizes" id="clSizes"><button data-size="6" aria-label="Tenký štětec"><i style="width:6px;height:6px"></i></button><button data-size="14" aria-label="Střední štětec"><i style="width:12px;height:12px"></i></button><button data-size="28" aria-label="Tlustý štětec"><i style="width:20px;height:20px"></i></button></div>
+        <div class="stk-sizes" id="stkSizes" hidden><button data-s="0.7" aria-label="Malá nálepka"><i style="font-size:13px">⭐</i></button><button data-s="1" aria-label="Střední nálepka"><i style="font-size:18px">⭐</i></button><button data-s="1.45" aria-label="Velká nálepka"><i style="font-size:24px">⭐</i></button><button data-del aria-label="Smazat nálepku">🗑️</button></div>
       </div>
+      <div class="nprog" id="nProg"></div>
       <div class="palette" id="palette"></div>
     </div>
   </section>
@@ -1407,66 +1468,428 @@ function confetti() {
   fxRun();
 }
 
+/* ---------- COLORING EXTRAS: stickers, scenes, numbers, coming alive ---------- */
+const CL_ARC = (R1, R2, cx = 200, cy = 330) => p(`M${cx - R1} ${cy} A${R1} ${R1} 0 0 1 ${cx + R1} ${cy} L${cx + R2} ${cy} A${R2} ${R2} 0 0 0 ${cx - R2} ${cy} Z`);
+const CL_HEART = (s = 1) => p(`M0 ${36 * s} C${-50 * s} ${6 * s} ${-36 * s} ${-38 * s} 0 ${-14 * s} C${36 * s} ${-38 * s} ${50 * s} ${6 * s} 0 ${36 * s} Z`);
+const CL_RAYS = (r1, r2, n = 8) => p(Array.from({ length: n }, (_, i) => { const a = i / n * Math.PI * 2; return `M${(Math.cos(a) * r1).toFixed(1)} ${(Math.sin(a) * r1).toFixed(1)} L${(Math.cos(a) * r2).toFixed(1)} ${(Math.sin(a) * r2).toFixed(1)}`; }).join(' '), 'l');
+const CL_STICKERS = [
+  { k: 'crown', name: 'Korunka', svg: p('M-38 22 L-42 -18 L-20 2 L0 -28 L20 2 L42 -18 L38 22 Z') + rc(-40, 14, 80, 14, 5) + c(0, -32, 6) + c(-42, -22, 5) + c(42, -22, 5) },
+  { k: 'bow', name: 'Mašle', svg: p('M0 0 L-42 -26 Q-50 0 -42 26 Z') + p('M0 0 L42 -26 Q50 0 42 26 Z') + c(0, 0, 11) },
+  { k: 'hat', name: 'Čepička', svg: p('M0 -38 L30 34 Q0 44 -30 34 Z') + p('M-12 -8 L14 -2 M-20 14 L22 22', 'l') + c(0, -40, 9) },
+  { k: 'glasses', name: 'Brýle', svg: c(-22, 0, 18) + c(22, 0, 18) + p('M-5 -3 Q0 -8 5 -3 M-40 -4 L-48 -12 M40 -4 L48 -12', 'l') },
+  { k: 'heart', name: 'Srdíčko', svg: CL_HEART(1.1) },
+  { k: 'star', name: 'Hvězdička', svg: star(0, 2, 44, 19) },
+  { k: 'balloon', name: 'Balonek', svg: p('M0 22 Q-8 34 0 42 Q6 48 0 52', 'l') + e(0, -14, 28, 34) + p('M-6 22 L6 22 L0 16 Z') },
+  { k: 'flower', name: 'Kytička', svg: [0, 1, 2, 3, 4, 5].map(i => c(+(Math.cos(i * 1.047) * 20).toFixed(1), +(Math.sin(i * 1.047) * 20).toFixed(1), 14)).join('') + c(0, 0, 12) },
+  { k: 'sun', name: 'Sluníčko', svg: CL_RAYS(32, 46) + c(0, 0, 26) },
+  { k: 'cloud', name: 'Mráček', svg: cloud(-50, -16) },
+  { k: 'rainbow', name: 'Duha', svg: CL_ARC(46, 36, 0, 20) + CL_ARC(36, 26, 0, 20) + CL_ARC(26, 16, 0, 20) },
+  { k: 'tree', name: 'Stromek', svg: rc(-8, 10, 16, 36, 4) + c(-18, 2, 19) + c(18, 2, 19) + c(0, -18, 24) },
+  { k: 'gift', name: 'Dárek', svg: p('M0 -24 Q-22 -48 -26 -30 Q-22 -24 0 -24 Z M0 -24 Q22 -48 26 -30 Q22 -24 0 -24 Z') + rc(-32, -10, 64, 48, 6) + rc(-38, -24, 76, 16, 5) + rc(-6, -24, 12, 62, 2) },
+  { k: 'cake', name: 'Dort', svg: rc(-3, -36, 6, 22, 2) + p('M0 -52 Q9 -43 0 -38 Q-9 -43 0 -52 Z') + rc(-30, -16, 60, 26, 7) + rc(-40, 6, 80, 32, 7) },
+  { k: 'shroom', name: 'Muchomůrka', svg: rc(-12, 0, 24, 36, 9) + p('M-44 6 Q-42 -40 0 -42 Q42 -40 44 6 Z') + c(-20, -16, 6) + c(8, -26, 5) + c(22, -8, 5) },
+  { k: 'wand', name: 'Kouzelná hůlka', svg: rc(-4, 4, 8, 46, 3) + star(0, -14, 28, 12) }
+];
+const CL_SCENES = [
+  { id: 'scn-meadow', name: 'Louka', e: '🌼', svg: BG + c(342, 62, 30) + cloud(36, 58) + cloud(206, 104) + p('M-10 334 Q110 226 250 330 Z') + GROUND },
+  { id: 'scn-sea', name: 'Moře', e: '🌊', svg: BG + c(342, 62, 30) + cloud(40, 60) +
+    p('M0 200 Q50 186 100 200 T200 200 T300 200 T400 200 V400 H0 Z') + p('M0 356 Q100 334 200 356 T400 350 V400 H0 Z') +
+    c(70, 300, 9) + c(88, 266, 6) + c(300, 286, 8) + p('M330 352 Q322 316 338 288 M352 352 Q362 326 354 300', 'l') },
+  { id: 'scn-night', name: 'Noční nebe', e: '🌙', svg: BG + p('M318 34 A44 44 0 1 0 366 112 A34 34 0 1 1 318 34 Z') +
+    star(70, 66, 15, 6) + star(196, 46, 11, 4.5) + star(140, 132, 9, 4) + star(250, 118, 13, 5) + star(46, 190, 9, 4) +
+    p('M0 312 Q100 262 200 304 T400 296 V400 H0 Z') },
+  { id: 'scn-castle', name: 'Zámek', e: '🏰', svg: BG + cloud(26, 46) + cloud(280, 72) + GROUND +
+    rc(130, 196, 140, 136, 0) + rc(96, 148, 52, 184, 0) + rc(252, 148, 52, 184, 0) +
+    p('M90 150 L122 90 L154 150 Z') + p('M246 150 L278 90 L310 150 Z') + p('M122 90 L122 60 M278 90 L278 60', 'l') +
+    p('M122 60 L146 68 L122 76 Z') + p('M278 60 L302 68 L278 76 Z') +
+    p('M178 332 L178 282 Q200 254 222 282 L222 332 Z') + rc(110, 180, 24, 32, 12) + rc(266, 180, 24, 32, 12) + rc(186, 214, 28, 30, 12) },
+  { id: 'scn-rainbow', name: 'Duha', e: '🌈', svg: BG + c(70, 70, 28) +
+    CL_ARC(176, 150) + CL_ARC(150, 124) + CL_ARC(124, 98) + CL_ARC(98, 72) + cloud(-2, 290) + cloud(300, 290) + GROUND }
+];
+const CL_SAY = {
+  cat: 'Mňau!', dog: 'Haf haf!', pig: 'Chro chro!', fish: 'Blub blub!', owl: 'Hú hú!', turtle: 'Ťap ťap!', butterfly: 'Třepy třepy!',
+  elephant: 'Tútúúú!', ladybug: 'Bzzz!', bear: 'Mňam, med!', bunny: 'Hop hop!', penguin: 'Ťap ťap!', snail: 'Pomaloučku!', lion: 'Vrrr!',
+  duck: 'Kvá kvá!', frog: 'Kvák kvák!', cow: 'Bůůů!', mouse: 'Píp píp!', fox: 'Ahoj!', hedgehog: 'Fuň fuň!', giraffe: 'Ahoj shora!',
+  whale: 'Pššš!', octopus: 'Blub!', chick: 'Píp píp!', bee: 'Bzzz!', crab: 'Cvak cvak!', hippo: 'Ham!', dino: 'Ráááá!',
+  sheep: 'Bééé!', panda: 'Mňam, bambus!', monkey: 'U u a a!'
+};
+const CL_MAIN = {
+  cat: '#FB8C00', dog: '#A1887F', pig: '#F48FB1', fish: '#FF7A45', owl: '#8D6E63', turtle: '#43A047', butterfly: '#B39DDB', elephant: '#BDBDBD',
+  ladybug: '#E53935', bear: '#8D6E63', bunny: '#FFCCBC', penguin: '#37474F', snail: '#FFB300', lion: '#FFB300', duck: '#FDD835', frog: '#9CCC65',
+  mouse: '#BDBDBD', fox: '#FF7A45', hedgehog: '#8D6E63', giraffe: '#FFB300', whale: '#4FC3F7', octopus: '#8E24AA', chick: '#FDD835', bee: '#FDD835',
+  crab: '#E53935', hippo: '#B39DDB', dino: '#43A047', sheep: '#ECEFF1', panda: '#ECEFF1', monkey: '#8D6E63', cow: '#FFF3A0'
+};
+const CL_CFG = {
+  stickers: CL_STICKERS, scenes: CL_SCENES,
+  sky: pg => '#B2EBF2', ground: pg => '#9CCC65', cloud: '#F8BBD0',
+  mapColor: c => c,
+  kit(pg) {
+    if (pg.e === '🦄') return { main: 'url(#g-pink)', second: 'url(#g-lilac)', accent: 'url(#g-gold)' };
+    const h = hash(pg.id), sec = ['#FFE0CC', '#F8BBD0', '#B2EBF2', '#FFF3A0', '#DCEDC8', '#E1BEE7'], acc = ['#E53935', '#1E88E5', '#8E24AA', '#EC407A', '#FFB300', '#26A69A'];
+    const main = CL_MAIN[pg.id] || acc[h % acc.length];
+    let accent = acc[(h >>> 3) % acc.length]; if (accent === main) accent = acc[((h >>> 3) + 1) % acc.length];
+    return { main, second: sec[(h >>> 7) % sec.length], accent };
+  },
+  // the picture hops, its eyes blink and a speech bubble says its sound
+  alive(svg, pg) {
+    restartAnim(svg, 'alive-hop');
+    svg.querySelectorAll('.k').forEach(el => {
+      const t = el.tagName.toLowerCase(); if (t !== 'circle' && t !== 'ellipse') return;
+      let b; try { b = el.getBBox(); } catch (e) { return; }
+      if (b.width < 22 && b.height < 22) restartAnim(el, 'blink');
+    });
+    return pg.e === '🦄' ? 'Íhahá!' : (CL_SAY[pg.id] || 'Ahoj!');
+  },
+  sound(pg, first) {
+    [660, 880, 1100].forEach((f, i) => tone(f, .12, 'sine', .08, i * .09));
+    const w = pg.e === '🦄' ? 'Íhahá!' : (CL_SAY[pg.id] || 'Ahoj!');
+    say(first ? `Krása! ${w}` : w);
+  }
+};
+
 /* ---------- COLORING ---------- */
+const CL_NS = 'http://www.w3.org/2000/svg';
 let C = null;
 let curColor = store.get('zd-color', PALETTE[0]);
+// picker modes: free coloring, colour-by-number, build a scene from stickers
+let clMode = store.get('zd-clmode', 'free'); if (!['free', 'num', 'scene'].includes(clMode)) clMode = 'free';
+const CL_MODES = [['free', '🎨', 'Vybarvi'], ['num', '🔢', 'Podle čísel'], ['scene', '✨', 'Poskládej']];
+const SCENES = CL_CFG.scenes;
+const cKey = pg => 'zd-c-' + pg.id;
+const nKey = pg => 'zd-n-' + pg.id;
+const stkKey = pg => 'zd-st-' + pg.id;
+const numDone = () => new Set(store.get('zd-ndone', []));
+const pickList = () => clMode === 'scene' ? SCENES : PAGES;
 function renderColorPicker() {
+  $('#clMode').innerHTML = CL_MODES.map(([id, ico, nm]) => `<button data-m="${id}" aria-pressed="${id === clMode}"><span class="ico">${ico}</span>${nm}</button>`).join('');
+  const nd = numDone(), list = pickList();
+  $('#clStars').hidden = clMode !== 'num';
+  $('#clStarN').textContent = `${PAGES.filter(pg => nd.has(pg.id)).length} / ${PAGES.length}`;
+  const hint = { free: '', num: '<p class="cl-hint">Vyber číslo dole a ťukej na políčka se stejným číslem.</p>', scene: '<p class="cl-hint">Vyber pozadí a polep ho nálepkami. Nálepky jdou posouvat i vybarvit.</p>' }[clMode];
   const g = $('#colorGrid');
-  g.innerHTML = PAGES.map((pg, i) => `<button class="ctile" data-i="${i}">${pageSvg(pg)}<span class="nm">${pg.name}</span></button>`).join('');
-  g.querySelectorAll('.ctile').forEach((b, i) => { const sv = b.querySelector('svg'); applyFills(sv, store.get('zd-c-' + PAGES[i].id, null)); applyInk(sv, PAGES[i]); });
+  g.innerHTML = hint + list.map((pg, i) => `<button class="ctile" data-i="${i}">${clMode === 'num' && nd.has(pg.id) ? '<span class="badge">⭐</span>' : ''}${pageSvg(pg)}<span class="nm">${pg.name}</span></button>`).join('');
+  g.querySelectorAll('.ctile').forEach((b, i) => {
+    const pg = list[i], sv = b.querySelector('svg');
+    if (clMode === 'num') applyFills(sv, store.get(nKey(pg), null));
+    else { applyFills(sv, store.get(cKey(pg), null)); applyStickers(sv, pg); applyInk(sv, pg); }
+  });
 }
-$('#colorGrid').addEventListener('click', ev => { const b = ev.target.closest('.ctile'); if (!b) return; openColor(PAGES[+b.dataset.i]); });
+$('#colorGrid').addEventListener('click', ev => { const b = ev.target.closest('.ctile'); if (!b) return; openColor(pickList()[+b.dataset.i], clMode); });
+$('#clMode').addEventListener('click', ev => {
+  const b = ev.target.closest('button[data-m]'); if (!b || b.dataset.m === clMode) return;
+  clMode = b.dataset.m; store.set('zd-clmode', clMode); sfx.pick(); renderColorPicker();
+  const sc = $('#pickColor .scroll'); if (sc) sc.scrollTop = 0;
+});
 function renderPalette() {
-  $('#palette').innerHTML = PALETTE.map(col => `<button class="sw" style="background:${swatchBg(col)}" data-col="${col}" aria-label="${swatchName(col)}" aria-pressed="${col === curColor}"></button>`).join('');
+  const pal = $('#palette'); pal.classList.remove('stk-grid', 'num-grid-pal');
+  pal.innerHTML = PALETTE.map(col => `<button class="sw" style="background:${swatchBg(col)}" data-col="${col}" aria-label="${swatchName(col)}" aria-pressed="${col === curColor}"></button>`).join('');
+}
+function renderDock() {
+  if (!C) return;
+  if (C.mode === 'num') renderNumPalette();
+  else if (tool === 'sticker') renderStickerDock();
+  else renderPalette();
 }
 $('#palette').addEventListener('click', ev => {
+  if (!C) return;
+  const nb = ev.target.closest('.nsw');
+  if (nb) { pickNum(+nb.dataset.n); return; }
+  const sb = ev.target.closest('.stk-btn');
+  if (sb) { addSticker(sb.dataset.stk); return; }
   const b = ev.target.closest('.sw'); if (!b) return;
   curColor = b.dataset.col; store.set('zd-color', curColor);
   $('#palette').querySelectorAll('.sw').forEach(s => s.setAttribute('aria-pressed', String(s === b)));
   if (curColor.startsWith('url')) { tone(1200, .08, 'sine', .08); tone(1600, .12, 'sine', .07, .05); } else tone(700, .05, 'sine', .08);
 });
 let tool = store.get('zd-tool', 'fill'), brushSize = store.get('zd-brush', 14);
+if (!['fill', 'brush', 'sticker'].includes(tool)) tool = 'fill';
+const STK_SIZES = [.7, 1, 1.45];
 function renderTools() {
   $('#clTools').querySelectorAll('.tool').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tool === tool)));
   $('#clSizes').hidden = tool !== 'brush';
   $('#clSizes').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.size === brushSize)));
+  const ss = $('#stkSizes'); ss.hidden = tool !== 'sticker';
+  const sel = C && C.sel, s = sel ? +sel.dataset.s : 0;
+  ss.querySelectorAll('button').forEach(b => {
+    b.disabled = !sel;
+    if (b.dataset.s) b.setAttribute('aria-pressed', String(!!sel && Math.abs(+b.dataset.s - s) < .01));
+  });
+  if (tool !== 'sticker') selectStk(null, true);
+  renderDock();
 }
 $('#clTools').addEventListener('click', ev => {
-  const t = ev.target.closest('.tool'), sz = ev.target.closest('#clSizes button');
+  const t = ev.target.closest('.tool'), sz = ev.target.closest('#clSizes button'), ss = ev.target.closest('#stkSizes button');
   if (t) { tool = t.dataset.tool; store.set('zd-tool', tool); }
   else if (sz) { brushSize = +sz.dataset.size; store.set('zd-brush', brushSize); }
+  else if (ss) { if (ss.dataset.del != null) deleteSel(); else scaleSel(+ss.dataset.s); return; }
   else return;
   sfx.pick(); renderTools();
 });
 // finger drawings are kept per picture as a list of strokes
 const inkKey = pg => 'zd-ink-' + pg.id;
 function inkPath(st) {
-  const el = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  const el = document.createElementNS(CL_NS, 'path');
   el.setAttribute('class', 'ink'); el.setAttribute('d', st.d); el.setAttribute('stroke-width', st.w); el.style.stroke = st.c;
   return el;
 }
 function applyInk(svgEl, pg) {
   const strokes = store.get(inkKey(pg), []); if (!strokes.length) return;
-  const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  const g = document.createElementNS(CL_NS, 'g');
   strokes.forEach(st => g.appendChild(inkPath(st)));
   svgEl.appendChild(g);
 }
-function openColor(pg) {
+
+/* stickers: outline pictures placed on top of a page; their parts can be coloured too */
+function stkEl(st) {
+  const def = CL_CFG.stickers.find(s => s.k === st.k); if (!def) return null;
+  const g = document.createElementNS(CL_NS, 'g'); g.setAttribute('class', 'stk'); g.dataset.k = st.k;
+  g.innerHTML = `<g class="stk-in">${def.svg}</g>`;
+  setStk(g, st.x, st.y, st.s || 1);
+  const rs = g.querySelectorAll('.r'); (st.f || []).forEach((f, i) => { if (f && rs[i]) rs[i].style.fill = f; });
+  return g;
+}
+function setStk(g, x, y, s) {
+  g.dataset.x = x; g.dataset.y = y; g.dataset.s = s;
+  g.setAttribute('transform', `translate(${(+x).toFixed(1)} ${(+y).toFixed(1)}) scale(${s})`);
+}
+const stkData = g => ({ k: g.dataset.k, x: Math.round(+g.dataset.x), y: Math.round(+g.dataset.y), s: +g.dataset.s, f: [...g.querySelectorAll('.r')].map(r => r.style.fill || null) });
+function saveStk() { if (C && C.mode !== 'num') store.set(stkKey(C.pg), [...C.stk.children].map(stkData)); }
+function applyStickers(svgEl, pg) {
+  const list = store.get(stkKey(pg), []); if (!list.length) return;
+  const g = document.createElementNS(CL_NS, 'g');
+  list.forEach(st => { const s = stkEl(st); if (s) g.appendChild(s); });
+  svgEl.appendChild(g);
+}
+function renderStickerDock() {
+  const pal = $('#palette'); pal.classList.add('stk-grid'); pal.classList.remove('num-grid-pal');
+  pal.innerHTML = CL_CFG.stickers.map(s => `<button class="stk-btn" data-stk="${s.k}" aria-label="${s.name}"><svg viewBox="-52 -52 104 104">${s.svg}</svg></button>`).join('');
+}
+function selectStk(g, quiet) {
+  if (!C) return;
+  if (C.sel && C.sel !== g) C.sel.classList.remove('sel');
+  C.sel = g || null;
+  if (g) g.classList.add('sel');
+  if (!quiet) renderTools();
+}
+function addSticker(k) {
+  const st = { k, x: 200 + (Math.random() - .5) * 200, y: 190 + (Math.random() - .5) * 150, s: 1 };
+  const g = stkEl(st); if (!g) return;
+  C.stk.appendChild(g); C.undo.push({ t: 'sadd', g });
+  g.classList.add('pop'); setTimeout(() => g.classList.remove('pop'), 450);
+  selectStk(g); saveStk(); sfx.snap();
+  const def = CL_CFG.stickers.find(s => s.k === k); if (def) say(def.name);
+}
+function scaleSel(s) {
+  const g = C && C.sel; if (!g || +g.dataset.s === s) return;
+  C.undo.push({ t: 'sscale', g, s: +g.dataset.s });
+  setStk(g, g.dataset.x, g.dataset.y, s); saveStk(); tone(500 + s * 300, .07, 'sine', .1); renderTools();
+}
+function deleteSel() {
+  const g = C && C.sel; if (!g) return;
+  removeStk(g, +g.dataset.x, +g.dataset.y);
+}
+function removeStk(g, x0, y0) {
+  C.undo.push({ t: 'sdel', g, idx: [...C.stk.children].indexOf(g), x: x0, y: y0 });
+  g.remove(); g.classList.remove('out'); selectStk(null); saveStk();
+  tone(300, .12, 'sine', .1); tone(180, .16, 'sine', .08, .06);
+}
+
+/* colour by number: every region gets a number, placed at its roomiest visible spot */
+const NUM_CACHE = {};
+function numPlan(pg) {
+  if (NUM_CACHE[pg.id]) return NUM_CACHE[pg.id];
+  let host = document.getElementById('clMeasure');
+  if (!host) {
+    host = document.createElementNS(CL_NS, 'svg'); host.id = 'clMeasure';
+    host.setAttribute('viewBox', '0 0 400 400'); host.setAttribute('width', '400'); host.setAttribute('height', '400');
+    host.style.cssText = 'position:fixed;left:-2000px;top:0;visibility:hidden;pointer-events:none';
+    document.body.appendChild(host);
+  }
+  host.innerHTML = pg.svg;
+  const regs = [...host.querySelectorAll('.r')];
+  const all = [...host.querySelectorAll('.r, .k, .l')];
+  let rootInv = null; try { rootInv = host.getScreenCTM().inverse(); } catch (e) {}
+  const info = all.map(el => {
+    let M = null;
+    try { M = rootInv && el.getScreenCTM() ? rootInv.multiply(el.getScreenCTM()) : null; } catch (e) {}
+    if (!M) M = host.createSVGMatrix();
+    let bb; try { bb = el.getBBox(); } catch (e) { bb = { x: 0, y: 0, width: 0, height: 0 }; }
+    const pts = [[bb.x, bb.y], [bb.x + bb.width, bb.y], [bb.x, bb.y + bb.height], [bb.x + bb.width, bb.y + bb.height]].map(([x, y]) => [M.a * x + M.c * y + M.e, M.b * x + M.d * y + M.f]);
+    const xs = pts.map(q => q[0]), ys = pts.map(q => q[1]);
+    const line = el.classList.contains('l'), pad = line ? 4 : 0;
+    return { el, line, Mi: M.inverse(), x1: Math.min(...xs) - pad, x2: Math.max(...xs) + pad, y1: Math.min(...ys) - pad, y2: Math.max(...ys) + pad, geo: typeof (line ? el.isPointInStroke : el.isPointInFill) === 'function' };
+  });
+  const sp = host.createSVGPoint();
+  const inside = (o, x, y) => {
+    if (x < o.x1 || x > o.x2 || y < o.y1 || y > o.y2) return false;
+    if (!o.geo) return !o.line;
+    sp.x = o.Mi.a * x + o.Mi.c * y + o.Mi.e; sp.y = o.Mi.b * x + o.Mi.d * y + o.Mi.f;
+    try { return o.line ? o.el.isPointInStroke(sp) : o.el.isPointInFill(sp); } catch (e) { return !o.line; }
+  };
+  const pts = regs.map(el => {
+    const oi = all.indexOf(el), o = info[oi];
+    const x1 = Math.max(0, o.x1), x2 = Math.min(400, o.x2), y1 = Math.max(0, o.y1), y2 = Math.min(400, o.y2);
+    if (x2 - x1 < 1 || y2 - y1 < 1) return { x: (x1 + x2) / 2, y: (y1 + y2) / 2, clr: 0, area: 0, box: o };
+    const step = Math.max(1.6, Math.sqrt((x2 - x1) * (y2 - y1) / 320));
+    const nx = Math.max(1, Math.round((x2 - x1) / step)), ny = Math.max(1, Math.round((y2 - y1) / step));
+    const sx = (x2 - x1) / nx, sy = (y2 - y1) / ny;
+    const later = info.slice(oi + 1).filter(q => q.x2 > x1 && q.x1 < x2 && q.y2 > y1 && q.y1 < y2);
+    const d = new Float32Array(nx * ny); let cnt = 0;
+    for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+      const x = x1 + (i + .5) * sx, y = y1 + (j + .5) * sy;
+      if (inside(o, x, y) && !later.some(q => inside(q, x, y))) { d[j * nx + i] = 1e9; cnt++; }
+    }
+    // chamfer distance to the nearest uncovered cell (outside the grid counts as uncovered)
+    const at = (i, j) => (i < 0 || j < 0 || i >= nx || j >= ny) ? 0 : d[j * nx + i];
+    for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) { const k = j * nx + i; if (d[k]) d[k] = Math.min(d[k], at(i - 1, j) + 1, at(i, j - 1) + 1, at(i - 1, j - 1) + 1.414, at(i + 1, j - 1) + 1.414); }
+    let best = -1, bi = 0, bj = 0;
+    for (let j = ny - 1; j >= 0; j--) for (let i = nx - 1; i >= 0; i--) {
+      const k = j * nx + i;
+      if (d[k]) d[k] = Math.min(d[k], at(i + 1, j) + 1, at(i, j + 1) + 1, at(i + 1, j + 1) + 1.414, at(i - 1, j + 1) + 1.414);
+      // prefer spots near the middle when equally roomy
+      const v = d[k] - Math.hypot(i - nx / 2, j - ny / 2) * .002;
+      if (d[k] && v > best) { best = v; bi = i; bj = j; }
+    }
+    const s = Math.min(sx, sy);
+    return { x: x1 + (bi + .5) * sx, y: y1 + (bj + .5) * sy, clr: best > 0 ? Math.max(0, (d[bj * nx + bi] - .5) * s - 2.5) : 0, area: cnt * sx * sy, box: o };
+  });
+  host.innerHTML = '';
+  // target colours
+  const kit = CL_CFG.kit(pg), col = new Array(regs.length), subj = [];
+  regs.forEach((el, i) => {
+    const b = pts[i].box, w = b.x2 - b.x1, h = b.y2 - b.y1, tag = el.tagName.toLowerCase(), dc = el.getAttribute('data-c');
+    if (dc) col[i] = CL_CFG.mapColor(dc);
+    else if (el.classList.contains('bg')) col[i] = CL_CFG.sky(pg);
+    else if (b.y2 >= 395 && w >= 300 && b.y1 > 180) col[i] = CL_CFG.ground(pg);
+    else if (tag === 'ellipse' && w >= 300) col[i] = '#4FC3F7';
+    else if (tag === 'circle' && b.y2 < 125 && w >= 40 && w <= 80) col[i] = '#FDD835';
+    else if (tag === 'path' && b.y2 < 140 && w > 70 && w < 130 && h < 60) col[i] = CL_CFG.cloud;
+    else subj.push(i);
+  });
+  const big = Math.max(1, ...subj.map(i => pts[i].area));
+  subj.forEach(i => { const r = pts[i].area / big; col[i] = r >= .6 ? kit.main : r >= .14 ? kit.second : kit.accent; });
+  if (CL_CFG.tweak) CL_CFG.tweak(pg, regs, col, pts);
+  // a handful of different colours at most: merge the closest plain colours
+  const rgb = h => /^#[0-9a-f]{6}$/i.test(h) ? [1, 3, 5].map(k => parseInt(h.substr(k, 2), 16)) : null;
+  for (;;) {
+    const uniq = [...new Set(col)]; if (uniq.length <= (CL_CFG.maxColors || 7)) break;
+    let bd = Infinity, pair = null;
+    for (let a = 0; a < uniq.length; a++) for (let b = a + 1; b < uniq.length; b++) {
+      const A = rgb(uniq[a]), B = rgb(uniq[b]); if (!A || !B) continue;
+      const dd = (A[0] - B[0]) ** 2 + (A[1] - B[1]) ** 2 + (A[2] - B[2]) ** 2; if (dd < bd) { bd = dd; pair = [uniq[a], uniq[b]]; }
+    }
+    if (!pair) break;
+    const cnt = v => col.filter(c => c === v).length, [keep, drop] = cnt(pair[0]) >= cnt(pair[1]) ? pair : [pair[1], pair[0]];
+    col.forEach((c, i) => { if (c === drop) col[i] = keep; });
+  }
+  const auto = pts.map(q => q.clr < 4.2 || q.area < 60);
+  const colors = [];
+  col.forEach((c, i) => { if (!auto[i] && !colors.includes(c)) colors.push(c); });
+  const num = col.map(c => colors.indexOf(c) + 1);
+  return (NUM_CACHE[pg.id] = { pts, col, auto, colors, num });
+}
+function numLabel(i) {
+  const P = C.plan, q = P.pts[i], fs = Math.max(9, Math.min(30, q.clr * 1.45));
+  const t = document.createElementNS(CL_NS, 'text');
+  t.setAttribute('class', 'nlab'); t.setAttribute('x', q.x.toFixed(1)); t.setAttribute('y', q.y.toFixed(1));
+  t.setAttribute('font-size', fs.toFixed(1)); t.dataset.i = i; t.dataset.n = P.num[i]; t.textContent = P.num[i];
+  return t;
+}
+function setupNumbers() {
+  const P = C.plan = numPlan(C.pg);
+  const saved = store.get(nKey(C.pg), null) || [];
+  C.ndone = P.col.map((c, i) => !P.auto[i] && !!saved[i]);
+  C.regions.forEach((el, i) => { if (P.auto[i] || C.ndone[i]) el.style.fill = P.col[i]; });
+  C.num.innerHTML = '';
+  P.pts.forEach((q, i) => { if (!P.auto[i] && !C.ndone[i]) C.num.appendChild(numLabel(i)); });
+  C.curN = firstOpenNum() || 1;
+  renderNumPalette();
+}
+const numLeft = n => C.plan.num.filter((m, i) => m === n && !C.plan.auto[i] && !C.ndone[i]).length;
+const totalLeft = () => C.plan.num.filter((m, i) => !C.plan.auto[i] && !C.ndone[i]).length;
+function firstOpenNum(from = 1) {
+  const K = C.plan.colors.length;
+  for (let k = 0; k < K; k++) { const n = (from - 1 + k) % K + 1; if (numLeft(n)) return n; }
+  return 0;
+}
+function renderNumPalette() {
+  const P = C.plan, pal = $('#palette'); pal.classList.add('num-grid-pal'); pal.classList.remove('stk-grid');
+  pal.innerHTML = P.colors.map((col, k) => {
+    const n = k + 1, left = numLeft(n);
+    return `<button class="sw nsw${left ? '' : ' done'}" style="background:${swatchBg(col)}" data-n="${n}" aria-label="Číslo ${n}" aria-pressed="${n === C.curN}"><b>${left ? n : '✓'}</b></button>`;
+  }).join('');
+  C.num.querySelectorAll('.nlab').forEach(t => t.classList.toggle('on', +t.dataset.n === C.curN));
+  const tl = totalLeft();
+  $('#nProg').textContent = tl ? `Zbývá políček: ${tl}` : 'Hotovo!';
+}
+function pickNum(n) {
+  C.curN = n; renderNumPalette(); say(String(n));
+  tone(600 + n * 60, .07, 'sine', .1);
+}
+function saveNum() { store.set(nKey(C.pg), C.plan.col.map((c, i) => (C.plan.auto[i] || C.ndone[i]) ? c : null)); }
+function numTap(ev) {
+  const el = ev.target.closest && ev.target.closest('.r'); if (!el) return;
+  const i = C.regions.indexOf(el); if (i < 0) return;
+  ev.preventDefault();
+  const P = C.plan;
+  if (P.auto[i] || C.ndone[i]) { sparkleAt(ev.clientX, ev.clientY, 5); return; }
+  const lab = C.num.querySelector(`.nlab[data-i="${i}"]`);
+  if (P.num[i] !== C.curN) {
+    if (lab) { lab.classList.remove('nope'); void lab.getBBox(); lab.classList.add('nope'); }
+    const sw = $(`#palette .nsw[data-n="${P.num[i]}"]`);
+    if (sw) { sw.classList.remove('hint'); void sw.offsetWidth; sw.classList.add('hint'); }
+    tone(200, .14, 'sine', .1); tone(160, .16, 'sine', .08, .08);
+    return;
+  }
+  C.ndone[i] = true; el.style.fill = P.col[i]; if (lab) lab.remove();
+  C.undo.push({ t: 'nfill', i }); saveNum(); sfx.paint(); sparkleAt(ev.clientX, ev.clientY, 12);
+  if (!numLeft(C.curN)) { const nx = firstOpenNum(C.curN + 1); if (nx) { C.curN = nx; tone(990, .12, 'triangle', .1, .08); } }
+  renderNumPalette();
+  if (!totalLeft()) {
+    const d = numDone(); d.add(C.pg.id); store.set('zd-ndone', [...d]);
+    setTimeout(() => { if (C && C.mode === 'num' && current === 'color') celebrate(); }, 450);
+  }
+}
+
+function openColor(pg, mode) {
   ac();
-  const svg = $('#clSvg'); svg.innerHTML = pg.svg + '<g id="clInk"></g>';
-  C = { pg, regions: [...svg.querySelectorAll('.r')], undo: [], ink: svg.querySelector('#clInk'), drawing: null };
-  applyFills(svg, store.get('zd-c-' + pg.id, null));
-  store.get(inkKey(pg), []).forEach(st => C.ink.appendChild(inkPath(st)));
+  mode = mode === 'num' ? 'num' : 'free';
+  const svg = $('#clSvg');
+  svg.innerHTML = pg.svg + '<g id="clStk"></g><g id="clInk"></g><g id="clNum"></g>';
+  C = { pg, mode, regions: [...svg.querySelectorAll('.r')], undo: [], ink: svg.querySelector('#clInk'), stk: svg.querySelector('#clStk'), num: svg.querySelector('#clNum'), drawing: null, drag: null, sel: null };
   $('#clTitle').textContent = pg.name;
-  renderPalette(); renderTools();
+  $('#color').classList.toggle('num-mode', mode === 'num');
+  if (mode === 'num') {
+    setupNumbers();
+  } else {
+    applyFills(svg, store.get(cKey(pg), null));
+    store.get(stkKey(pg), []).forEach(st => { const g = stkEl(st); if (g) C.stk.appendChild(g); });
+    store.get(inkKey(pg), []).forEach(st => C.ink.appendChild(inkPath(st)));
+    if (SCENES.includes(pg) && !C.stk.children.length) tool = 'sticker';
+    renderTools();
+  }
   show('color');
   const sel = $('#palette .sw[aria-pressed="true"]'); if (sel) sel.scrollIntoView({ block: 'nearest' });
 }
-function saveColor() { store.set('zd-c-' + C.pg.id, C.regions.map(el => el.style.fill || null)); }
-function saveInk() { store.set(inkKey(C.pg), [...C.ink.children].map(el => ({ d: el.getAttribute('d'), c: el.style.stroke, w: +el.getAttribute('stroke-width') }))); }
+function saveColor() { if (C.mode !== 'num') store.set(cKey(C.pg), C.regions.map(el => el.style.fill || null)); }
+function saveInk() { if (C.mode !== 'num') store.set(inkKey(C.pg), [...C.ink.children].map(el => ({ d: el.getAttribute('d'), c: el.style.stroke, w: +el.getAttribute('stroke-width') }))); }
 function clPt(ev) { const svg = $('#clSvg'), pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; return pt.matrixTransform(svg.getScreenCTM().inverse()); }
+const stkOut = (x, y) => x < -6 || x > 406 || y < -6 || y > 406;
 $('#clSvg').addEventListener('pointerdown', ev => {
   if (!C) return;
+  if (C.mode === 'num') { numTap(ev); return; }
+  const sg = ev.target.closest && ev.target.closest('.stk');
+  if (tool === 'sticker') {
+    if (!sg) { selectStk(null); return; }
+    if (C.drag) return;
+    ev.preventDefault();
+    selectStk(sg);
+    const q = clPt(ev);
+    C.drag = { g: sg, id: ev.pointerId, dx: q.x - +sg.dataset.x, dy: q.y - +sg.dataset.y, x0: +sg.dataset.x, y0: +sg.dataset.y, moved: false };
+    try { $('#clSvg').setPointerCapture(ev.pointerId); } catch (e) {}
+    sfx.pick();
+    return;
+  }
   if (tool === 'brush') {
     if (C.drawing) return;
     ev.preventDefault();
@@ -1478,6 +1901,13 @@ $('#clSvg').addEventListener('pointerdown', ev => {
   }
   const el = ev.target.closest && ev.target.closest('.r'); if (!el) return;
   ev.preventDefault();
+  if (sg) {
+    const prev = el.style.fill || '';
+    el.style.fill = curColor;
+    if (el.style.fill === prev) return;
+    C.undo.push({ t: 'sfill', el, prev }); sfx.paint(); saveStk(); sparkleAt(ev.clientX, ev.clientY, 12);
+    return;
+  }
   const i = C.regions.indexOf(el); if (i < 0) return;
   const prev = el.style.fill || '';
   el.style.fill = curColor;
@@ -1485,12 +1915,29 @@ $('#clSvg').addEventListener('pointerdown', ev => {
   C.undo.push({ t: 'fill', list: [[i, prev]] }); sfx.paint(); saveColor(); sparkleAt(ev.clientX, ev.clientY, 12);
 });
 $('#clSvg').addEventListener('pointermove', ev => {
+  const g = C && C.drag;
+  if (g && ev.pointerId === g.id) {
+    ev.preventDefault();
+    const q = clPt(ev), x = q.x - g.dx, y = q.y - g.dy;
+    if (!g.moved && Math.hypot(x - g.x0, y - g.y0) < 2) return;
+    g.moved = true; setStk(g.g, x, y, g.g.dataset.s);
+    g.g.classList.toggle('out', stkOut(x, y));
+    return;
+  }
   const d = C && C.drawing; if (!d || ev.pointerId !== d.id) return;
   ev.preventDefault();
   const q = clPt(ev); if (Math.hypot(q.x - d.x, q.y - d.y) < 1.5) return;
   d.el.setAttribute('d', d.el.getAttribute('d') + ` L${q.x.toFixed(1)} ${q.y.toFixed(1)}`); d.x = q.x; d.y = q.y;
 });
 function endInk(ev) {
+  const g = C && C.drag;
+  if (g && ev.pointerId === g.id) {
+    C.drag = null;
+    if (!g.moved) return;
+    if (stkOut(+g.g.dataset.x, +g.g.dataset.y)) { removeStk(g.g, g.x0, g.y0); return; }
+    C.undo.push({ t: 'smove', g: g.g, x: g.x0, y: g.y0 }); saveStk(); tone(520, .06, 'sine', .08);
+    return;
+  }
   const d = C && C.drawing; if (!d || ev.pointerId !== d.id) return;
   C.drawing = null; C.undo.push({ t: 'ink', el: d.el }); saveInk(); tone(500 + Math.random() * 200, .05, 'sine', .06);
 }
@@ -1501,29 +1948,70 @@ $('#undoBtn').addEventListener('click', () => {
   const u = C.undo.pop();
   if (u.t === 'fill' || u.t === 'clear') u.list.forEach(([i, prev]) => { C.regions[i].style.fill = prev; });
   if (u.t === 'ink') u.el.remove();
-  if (u.t === 'clear') u.inks.forEach(el => C.ink.appendChild(el));
-  saveColor(); saveInk(); tone(300, .08, 'sine', .1);
+  if (u.t === 'clear') { u.inks.forEach(el => C.ink.appendChild(el)); (u.stks || []).forEach(g => C.stk.appendChild(g)); }
+  if (u.t === 'sfill') u.el.style.fill = u.prev;
+  if (u.t === 'sadd') { u.g.remove(); if (C.sel === u.g) selectStk(null); }
+  if (u.t === 'smove') setStk(u.g, u.x, u.y, u.g.dataset.s);
+  if (u.t === 'sscale') { setStk(u.g, u.g.dataset.x, u.g.dataset.y, u.s); renderTools(); }
+  if (u.t === 'sdel') { C.stk.insertBefore(u.g, C.stk.children[u.idx] || null); setStk(u.g, u.x, u.y, u.g.dataset.s); }
+  if (u.t === 'nfill' || u.t === 'nclear') {
+    (u.t === 'nfill' ? [u.i] : u.list).forEach(i => { C.ndone[i] = !!(u.t === 'nclear'); });
+    C.regions.forEach((el, i) => { el.style.fill = (C.plan.auto[i] || C.ndone[i]) ? C.plan.col[i] : ''; });
+    C.num.innerHTML = ''; C.plan.pts.forEach((q, i) => { if (!C.plan.auto[i] && !C.ndone[i]) C.num.appendChild(numLabel(i)); });
+    if (u.t === 'nfill') C.curN = C.plan.num[u.i];
+    saveNum(); renderNumPalette();
+  } else { saveColor(); saveInk(); saveStk(); }
+  tone(300, .08, 'sine', .1);
 });
 $('#clearBtn').addEventListener('click', () => {
   if (!C) return;
-  const list = C.regions.map((el, i) => [i, el.style.fill || '']).filter(([, f]) => f), inks = [...C.ink.children];
-  if (!list.length && !inks.length) return;
-  C.undo.push({ t: 'clear', list, inks });
-  C.regions.forEach(el => { el.style.fill = ''; }); inks.forEach(el => el.remove());
-  saveColor(); saveInk(); tone(220, .15, 'sine', .1);
+  if (C.mode === 'num') {
+    const list = C.ndone.map((v, i) => v ? i : -1).filter(i => i >= 0); if (!list.length) return;
+    C.undo.push({ t: 'nclear', list });
+    list.forEach(i => { C.ndone[i] = false; C.regions[i].style.fill = ''; C.num.appendChild(numLabel(i)); });
+    C.curN = firstOpenNum() || 1; saveNum(); renderNumPalette(); tone(220, .15, 'sine', .1);
+    return;
+  }
+  const list = C.regions.map((el, i) => [i, el.style.fill || '']).filter(([, f]) => f), inks = [...C.ink.children], stks = [...C.stk.children];
+  if (!list.length && !inks.length && !stks.length) return;
+  C.undo.push({ t: 'clear', list, inks, stks });
+  C.regions.forEach(el => { el.style.fill = ''; }); inks.forEach(el => el.remove()); stks.forEach(g => g.remove());
+  selectStk(null);
+  saveColor(); saveInk(); saveStk(); tone(220, .15, 'sine', .1);
 });
 $('#doneBtn').addEventListener('click', () => {
   if (!C) return;
-  sfx.win(); confetti(); say('Krása! ' + C.pg.name);
-  const pg = C.pg, i = PAGES.indexOf(pg), next = PAGES[(i + 1) % PAGES.length];
-  showWin(pageSvg(pg), 'Krása!', `${pg.name} je hotová. Obrázek si pamatuju.`, [
-    { label: `Další: ${next.name}`, cls: 'primary', fn: () => openColor(next) },
-    { label: 'Ještě vybarvovat', cls: '', fn: () => { $('#win').hidden = true; } },
-    { label: 'Všechny obrázky', cls: '', fn: () => { renderColorPicker(); show('pickColor'); } }
-  ], () => say(pg.name));
-  const w = $('#winArt svg');
-  applyFills(w, C.regions.map(el => el.style.fill || null)); applyInk(w, pg);
+  if (C.mode === 'num' && totalLeft()) {
+    const n = firstOpenNum(C.curN) || C.curN; C.curN = n; renderNumPalette();
+    C.num.querySelectorAll(`.nlab[data-n="${n}"]`).forEach(t => { t.classList.remove('nope'); void t.getBBox(); t.classList.add('nope'); });
+    say(`Ještě chybí ${totalLeft() === 1 ? 'jedno políčko' : 'pár políček'}. Číslo ${n}.`);
+    return;
+  }
+  celebrate();
 });
+// win screen: the finished picture comes alive (hops, blinks, drives…) and makes its sound
+function celebrate() {
+  const pg = C.pg, num = C.mode === 'num';
+  sfx.win(); confetti();
+  const list = SCENES.includes(pg) ? SCENES : PAGES, next = list[(list.indexOf(pg) + 1) % list.length];
+  showWin(pageSvg(pg), 'Krása!', 'Ťukni na obrázek, ožije!', [
+    { label: `Další: ${next.name}`, cls: 'primary', fn: () => openColor(next, num ? 'num' : 'free') },
+    { label: num ? 'Prohlédnout' : 'Ještě vybarvovat', cls: '', fn: () => { $('#win').hidden = true; } },
+    { label: 'Všechny obrázky', cls: '', fn: () => { renderColorPicker(); show('pickColor'); } }
+  ], () => bringAlive(pg));
+  const w = $('#winArt svg');
+  applyFills(w, C.regions.map(el => el.style.fill || null));
+  if (!num) { applyStickers(w, pg); applyInk(w, pg); }
+  setTimeout(() => bringAlive(pg, true), 350);
+}
+function bringAlive(pg, first) {
+  const art = $('#winArt'), w = art && art.querySelector('svg'); if (!w) return;
+  const word = CL_CFG.alive(w, pg);
+  art.querySelectorAll('.cl-bubble').forEach(b => b.remove());
+  if (word) { const b = document.createElement('span'); b.className = 'cl-bubble'; b.textContent = word; art.appendChild(b); }
+  CL_CFG.sound(pg, first);
+}
+function restartAnim(el, cls) { el.classList.remove(cls); void (el.getBBox ? el.getBBox() : el.offsetWidth); el.classList.add(cls); }
 
 /* ---------- SHARED ---------- */
 const rand = n => Math.floor(Math.random() * n);
