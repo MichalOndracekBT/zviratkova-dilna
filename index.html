@@ -1799,11 +1799,16 @@ function setupNumbers() {
   const P = C.plan = numPlan(C.pg);
   const saved = store.get(nKey(C.pg), null) || [];
   C.ndone = P.col.map((c, i) => !P.auto[i] && !!saved[i]);
-  C.regions.forEach((el, i) => { if (P.auto[i] || C.ndone[i]) el.style.fill = P.col[i]; });
+  C.regions.forEach((el, i) => { if (C.ndone[i]) el.style.fill = P.col[i]; });
   C.num.innerHTML = '';
   P.pts.forEach((q, i) => { if (!P.auto[i] && !C.ndone[i]) C.num.appendChild(numLabel(i)); });
   C.curN = firstOpenNum() || 1;
-  renderNumPalette();
+  syncAuto(); renderNumPalette();
+}
+// tiny parts without a number colour themselves once their colour's number is finished (or the whole picture is)
+function syncAuto() {
+  const P = C.plan, all = !totalLeft();
+  P.auto.forEach((a, i) => { if (!a) return; const n = P.colors.indexOf(P.col[i]) + 1; C.regions[i].style.fill = (all || (n && !numLeft(n))) ? P.col[i] : ''; });
 }
 const numLeft = n => C.plan.num.filter((m, i) => m === n && !C.plan.auto[i] && !C.ndone[i]).length;
 const totalLeft = () => C.plan.num.filter((m, i) => !C.plan.auto[i] && !C.ndone[i]).length;
@@ -1826,7 +1831,7 @@ function pickNum(n) {
   C.curN = n; renderNumPalette(); say(String(n));
   tone(600 + n * 60, .07, 'sine', .1);
 }
-function saveNum() { store.set(nKey(C.pg), C.plan.col.map((c, i) => (C.plan.auto[i] || C.ndone[i]) ? c : null)); }
+function saveNum() { store.set(nKey(C.pg), C.plan.col.map((c, i) => (C.ndone[i] || (C.plan.auto[i] && C.regions[i].style.fill)) ? c : null)); }
 function numTap(ev) {
   const el = ev.target.closest && ev.target.closest('.r'); if (!el) return;
   const i = C.regions.indexOf(el); if (i < 0) return;
@@ -1842,7 +1847,7 @@ function numTap(ev) {
     return;
   }
   C.ndone[i] = true; el.style.fill = P.col[i]; if (lab) lab.remove();
-  C.undo.push({ t: 'nfill', i }); saveNum(); sfx.paint(); sparkleAt(ev.clientX, ev.clientY, 12);
+  syncAuto(); C.undo.push({ t: 'nfill', i }); saveNum(); sfx.paint(); sparkleAt(ev.clientX, ev.clientY, 12);
   if (!numLeft(C.curN)) { const nx = firstOpenNum(C.curN + 1); if (nx) { C.curN = nx; tone(990, .12, 'triangle', .1, .08); } }
   renderNumPalette();
   if (!totalLeft()) {
@@ -1956,7 +1961,7 @@ $('#undoBtn').addEventListener('click', () => {
   if (u.t === 'sdel') { C.stk.insertBefore(u.g, C.stk.children[u.idx] || null); setStk(u.g, u.x, u.y, u.g.dataset.s); }
   if (u.t === 'nfill' || u.t === 'nclear') {
     (u.t === 'nfill' ? [u.i] : u.list).forEach(i => { C.ndone[i] = !!(u.t === 'nclear'); });
-    C.regions.forEach((el, i) => { el.style.fill = (C.plan.auto[i] || C.ndone[i]) ? C.plan.col[i] : ''; });
+    C.regions.forEach((el, i) => { el.style.fill = C.ndone[i] ? C.plan.col[i] : ''; }); syncAuto();
     C.num.innerHTML = ''; C.plan.pts.forEach((q, i) => { if (!C.plan.auto[i] && !C.ndone[i]) C.num.appendChild(numLabel(i)); });
     if (u.t === 'nfill') C.curN = C.plan.num[u.i];
     saveNum(); renderNumPalette();
@@ -1969,7 +1974,7 @@ $('#clearBtn').addEventListener('click', () => {
     const list = C.ndone.map((v, i) => v ? i : -1).filter(i => i >= 0); if (!list.length) return;
     C.undo.push({ t: 'nclear', list });
     list.forEach(i => { C.ndone[i] = false; C.regions[i].style.fill = ''; C.num.appendChild(numLabel(i)); });
-    C.curN = firstOpenNum() || 1; saveNum(); renderNumPalette(); tone(220, .15, 'sine', .1);
+    syncAuto(); C.curN = firstOpenNum() || 1; saveNum(); renderNumPalette(); tone(220, .15, 'sine', .1);
     return;
   }
   const list = C.regions.map((el, i) => [i, el.style.fill || '']).filter(([, f]) => f), inks = [...C.ink.children], stks = [...C.stk.children];
