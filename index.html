@@ -1089,6 +1089,118 @@ const PAGES = [
     p('M180 195 Q200 210 220 195', 'l') +
     p('M250 255 Q290 250 300 215 Q308 218 305 230 Q300 270 252 268 Z') }
 ];
+/* ---------- MORE COLORING PAGES ---------- */
+// class hack like D(): the colour this region gets in colour-by-number mode
+const NC = col => `r" data-nc="${col}`;
+const hooves = col => [150, 180, 245, 275].map((x, i) => rc(x, i % 3 ? 282 : 280, 20, i % 3 ? 48 : 50, 6, NC(col)) + rc(x, 322, 20, 13, 4, NC('#5D4037'))).join('');
+function horseHead(mane, maneCol, col) {
+  return p('M150 248 L124 160 L176 150 L202 226 Z', NC(col)) +
+    p('M160 118 Q192 128 186 160 Q202 176 191 200 Q206 216 196 238 Q175 216 170 192 Q160 172 165 150 Q150 134 160 118 Z', NC(maneCol)) +
+    p('M142 124 L150 96 L162 126 Z', NC(col)) + e(128, 152, 44, 30, NC(col), -20) +
+    p('M140 126 Q118 128 112 146 Q128 136 146 138 Z', NC(maneCol)) +
+    c(93, 166, 3, 'k') + c(130, 146, 5, 'k') + p('M96 176 Q106 182 116 176', 'l') + (mane || '');
+}
+const EXTRA_PAGES = [
+  { id:'horse', name:'Koník', e:'🐎', svg: meadow() + hooves('#A1887F') +
+    p('M298 228 C350 220 362 280 338 314 C330 286 318 266 300 254 Z', NC('#5D4037')) + e(225, 245, 85, 48, NC('#A1887F')) +
+    p('M196 204 Q228 192 258 204 L262 236 Q228 246 192 236 Z', NC('#E53935')) + p('M226 240 L226 270 M218 270 L234 270', 'l') +
+    horseHead('', '#5D4037', '#A1887F') },
+  { id:'zebra', name:'Zebra', e:'🦓', svg: meadow() + hooves('#FFFFFF') +
+    p('M298 228 C330 226 336 262 326 290 L316 292 C316 270 312 258 300 252 Z', NC('#FFFFFF')) + p('M318 290 L330 310 L310 306 Z', NC('#263238')) +
+    e(225, 245, 85, 48, NC('#FFFFFF')) +
+    [[170, 212, 296], [200, 202, 300], [232, 199, 296], [264, 204, 290], [292, 216, 278]].map(([x, y1, y2]) =>
+      p(`M${x - 4} ${y1} Q${x + 8} 246 ${x - 2} ${y2} L${x + 10} ${y2 - 2} Q${x + 20} 246 ${x + 8} ${y1 - 1} Z`, NC('#263238'))).join('') +
+    horseHead(p('M146 180 L170 176 M150 200 L176 194 M156 220 L182 214', 'l'), '#263238', '#FFFFFF') },
+  { id:'hen', name:'Slepička', e:'🐔', svg: meadow() +
+    p('M186 300 L182 334 M214 300 L218 334 M170 334 L194 334 M206 334 L230 334', 'l') +
+    e(282, 200, 16, 40, 'r', 30) + e(300, 226, 14, 36, 'r', 55) +
+    e(210, 255, 80, 58, NC('#FFFFFF')) + p('M190 244 Q232 226 262 252 Q242 288 202 272 Q186 260 190 244 Z', NC('#FFCCBC')) +
+    c(142, 188, 36, NC('#FFFFFF')) + p('M122 158 Q124 136 136 148 Q142 128 152 146 Q166 134 164 160 Z', NC('#E53935')) +
+    p('M108 186 L86 194 L108 202 Z', NC('#FFB300')) + p('M114 206 Q106 224 118 228 Q126 218 122 206 Z', NC('#E53935')) + c(132, 182, 5, 'k') +
+    e(318, 318, 15, 19, NC('#FFF3A0')) + e(346, 324, 13, 16, NC('#FFF3A0')) },
+  { id:'dolphin', name:'Delfín', e:'🐬', svg: BG + c(60, 62, 28) + cloud(250, 50) +
+    p('M0 254 Q50 240 100 254 T200 254 T300 254 T400 254 V400 H0 Z', NC('#1E88E5')) +
+    p('M100 258 L68 250 Q78 270 94 272 L90 300 Q112 286 118 266 Z') +
+    p('M210 128 Q214 92 244 98 Q232 108 236 122 Z') +
+    p('M100 258 Q130 150 230 122 Q290 110 318 140 L346 146 Q340 160 316 162 Q290 180 240 178 Q170 190 128 262 Z') +
+    p('M316 162 Q262 166 214 184 Q166 204 136 250 Q170 178 240 172 Z', NC('#ECEFF1')) +
+    p('M240 176 Q238 210 214 222 Q222 196 222 180 Z') + c(296, 140, 5, 'k') + p('M320 152 Q328 156 336 152', 'l') +
+    c(352, 100, 26, NC('#FDD835')) + p('M352 74 L352 126 M328 92 Q352 104 376 92', 'l') +
+    c(70, 232, 7) + c(122, 236, 5) + c(88, 214, 4) },
+  { id:'parrot', name:'Papoušek', e:'🦜', svg: BG + c(342, 62, 30) + cloud(30, 50) +
+    p('M190 290 L170 380 L198 372 L214 386 L226 290 Z', NC('#1E88E5')) +
+    p('M20 300 Q200 282 390 290 L390 306 Q200 300 20 316 Z', NC('#8D6E63')) + e(80, 286, 24, 10, NC('#43A047'), -20) + e(330, 280, 24, 10, NC('#43A047'), 20) +
+    e(205, 226, 52, 80) + p('M214 176 Q278 202 256 302 Q226 282 210 232 Z', NC('#FDD835')) +
+    c(190, 136, 46) + e(176, 132, 20, 24, NC('#FFFFFF')) + c(174, 128, 6, 'k') +
+    p('M150 128 Q126 140 140 172 Q150 160 162 150 Z', NC('#FFB300')) +
+    c(188, 300, 9, NC('#FFB300')) + c(214, 300, 9, NC('#FFB300')) },
+  { id:'koala', name:'Koala', e:'🐨', svg: BG + cloud(24, 40) + cloud(290, 60) +
+    rc(208, 0, 64, 400, 0, NC('#8D6E63')) +
+    p('M240 70 Q160 50 80 80', 'l') + e(100, 70, 24, 11, NC('#43A047'), -15) + e(146, 54, 22, 10, NC('#43A047'), 10) + e(118, 92, 20, 9, NC('#43A047'), 25) +
+    e(240, 250, 62, 76, NC('#BDBDBD')) + e(240, 268, 34, 44, NC('#ECEFF1')) +
+    e(196, 236, 18, 40, NC('#BDBDBD'), 20) + e(284, 236, 18, 40, NC('#BDBDBD'), -20) + e(206, 318, 24, 16, NC('#BDBDBD')) + e(274, 318, 24, 16, NC('#BDBDBD')) +
+    c(184, 116, 32, NC('#BDBDBD')) + c(296, 116, 32, NC('#BDBDBD')) + c(184, 118, 17, NC('#F8BBD0')) + c(296, 118, 17, NC('#F8BBD0')) +
+    c(240, 148, 60, NC('#BDBDBD')) + e(240, 158, 15, 21, NC('#37474F')) + c(214, 140, 6, 'k') + c(266, 140, 6, 'k') + p('M226 186 Q240 194 254 186', 'l') },
+  { id:'squirrel', name:'Veverka', e:'🐿️', svg: meadow() +
+    p('M256 322 Q336 304 334 220 Q334 146 280 128 Q236 118 226 160 Q268 160 280 202 Q292 262 236 302 Z', NC('#FF7A45')) +
+    e(200, 272, 50, 58, NC('#FF7A45')) + e(188, 282, 28, 38, NC('#FFE0CC')) + c(170, 192, 40, NC('#FF7A45')) +
+    p('M148 164 L144 128 L172 154 Z', NC('#FF7A45')) + p('M180 154 L196 120 L206 162 Z', NC('#FF7A45')) + c(158, 186, 6, 'k') + c(132, 200, 4, 'k') + p('M136 212 Q146 218 154 212', 'l') +
+    e(160, 258, 16, 18, NC('#A1887F')) + p('M142 252 Q160 230 178 252 Z', NC('#5D4037')) +
+    e(180, 330, 20, 8, NC('#FF7A45')) + e(226, 330, 20, 8, NC('#FF7A45')) },
+  { id:'bat', name:'Netopýr', e:'🦇', svg: BG + c(200, 150, 96, NC('#FFF3A0')) + star(50, 60, 12, 5) + star(350, 70, 10, 4) + star(330, 250, 9, 4) + star(70, 260, 8, 3.5) +
+    p('M0 334 Q100 300 200 326 T400 320 V400 H0 Z', NC('#1B7F4B')) +
+    p('M200 200 Q150 150 66 162 Q88 182 78 204 Q110 198 120 224 Q140 208 162 234 Q182 218 200 234 Z') +
+    p('M200 200 Q250 150 334 162 Q312 182 322 204 Q290 198 280 224 Q260 208 238 234 Q218 218 200 234 Z') +
+    e(200, 218, 26, 34) + p('M182 168 L176 140 L196 160 Z') + p('M218 168 L224 140 L204 160 Z') + c(200, 182, 25) +
+    c(191, 178, 4, 'k') + c(209, 178, 4, 'k') + p('M194 192 L197 199 L200 192 M200 192 L203 199 L206 192', 'l') },
+  { id:'pumpkin', name:'Dýně', e:'🎃', svg: BG + c(70, 66, 30, NC('#FFF3A0')) + cloud(250, 50) + GROUND +
+    rc(188, 132, 24, 36, 6, NC('#5D4037')) + p('M210 150 Q248 118 272 144 Q242 162 210 150 Z', NC('#43A047')) + p('M190 146 Q164 134 172 112', 'l') +
+    e(200, 252, 124, 94) + e(200, 252, 76, 94) + e(200, 252, 28, 94) +
+    p('M138 232 L176 232 L157 200 Z', NC('#FFE066')) + p('M224 232 L262 232 L243 200 Z', NC('#FFE066')) + p('M188 258 L212 258 L200 240 Z', NC('#FFE066')) +
+    p('M130 272 Q200 326 270 272 L252 278 L240 266 L226 286 L210 272 L190 272 L174 286 L160 266 L148 278 Z', NC('#FFE066')) +
+    e(330, 330, 16, 8, NC('#FF7A45'), 20) + e(76, 336, 18, 8, NC('#FFB300'), -15) },
+  { id:'snowman', name:'Sněhulák', e:'⛄', svg: BG + [[50, 60], [120, 120], [330, 120], [300, 40], [60, 230], [350, 240]].map(([x, y]) => star(x, y, 10, 3.5, 6, NC('#4FC3F7'))).join('') +
+    p('M0 318 Q200 290 400 318 V400 H0 Z', NC('#FFFFFF')) +
+    p('M140 190 L80 150 M96 160 L84 140 M260 190 L322 150 M306 160 L320 140', 'l') +
+    c(200, 278, 72, NC('#FFFFFF')) + c(200, 178, 52, NC('#FFFFFF')) + c(200, 104, 38, NC('#FFFFFF')) +
+    p('M158 140 Q200 156 242 140 L246 156 Q200 172 154 156 Z', NC('#E53935')) + rc(214, 152, 18, 44, 5, NC('#E53935')) +
+    rc(168, 44, 64, 42, 5, NC('#37474F')) + rc(152, 80, 96, 12, 5, NC('#37474F')) + rc(168, 70, 64, 10, 0, NC('#E53935')) +
+    p('M200 106 L240 114 L200 120 Z', NC('#FB8C00')) + c(186, 96, 4, 'k') + c(214, 96, 4, 'k') +
+    c(200, 196, 6, 'k') + c(200, 220, 6, 'k') + c(200, 262, 7, 'k') + c(200, 292, 7, 'k') },
+  { id:'dragon', name:'Dráček', e:'🐉', svg: meadow() +
+    p('M250 300 Q330 322 352 270 L374 262 L358 292 Q342 340 250 324 Z', NC('#43A047')) +
+    p('M220 222 Q240 140 300 150 Q286 170 300 180 Q280 190 290 206 Q262 206 240 230 Z', NC('#B39DDB')) +
+    e(212, 272, 70, 55, NC('#43A047')) + e(200, 284, 40, 40, NC('#FFF3A0')) +
+    [[236, 220], [258, 230], [276, 246]].map(([x, y]) => p(`M${x - 8} ${y + 4} L${x} ${y - 14} L${x + 10} ${y + 6} Z`, NC('#FB8C00'))).join('') +
+    c(150, 192, 48, NC('#43A047')) + e(114, 208, 30, 22, NC('#43A047')) + c(102, 202, 3, 'k') + c(116, 200, 3, 'k') + p('M100 222 Q114 230 128 222', 'l') +
+    c(160, 182, 10, NC('#FFFFFF')) + c(162, 184, 5, 'k') +
+    p('M148 148 L138 116 L164 144 Z', NC('#FB8C00')) + p('M174 152 L186 120 L190 158 Z', NC('#FB8C00')) +
+    e(176, 324, 22, 10, NC('#43A047')) + e(242, 324, 22, 10, NC('#43A047')) +
+    p('M72 204 Q52 192 40 208 Q28 198 16 212 Q32 228 50 218 Q60 232 74 214 Z', NC('#FF7A45')) },
+  { id:'croc', name:'Krokodýl', e:'🐊', svg: pond() +
+    p('M330 286 Q378 270 392 236 Q386 292 330 308 Z', NC('#43A047')) +
+    [170, 200, 230, 260, 290].map(x => c(x, 266, 9, NC('#1B7F4B'))).join('') +
+    e(230, 290, 112, 30, NC('#43A047')) + e(170, 318, 18, 10, NC('#43A047')) + e(282, 318, 18, 10, NC('#43A047')) +
+    p('M132 280 Q62 268 38 290 Q62 314 132 308 Z', NC('#43A047')) + p('M52 296 L58 289 L64 296 L70 289 L76 296 L82 289 L88 296', 'l') +
+    c(140, 264, 14, NC('#43A047')) + c(142, 263, 6, 'k') + c(48, 284, 3, 'k') +
+    e(300, 356, 26, 9, NC('#43A047')) + c(300, 350, 7, NC('#F48FB1')) },
+  { id:'uni-rainbow', name:'Jednorožec a duha', e:'🦄', maxColors: 11, svg: BG + star(50, 50, 12, 5) + star(350, 60, 10, 4) +
+    ['#E53935', '#FB8C00', '#FDD835', '#43A047', '#1E88E5', '#8E24AA'].map((col, i) => { const R1 = 190 - i * 18, R2 = R1 - 18;
+      return p(`M${200 - R1} 380 A${R1} ${R1} 0 0 1 ${200 + R1} 380 L${200 + R2} 380 A${R2} ${R2} 0 0 0 ${200 - R2} 380 Z`, NC(col)); }).join('') +
+    `<g transform="translate(80 132) scale(.6)">${baby(false).slice(BG.length)}</g>` +
+    p('M0 400 L0 346 Q20 318 60 334 Q86 304 124 326 Q160 312 176 344 Q200 330 214 350 L214 400 Z', NC('#FFFFFF')) +
+    p('M186 400 L186 350 Q210 324 244 340 Q270 310 306 328 Q344 310 372 336 Q392 332 400 340 L400 400 Z', NC('#FFFFFF')) },
+  { id:'uni-cake', name:'Jednorožčí dort', e:'🦄', svg: BG + star(50, 60, 12, 5) + star(350, 70, 10, 4) + heart(60, 150, 14) + heart(340, 160, 14) +
+    p('M0 340 H400 V400 H0 Z', NC('#FFCCBC')) + e(200, 334, 156, 18, NC('#ECEFF1')) +
+    rc(86, 236, 228, 98, 16) + rc(118, 162, 164, 80, 16) +
+    p('M118 196 Q132 212 146 196 Q160 214 174 196 Q188 214 202 196 Q216 214 230 196 Q244 214 258 196 Q270 210 282 196 L282 178 Q282 162 266 162 L134 162 Q118 162 118 178 Z', NC('url(#g-pink)')) +
+    p('M136 168 L148 126 L172 164 Z', NC('url(#g-lilac)')) + p('M264 168 L252 126 L228 164 Z', NC('url(#g-lilac)')) +
+    p('M184 164 L200 74 L216 164 Z', NC('url(#g-gold)')) + p('M189 144 L211 138 M192 122 L208 118 M195 100 L205 98', 'l') +
+    p('M150 214 Q164 224 178 214 M222 214 Q236 224 250 214', 'l') + c(150, 228, 8, NC('#F48FB1')) + c(250, 228, 8, NC('#F48FB1')) +
+    [116, 158, 200, 242, 284].map(x => c(x, 290, 13, NC('#B39DDB'))).join('') +
+    p('M86 262 Q116 276 146 262 Q176 278 206 262 Q236 278 266 262 Q290 274 314 262', 'l') }
+];
+PAGES.push(...EXTRA_PAGES);
 PAGES.sort((a, b) => (b.e === '🦄') - (a.e === '🦄'));
 const GLITTERS = [
   ['g-rainbow', 'Duhová'], ['g-pink', 'Růžové třpytky', '#FF9ED2', '#E0509E'], ['g-lilac', 'Fialové třpytky', '#C9A8FF', '#8E5BE0'],
@@ -1491,7 +1603,7 @@ const CL_STICKERS = [
   { k: 'wand', name: 'Kouzelná hůlka', svg: rc(-4, 4, 8, 46, 3) + star(0, -14, 28, 12) }
 ];
 const CL_SCENES = [
-  { id: 'scn-meadow', name: 'Louka', e: '🌼', svg: BG + c(342, 62, 30) + cloud(36, 58) + cloud(206, 104) + p('M-10 334 Q110 226 250 330 Z') + GROUND },
+  { id: 'scn-meadow', name: 'Louka', e: '🌼', svg: BG + c(342, 62, 30) + cloud(36, 58) + cloud(206, 104) + p('M0 330 Q110 226 250 330 Z') + GROUND },
   { id: 'scn-sea', name: 'Moře', e: '🌊', svg: BG + c(342, 62, 30) + cloud(40, 60) +
     p('M0 200 Q50 186 100 200 T200 200 T300 200 T400 200 V400 H0 Z') + p('M0 356 Q100 334 200 356 T400 350 V400 H0 Z') +
     c(70, 300, 9) + c(88, 266, 6) + c(300, 286, 8) + p('M330 352 Q322 316 338 288 M352 352 Q362 326 354 300', 'l') },
@@ -1504,24 +1616,28 @@ const CL_SCENES = [
     p('M122 60 L146 68 L122 76 Z') + p('M278 60 L302 68 L278 76 Z') +
     p('M178 332 L178 282 Q200 254 222 282 L222 332 Z') + rc(110, 180, 24, 32, 12) + rc(266, 180, 24, 32, 12) + rc(186, 214, 28, 30, 12) },
   { id: 'scn-rainbow', name: 'Duha', e: '🌈', svg: BG + c(70, 70, 28) +
-    CL_ARC(176, 150) + CL_ARC(150, 124) + CL_ARC(124, 98) + CL_ARC(98, 72) + cloud(-2, 290) + cloud(300, 290) + GROUND }
+    CL_ARC(176, 150) + CL_ARC(150, 124) + CL_ARC(124, 98) + CL_ARC(98, 72) + cloud(2, 290) + cloud(300, 290) + GROUND }
 ];
 const CL_SAY = {
   cat: 'Mňau!', dog: 'Haf haf!', pig: 'Chro chro!', fish: 'Blub blub!', owl: 'Hú hú!', turtle: 'Ťap ťap!', butterfly: 'Třepy třepy!',
   elephant: 'Tútúúú!', ladybug: 'Bzzz!', bear: 'Mňam, med!', bunny: 'Hop hop!', penguin: 'Ťap ťap!', snail: 'Pomaloučku!', lion: 'Vrrr!',
   duck: 'Kvá kvá!', frog: 'Kvák kvák!', cow: 'Bůůů!', mouse: 'Píp píp!', fox: 'Ahoj!', hedgehog: 'Fuň fuň!', giraffe: 'Ahoj shora!',
   whale: 'Pššš!', octopus: 'Blub!', chick: 'Píp píp!', bee: 'Bzzz!', crab: 'Cvak cvak!', hippo: 'Ham!', dino: 'Ráááá!',
-  sheep: 'Bééé!', panda: 'Mňam, bambus!', monkey: 'U u a a!'
+  sheep: 'Bééé!', panda: 'Mňam, bambus!', monkey: 'U u a a!',
+  horse: 'Íhahá!', zebra: 'Mám proužky!', hen: 'Kokodák!', dolphin: 'Ííí ííí!', parrot: 'Ahoj, ahoj!', koala: 'Mňam, lístky!',
+  squirrel: 'Mám oříšek!', bat: 'Píí píí!', pumpkin: 'Bú!', snowman: 'Brrr, zima!', dragon: 'Fíí, ohníček!', croc: 'Klap klap!'
 };
 const CL_MAIN = {
   cat: '#FB8C00', dog: '#A1887F', pig: '#F48FB1', fish: '#FF7A45', owl: '#8D6E63', turtle: '#43A047', butterfly: '#B39DDB', elephant: '#BDBDBD',
   ladybug: '#E53935', bear: '#8D6E63', bunny: '#FFCCBC', penguin: '#37474F', snail: '#FFB300', lion: '#FFB300', duck: '#FDD835', frog: '#9CCC65',
   mouse: '#BDBDBD', fox: '#FF7A45', hedgehog: '#8D6E63', giraffe: '#FFB300', whale: '#4FC3F7', octopus: '#8E24AA', chick: '#FDD835', bee: '#FDD835',
-  crab: '#E53935', hippo: '#B39DDB', dino: '#43A047', sheep: '#ECEFF1', panda: '#ECEFF1', monkey: '#8D6E63', cow: '#FFF3A0'
+  crab: '#E53935', hippo: '#B39DDB', dino: '#43A047', sheep: '#ECEFF1', panda: '#ECEFF1', monkey: '#8D6E63', cow: '#FFF3A0',
+  horse: '#A1887F', zebra: '#FFFFFF', hen: '#FFFFFF', dolphin: '#78909C', parrot: '#43A047', koala: '#BDBDBD', squirrel: '#FF7A45',
+  bat: '#8E24AA', pumpkin: '#FB8C00', snowman: '#FFFFFF', dragon: '#43A047', croc: '#43A047'
 };
 const CL_CFG = {
   stickers: CL_STICKERS, scenes: CL_SCENES,
-  sky: pg => '#B2EBF2', ground: pg => '#9CCC65', cloud: '#F8BBD0',
+  sky: pg => pg.id === 'bat' ? '#1A237E' : '#B2EBF2', ground: pg => '#9CCC65', cloud: '#F8BBD0',
   mapColor: c => c,
   kit(pg) {
     if (pg.e === '🦄') return { main: 'url(#g-pink)', second: 'url(#g-lilac)', accent: 'url(#g-gold)' };
@@ -1730,10 +1846,11 @@ function numPlan(pg) {
     const oi = all.indexOf(el), o = info[oi];
     const x1 = Math.max(0, o.x1), x2 = Math.min(400, o.x2), y1 = Math.max(0, o.y1), y2 = Math.min(400, o.y2);
     if (x2 - x1 < 1 || y2 - y1 < 1) return { x: (x1 + x2) / 2, y: (y1 + y2) / 2, clr: 0, area: 0, box: o };
-    const step = Math.max(1.6, Math.sqrt((x2 - x1) * (y2 - y1) / 320));
+    const later = info.slice(oi + 1).filter(q => q.x2 > x1 && q.x1 < x2 && q.y2 > y1 && q.y1 < y2);
+    // thin shapes (rainbow bands, stripes) get a finer second pass
+    const sample = step => {
     const nx = Math.max(1, Math.round((x2 - x1) / step)), ny = Math.max(1, Math.round((y2 - y1) / step));
     const sx = (x2 - x1) / nx, sy = (y2 - y1) / ny;
-    const later = info.slice(oi + 1).filter(q => q.x2 > x1 && q.x1 < x2 && q.y2 > y1 && q.y1 < y2);
     const d = new Float32Array(nx * ny); let cnt = 0;
     for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
       const x = x1 + (i + .5) * sx, y = y1 + (j + .5) * sy;
@@ -1751,19 +1868,24 @@ function numPlan(pg) {
       if (d[k] && v > best) { best = v; bi = i; bj = j; }
     }
     const s = Math.min(sx, sy);
-    return { x: x1 + (bi + .5) * sx, y: y1 + (bj + .5) * sy, clr: best > 0 ? Math.max(0, (d[bj * nx + bi] - .5) * s - 2.5) : 0, area: cnt * sx * sy, box: o };
+    return { dc: best, x: x1 + (bi + .5) * sx, y: y1 + (bj + .5) * sy, clr: best > 0 ? Math.max(0, (d[bj * nx + bi] - .5) * s - 2.5) : 0, area: cnt * sx * sy, box: o };
+    };
+    const st = Math.max(1.6, Math.sqrt((x2 - x1) * (y2 - y1) / 320));
+    let r = sample(st);
+    if (r.dc < 3 && st > 4) { const r2 = sample(Math.max(2.5, st / 3)); if (r2.clr > r.clr) r = { ...r2, area: r.area || r2.area }; }
+    return r;
   });
   host.innerHTML = '';
   // target colours
   const kit = CL_CFG.kit(pg), col = new Array(regs.length), subj = [];
   regs.forEach((el, i) => {
-    const b = pts[i].box, w = b.x2 - b.x1, h = b.y2 - b.y1, tag = el.tagName.toLowerCase(), dc = el.getAttribute('data-c');
+    const b = pts[i].box, w = b.x2 - b.x1, h = b.y2 - b.y1, tag = el.tagName.toLowerCase(), dc = el.getAttribute('data-nc') || el.getAttribute('data-c');
     if (dc) col[i] = CL_CFG.mapColor(dc);
     else if (el.classList.contains('bg')) col[i] = CL_CFG.sky(pg);
     else if (b.y2 >= 395 && w >= 300 && b.y1 > 180) col[i] = CL_CFG.ground(pg);
     else if (tag === 'ellipse' && w >= 300) col[i] = '#4FC3F7';
     else if (tag === 'circle' && b.y2 < 125 && w >= 40 && w <= 80) col[i] = '#FDD835';
-    else if (tag === 'path' && b.y2 < 140 && w > 70 && w < 130 && h < 60) col[i] = CL_CFG.cloud;
+    else if (tag === 'path' && ((b.y2 < 140 && w > 70 && w < 130 && h < 60) || (w > 85 && w < 115 && h > 25 && h < 45 && !el.getAttribute('data-c')))) col[i] = CL_CFG.cloud;
     else subj.push(i);
   });
   const big = Math.max(1, ...subj.map(i => pts[i].area));
@@ -1771,15 +1893,17 @@ function numPlan(pg) {
   if (CL_CFG.tweak) CL_CFG.tweak(pg, regs, col, pts);
   // a handful of different colours at most: merge the closest plain colours
   const rgb = h => /^#[0-9a-f]{6}$/i.test(h) ? [1, 3, 5].map(k => parseInt(h.substr(k, 2), 16)) : null;
+  // sky and ground keep their colour; other colours merge into them, never the other way round
+  const keepCol = new Set(regs.map((el, i) => el.classList.contains('bg') || (pts[i].box.y2 >= 395 && pts[i].box.x2 - pts[i].box.x1 >= 300) ? col[i] : null).filter(Boolean));
   for (;;) {
-    const uniq = [...new Set(col)]; if (uniq.length <= (CL_CFG.maxColors || 7)) break;
+    const uniq = [...new Set(col)]; if (uniq.length <= (pg.maxColors || CL_CFG.maxColors || 7)) break;
     let bd = Infinity, pair = null;
     for (let a = 0; a < uniq.length; a++) for (let b = a + 1; b < uniq.length; b++) {
-      const A = rgb(uniq[a]), B = rgb(uniq[b]); if (!A || !B) continue;
+      const A = rgb(uniq[a]), B = rgb(uniq[b]); if (!A || !B || (keepCol.has(uniq[a]) && keepCol.has(uniq[b]))) continue;
       const dd = (A[0] - B[0]) ** 2 + (A[1] - B[1]) ** 2 + (A[2] - B[2]) ** 2; if (dd < bd) { bd = dd; pair = [uniq[a], uniq[b]]; }
     }
     if (!pair) break;
-    const cnt = v => col.filter(c => c === v).length, [keep, drop] = cnt(pair[0]) >= cnt(pair[1]) ? pair : [pair[1], pair[0]];
+    const cnt = v => col.filter(c => c === v).length + (keepCol.has(v) ? 1e6 : 0), [keep, drop] = cnt(pair[0]) >= cnt(pair[1]) ? pair : [pair[1], pair[0]];
     col.forEach((c, i) => { if (c === drop) col[i] = keep; });
   }
   const auto = pts.map(q => q.clr < 4.2 || q.area < 60);
