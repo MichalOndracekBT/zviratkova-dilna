@@ -366,6 +366,9 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .tools .sizes,.tools .stk-sizes{margin-left:auto}
 @media (max-width:520px){.tool{padding:0 8px;font-size:15px}.tool .ico{font-size:18px}}
 
+.ctile.locked svg{filter:grayscale(1) opacity(.45)}
+.ctile .lock{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:42px;z-index:2;pointer-events:none}
+
 /* HÁDANKY + PEXESO */
 .mode-logic{background:linear-gradient(145deg,#FFE08A,#FFB3B3)}
 .mode-memo{background:linear-gradient(145deg,#B8F0D8,#C9D8FF)}
@@ -421,6 +424,11 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .memo-card.got{animation:pop .4s;box-shadow:0 0 0 4px var(--leaf),0 4px 0 var(--shadow)}
 @media (min-width:760px){.modes{grid-template-columns:repeat(3,1fr)}}
 @media (prefers-reduced-motion:reduce){.lg-field.in,.lg-card.ok,.memo-card,.memo-card.got{animation:none;transition:none}}
+#memoSeg button{min-height:70px;gap:4px}
+.memo-ico{display:inline-grid;gap:2px;width:40px}
+.memo-ico i{aspect-ratio:1;border-radius:3px;background:linear-gradient(145deg,#FF8AC6,#B78BFF);border:1px solid rgba(255,255,255,.6)}
+#memoSeg button[aria-pressed="true"] .memo-ico i{background:#fff}
+.memo-n{font-size:20px;font-weight:800;line-height:1}
 
 /* WIN */
 .overlay{position:absolute;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(32,48,71,.35)}
@@ -759,7 +767,7 @@ function say(text) {
   if (muted || !('speechSynthesis' in window)) return;
   try {
     const synth = window.speechSynthesis;
-    const u = new SpeechSynthesisUtterance(text); u.lang = 'cs-CZ'; u.rate = .9; u.pitch = 1.15;
+    const u = new SpeechSynthesisUtterance(text); u.lang = 'cs-CZ'; u.rate = .95; u.pitch = 1;
     const v = czechVoice(); if (v) u.voice = v;
     lastUtterance = u; // keep a reference: Chrome can garbage-collect a playing utterance and cut it off
     const go = () => { try { synth.resume(); synth.speak(u); } catch (e) {} };
@@ -1446,24 +1454,35 @@ function buildPuzzle() {
   const sx = sil.getContext('2d'); sx.drawImage(src, 0, 0); sx.globalCompositeOperation = 'source-atop'; sx.fillStyle = 'rgba(25,20,55,.7)'; sx.fillRect(0, 0, AP, AP);
   sil.className = 'pz-sil'; Object.assign(sil.style, { width: A + 'px', height: A + 'px', left: ax + 'px', top: ay + 'px' });
   area.appendChild(sil); P.sil = sil;
-  const [cols, rows] = GRID[P.diff];
-  const rnd = seeded(Math.floor(P.seed * 1e9));
-  const wav = (k, n) => ({ base: k / n, amp: .035 + rnd() * .045, f: .8 + rnd() * 1.4, ph: rnd() * 6.28 });
-  const vc = Array.from({ length: cols - 1 }, (_, k) => wav(k + 1, cols)), hc = Array.from({ length: rows - 1 }, (_, k) => wav(k + 1, rows));
-  const cellOf = (x, y) => {
-    const u = x / AP, v = y / AP; let c = 0, r = 0;
-    for (const w of vc) if (u > w.base + w.amp * Math.sin(v * Math.PI * 2 * w.f + w.ph)) c++;
-    for (const w of hc) if (v > w.base + w.amp * Math.sin(u * Math.PI * 2 * w.f + w.ph)) r++;
-    return r * cols + c;
-  };
-  const owner = new Int16Array(AP * AP).fill(-1), count = new Array(cols * rows).fill(0);
-  let total = 0;
-  for (let y = 0; y < AP; y++) for (let x = 0; x < AP; x++) { const i = y * AP + x; if (d[i * 4 + 3] > 16) { const k = cellOf(x, y); owner[i] = k; count[k]++; total++; } }
-  // tiny fragments join their biggest neighbour
-  const map = count.map((_, k) => k);
-  const nb = k => { const r = Math.floor(k / cols), c = k % cols; return [[r, c - 1], [r, c + 1], [r - 1, c], [r + 1, c]].filter(([a, b]) => a >= 0 && b >= 0 && a < rows && b < cols).map(([a, b]) => a * cols + b); };
-  count.forEach((n, k) => { if (n > 0 && n < total * .045) { const t = nb(k).filter(j => count[j] > 0).sort((a, b) => count[b] - count[a])[0]; if (t != null) { map[k] = t; count[t] += n; count[k] = 0; } } });
-  const resolve = k => { while (map[k] !== k) k = map[k]; return k; };
+  // cut the animal itself into exactly as many pieces as chosen: seeds spread evenly over the
+  // animal's pixels (a few rounds of Lloyd relaxation), each pixel goes to its nearest seed with a
+  // wavy offset so the cuts look like puzzle edges
+  const N = P.diff, rnd = seeded(Math.floor(P.seed * 1e9));
+  const opaque = []; let total = 0;
+  const st = Math.max(1, Math.round(AP / 160));
+  for (let y = 0; y < AP; y += st) for (let x = 0; x < AP; x += st) if (d[(y * AP + x) * 4 + 3] > 16) opaque.push(x, y);
+  let seeds = [];
+  { let x0 = AP, y0 = AP, x1 = 0, y1 = 0; for (let i = 0; i < opaque.length; i += 2) { const x = opaque[i], y = opaque[i + 1]; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    const [gc, gr] = GRID[N] || [Math.ceil(Math.sqrt(N)), Math.ceil(N / Math.ceil(Math.sqrt(N)))];
+    for (let r = 0; r < gr; r++) for (let c = 0; c < gc; c++) if (seeds.length < N * 2) seeds.push([x0 + (c + .5) * (x1 - x0) / gc, y0 + (r + .5) * (y1 - y0) / gr]); }
+  // snap to the animal; drop seeds that landed on the same spot, then refill with farthest points
+  seeds = seeds.map(([sx, sy]) => { let best = 1e18, bx = sx, by = sy; for (let i = 0; i < opaque.length; i += 2) { const dd = (opaque[i] - sx) ** 2 + (opaque[i + 1] - sy) ** 2; if (dd < best) { best = dd; bx = opaque[i]; by = opaque[i + 1]; } } return [bx, by]; })
+    .filter((p, i, arr) => arr.findIndex(q => Math.abs(q[0] - p[0]) < AP / 40 && Math.abs(q[1] - p[1]) < AP / 40) === i).slice(0, N);
+  while (seeds.length < N && opaque.length) {
+    let far = -1, fx = 0, fy = 0;
+    for (let i = 0; i < opaque.length; i += 2) { let m = 1e18; for (const [sx, sy] of seeds) m = Math.min(m, (opaque[i] - sx) ** 2 + (opaque[i + 1] - sy) ** 2); if (m > far) { far = m; fx = opaque[i]; fy = opaque[i + 1]; } }
+    seeds.push([fx, fy]);
+  }
+  const nearest = (x, y) => { let k = 0, best = 1e18; for (let j = 0; j < seeds.length; j++) { const dd = (x - seeds[j][0]) ** 2 + (y - seeds[j][1]) ** 2; if (dd < best) { best = dd; k = j; } } return k; };
+  for (let it = 0; it < 4; it++) {
+    const acc = seeds.map(() => [0, 0, 0]);
+    for (let i = 0; i < opaque.length; i += 2) { const k = nearest(opaque[i], opaque[i + 1]); acc[k][0] += opaque[i]; acc[k][1] += opaque[i + 1]; acc[k][2]++; }
+    seeds = seeds.map((s0, j) => acc[j][2] ? [acc[j][0] / acc[j][2], acc[j][1] / acc[j][2]] : s0);
+  }
+  const amp = AP / (Math.sqrt(N) * 16), f1 = (2 + rnd() * 2) * Math.PI * 2 / AP * Math.sqrt(N), f2 = (2 + rnd() * 2) * Math.PI * 2 / AP * Math.sqrt(N), p1 = rnd() * 6.28, p2 = rnd() * 6.28;
+  const owner = new Int16Array(AP * AP).fill(-1), count = new Array(seeds.length).fill(0);
+  for (let y = 0; y < AP; y++) for (let x = 0; x < AP; x++) { const i = y * AP + x; if (d[i * 4 + 3] > 16) { const k = nearest(x + amp * Math.sin(y * f1 + p1), y + amp * Math.sin(x * f2 + p2)); owner[i] = k; count[k]++; total++; } }
+  const resolve = k => k;
   const boxes = {};
   for (let y = 0; y < AP; y++) for (let x = 0; x < AP; x++) {
     const i = y * AP + x; if (owner[i] < 0) continue;
@@ -1758,7 +1777,7 @@ let C = null;
 let curColor = store.get('zd-color', PALETTE[0]);
 // picker modes: free coloring, colour-by-number, build a scene from stickers
 let clMode = store.get('zd-clmode', 'free'); if (!['free', 'num', 'scene'].includes(clMode)) clMode = 'free';
-const CL_MODES = [['free', '🎨', 'Vybarvi'], ['num', '🔢', 'Podle čísel'], ['scene', '✨', 'Poskládej']];
+const CL_MODES = CL_CFG.modes || [['free', '🎨', 'Vybarvi'], ['num', '🔢', 'Podle čísel'], ['scene', '✨', 'Poskládej']];
 const SCENES = CL_CFG.scenes;
 const cKey = pg => 'zd-c-' + pg.id;
 const nKey = pg => 'zd-n-' + pg.id;
@@ -1772,14 +1791,14 @@ function renderColorPicker() {
   $('#clStarN').textContent = `${PAGES.filter(pg => nd.has(pg.id)).length} / ${PAGES.length}`;
   const hint = { free: '', num: '<p class="cl-hint">Vyber číslo dole a ťukej na políčka se stejným číslem.</p>', scene: '<p class="cl-hint">Vyber pozadí a polep ho nálepkami. Nálepky jdou posouvat i vybarvit.</p>' }[clMode];
   const g = $('#colorGrid');
-  g.innerHTML = hint + list.map((pg, i) => `<button class="ctile" data-i="${i}">${clMode === 'num' && nd.has(pg.id) ? '<span class="badge">⭐</span>' : ''}${pageSvg(pg)}<span class="nm">${pg.name}</span></button>`).join('');
+  g.innerHTML = hint + list.map((pg, i) => `<button class="ctile${CL_CFG.isLocked && CL_CFG.isLocked(pg) ? ' locked' : ''}" data-i="${i}">${CL_CFG.isLocked && CL_CFG.isLocked(pg) ? '<span class="lock">🔒</span>' : ''}${clMode === 'num' && nd.has(pg.id) ? '<span class="badge">⭐</span>' : ''}${pageSvg(pg)}<span class="nm">${pg.name}</span></button>`).join('');
   g.querySelectorAll('.ctile').forEach((b, i) => {
     const pg = list[i], sv = b.querySelector('svg');
     if (clMode === 'num') applyFills(sv, store.get(nKey(pg), null));
     else { applyFills(sv, store.get(cKey(pg), null)); applyStickers(sv, pg); applyInk(sv, pg); }
   });
 }
-$('#colorGrid').addEventListener('click', ev => { const b = ev.target.closest('.ctile'); if (!b) return; openColor(pickList()[+b.dataset.i], clMode); });
+$('#colorGrid').addEventListener('click', ev => { const b = ev.target.closest('.ctile'); if (!b) return; const pg = pickList()[+b.dataset.i]; if (CL_CFG.isLocked && CL_CFG.isLocked(pg)) { CL_CFG.onLocked(pg); return; } openColor(pg, clMode); });
 $('#clMode').addEventListener('click', ev => {
   const b = ev.target.closest('button[data-m]'); if (!b || b.dataset.m === clMode) return;
   clMode = b.dataset.m; store.set('zd-clmode', clMode); sfx.pick(); renderColorPicker();
@@ -1995,17 +2014,18 @@ function numPlan(pg) {
     const cnt = v => col.filter(c => c === v).length + (keepCol.has(v) ? 1e6 : 0), [keep, drop] = cnt(pair[0]) >= cnt(pair[1]) ? pair : [pair[1], pair[0]];
     col.forEach((c, i) => { if (c === drop) col[i] = keep; });
   }
-  const auto = pts.map(q => q.clr < 4.2 || q.area < 60);
+  const auto = pts.map(q => q.clr < (CL_CFG.minClr || 4.2) || q.area < 60);
   const colors = [];
   col.forEach((c, i) => { if (!auto[i] && !colors.includes(c)) colors.push(c); });
   const num = col.map(c => colors.indexOf(c) + 1);
   return (NUM_CACHE[pg.id] = { pts, col, auto, colors, num });
 }
 function numLabel(i) {
-  const P = C.plan, q = P.pts[i], fs = Math.max(9, Math.min(30, q.clr * 1.45));
+  const P = C.plan, q = P.pts[i], txt = CL_CFG.numText ? CL_CFG.numText(C.pg, i, P.num[i]) : String(P.num[i]);
+  const fs = Math.max(CL_CFG.numText ? 8.5 : 9, Math.min(CL_CFG.numText ? 24 : 30, q.clr * 1.45, txt.length > 2 ? 3.4 * q.clr / txt.length : 99));
   const t = document.createElementNS(CL_NS, 'text');
   t.setAttribute('class', 'nlab'); t.setAttribute('x', q.x.toFixed(1)); t.setAttribute('y', q.y.toFixed(1));
-  t.setAttribute('font-size', fs.toFixed(1)); t.dataset.i = i; t.dataset.n = P.num[i]; t.textContent = P.num[i];
+  t.setAttribute('font-size', fs.toFixed(1)); t.dataset.i = i; t.dataset.n = P.num[i]; t.textContent = txt;
   return t;
 }
 function setupNumbers() {
@@ -2034,14 +2054,14 @@ function renderNumPalette() {
   const P = C.plan, pal = $('#palette'); pal.classList.add('num-grid-pal'); pal.classList.remove('stk-grid');
   pal.innerHTML = P.colors.map((col, k) => {
     const n = k + 1, left = numLeft(n);
-    return `<button class="sw nsw${left ? '' : ' done'}" style="background:${swatchBg(col)}" data-n="${n}" aria-label="Číslo ${n}" aria-pressed="${n === C.curN}"><b>${left ? n : '✓'}</b></button>`;
+    return `<button class="sw nsw${left ? '' : ' done'}" style="background:${swatchBg(col)}" data-n="${n}" aria-label="Číslo ${n}" aria-pressed="${n === C.curN}"><b>${left ? (CL_CFG.swatchText ? CL_CFG.swatchText(C.pg, n) : n) : '✓'}</b></button>`;
   }).join('');
   C.num.querySelectorAll('.nlab').forEach(t => t.classList.toggle('on', +t.dataset.n === C.curN));
   const tl = totalLeft();
   $('#nProg').textContent = tl ? `Zbývá políček: ${tl}` : 'Hotovo!';
 }
 function pickNum(n) {
-  C.curN = n; renderNumPalette(); say(String(n));
+  C.curN = n; renderNumPalette(); say(String(CL_CFG.swatchText ? CL_CFG.swatchText(C.pg, n) : n));
   tone(600 + n * 60, .07, 'sine', .1);
 }
 function saveNum() { store.set(nKey(C.pg), C.plan.col.map((c, i) => (C.ndone[i] || (C.plan.auto[i] && C.regions[i].style.fill)) ? c : null)); }
@@ -2666,7 +2686,7 @@ function startTrace(speak) {
   };
   fontsReady.then(build);
   activeTrace = { rebuild: build };
-  if (speak) say(`Obtáhni písmeno ${spoken(L)}. ${spoken(L)} jako ${w.toLowerCase()}.`);
+  if (speak) say(`Obtáhni písmeno ${spoken(L)} jako ${w.toLowerCase()}.`);
 }
 $('#trPrev').addEventListener('click', () => { abcSel = (abcSel - 1 + LETTERS.length) % LETTERS.length; sfx.pick(); startTrace(true); });
 $('#trNext').addEventListener('click', () => { abcSel = (abcSel + 1) % LETTERS.length; sfx.pick(); startTrace(true); });
@@ -2731,10 +2751,12 @@ const LG_CFG = {
     eats: { name: 'Co kdo jí?', ico: '🥕', list: [
       ['🐰', 'Co jí zajíček?', '🥕'], ['🐒', 'Co jí opička?', '🍌'], ['🐭', 'Co mlsá myška?', '🧀'], ['🐶', 'Co hryže pejsek?', '🦴'],
       ['🐱', 'Co má ráda kočička?', '🐟'], ['🐼', 'Co jí panda?', '🎋'], ['🐿️', 'Co jí veverka?', '🌰'], ['🐻', 'Co mlsá medvídek?', '🍯'],
-      ['🐔', 'Co zobe slepička?', '🌾'], ['🐝', 'Kam letí včelka?', '🌸'], ['🐸', 'Co chytá žabka?', '🪰']] },
+      ['🐔', 'Co zobe slepička?', '🌾'], ['🐝', 'Kam letí včelka pro sladkou šťávu?', '🌸'], ['🐸', 'Co chytá žabka?', '🪰'],
+      ['🐨', 'Co jí koala?', '🌿'], ['🦔', 'Co si najde ježek pod listím?', '🐛'], ['🐦', 'Co zobe ptáček?', '🌻'], ['🐧', 'Co loví tučňák?', '🦐']] },
     home: { name: 'Kdo kde bydlí?', ico: '🏠', list: [
       ['🐟', 'Kde bydlí rybička?', '🌊'], ['🐦', 'Kde bydlí ptáček?', '🪺'], ['🐶', 'Kde bydlí pejsek?', '🏠'], ['🐧', 'Kde bydlí tučňák?', '🧊'],
-      ['🐫', 'Kde bydlí velbloud?', '🏜️'], ['🐒', 'Kde bydlí opička?', '🌴'], ['🐻', 'Kde bydlí medvěd?', '🌲'], ['🐌', 'Co nosí šnek na zádech?', '🐚']] }
+      ['🐫', 'Kde bydlí velbloud?', '🏜️'], ['🐒', 'Kde bydlí opička?', '🌴'], ['🐻', 'Kde bydlí medvěd?', '🌲'], ['🐌', 'Co nosí šnek na zádech?', '🐚'],
+      ['🦇', 'Kde přes den visí netopýr?', '🕳️'], ['🐄', 'Kde se pase kravička?', '🌾'], ['🐸', 'Kde bydlí žabka?', '🪷']] }
   },
   colors: [
     ['red', 'červeného', '#E53935', ['🍎', '🍓', '🍒', '🌹', '❤️', '🚒']],
@@ -2762,23 +2784,23 @@ const LG_TYPES = {
     const A = LG_CFG.cats[rand(LG_CFG.cats.length)];
     const others = LG_CFG.cats.filter(c => c !== A && (c.group || c.name) !== (A.group || A.name));
     const B = others[rand(others.length)], odd = B.items[rand(B.items.length)];
-    return { say: 'Co sem nepatří? Ťukni na to.', prompt: 'Co sem <b>nepatří</b>?', cols: 2,
+    return { key: odd, say: 'Co sem nepatří? Ťukni na to.', prompt: 'Co sem <b>nepatří</b>?', cols: 2,
       choices: lgShuffle([...lgPick(A.items, 3).map(e => ({ html: lgEm(e) })), { html: lgEm(odd), ok: true }]) };
   } },
   same: { name: 'Najdi stejné', ico: '👀', make() {
     const t = lgAll()[rand(lgAll().length)];
-    return { say: 'Najdi stejný obrázek.', prompt: 'Najdi <b>stejný</b> obrázek', q: lgEm(t, 'big'), cols: 4,
+    return { key: t, say: 'Najdi stejný obrázek.', prompt: 'Najdi <b>stejný</b> obrázek', q: lgEm(t, 'big'), cols: 4,
       choices: lgShuffle([{ html: lgEm(t), ok: true }, ...lgSimilar(t, 3).map(e => ({ html: lgEm(e) }))]) };
   } },
   shadow: { name: 'Čí je to stín?', ico: '🌑', make() {
     const t = lgAll()[rand(lgAll().length)];
-    return { say: 'Čí je to stín?', prompt: 'Čí je to <b>stín</b>?', q: lgEm(t, 'big sil'), cols: 3, reveal: t,
+    return { key: t, say: 'Čí je to stín?', prompt: 'Čí je to <b>stín</b>?', q: lgEm(t, 'big sil'), cols: 3, reveal: t,
       choices: lgShuffle([{ html: lgEm(t), ok: true }, ...lgSimilar(t, 2).map(e => ({ html: lgEm(e) }))]) };
   } },
   big: { name: 'Velký a malý', ico: '🐘', make() {
     const t = lgAll()[rand(lgAll().length)], biggest = Math.random() < .5, sizes = lgShuffle([.5, .78, 1.12]);
     const want = biggest ? Math.max(...sizes) : Math.min(...sizes);
-    return { say: biggest ? 'Ťukni na ten největší.' : 'Ťukni na ten nejmenší.', prompt: `Ťukni na <b>${biggest ? 'největší' : 'nejmenší'}</b>`, cols: 3, tall: true,
+    return { key: t, say: biggest ? 'Ťukni na ten největší.' : 'Ťukni na ten nejmenší.', prompt: `Ťukni na <b>${biggest ? 'největší' : 'nejmenší'}</b>`, cols: 3, tall: true,
       choices: sizes.map(s => ({ html: lgEm(t, '', `font-size:${(s * 64).toFixed(0)}px`), ok: s === want })) };
   } },
   more: { name: 'Kde je víc?', ico: '⚖️', make() {
@@ -2786,7 +2808,7 @@ const LG_TYPES = {
     let n1 = 1 + rand(5), n2; do { n2 = 1 + rand(6); } while (Math.abs(n1 - n2) < 2);
     const okFirst = less ? n1 < n2 : n1 > n2;
     const group = (e, n) => `<span class="lg-group">${Array.from({ length: n }, () => lgEm(e)).join('')}</span>`;
-    return { say: less ? 'Kde je méně?' : 'Kde je víc?', prompt: `Kde je <b>${less ? 'méně' : 'víc'}</b>?`, cols: 2, tall: true,
+    return { key: a + b, say: less ? 'Kde je méně?' : 'Kde je víc?', prompt: `Kde je <b>${less ? 'méně' : 'víc'}</b>?`, cols: 2, tall: true,
       choices: [{ html: group(a, n1), ok: okFirst }, { html: group(b, n2), ok: !okFirst }] };
   } },
   pattern: { name: 'Co bude dál?', ico: '🔁', make() {
@@ -2795,31 +2817,36 @@ const LG_TYPES = {
     const row = Array.from({ length: len }, (_, i) => map[k[i % k.length]]), next = map[k[len % k.length]];
     const pool = [...new Set(k.map(x => map[x]))], opts = pool.concat(lgPick(lgAll(), 3 - pool.length, pool));
     const choices = lgShuffle(opts.slice(0, 3)).map(e => ({ html: lgEm(e), ok: e === next }));
-    return { say: 'Co bude dál? Doplň řadu.', prompt: 'Co bude <b>dál</b>?', cols: 3, fill: next,
+    return { key: row.join(''), say: 'Co bude dál? Doplň řadu.', prompt: 'Co bude <b>dál</b>?', cols: 3, fill: next,
       q: `<span class="lg-row">${row.map(e => lgEm(e)).join('')}<span class="lg-em lg-slot">?</span></span>`, choices };
   } },
   peek: { name: 'Kdo se schovává?', ico: '🙈', make() {
     const t = lgAll()[rand(lgAll().length)], side = ['l', 'r', 't', 'b'][rand(4)];
-    return { say: 'Kdo se tu schovává?', prompt: 'Kdo se tu <b>schovává</b>?', cols: 3, reveal: t,
+    return { key: t, say: 'Kdo se tu schovává?', prompt: 'Kdo se tu <b>schovává</b>?', cols: 3, reveal: t,
       q: `<span class="lg-peek lg-peek-${side}">${lgEm(t, 'big')}<i></i></span>`,
       choices: lgShuffle([{ html: lgEm(t), ok: true }, ...lgSimilar(t, 2).map(e => ({ html: lgEm(e) }))]) };
   } },
   emotion: { name: 'Jak se kdo cítí?', ico: '😊', make() {
-    const F = [['😀', 'veselý'], ['😢', 'smutný'], ['😠', 'naštvaný'], ['😮', 'překvapený'], ['😴', 'ospalý']];
-    const opts = lgPick(F, 3), t = opts[rand(3)];
-    return { say: `Kdo je ${t[1]}?`, prompt: `Kdo je <b>${t[1]}</b>?`, cols: 3, choices: opts.map(f => ({ html: lgEm(f[0]), ok: f === t })) };
+    const S = [['🍦', 'Kubovi spadla zmrzlina na zem.', '😢'], ['🎁', 'Ema dostala k narozeninám dárek.', '😀'], ['🌙', 'Je pozdě večer a Tonda zívá.', '😴'],
+      ['🎈', 'Vedle Aničky najednou prasklo BUM balonek.', '😮'], ['🧱', 'Někdo Matýskovi schválně zbořil věž z kostek.', '😠'], ['🔍', 'Lucce se ztratil pejsek a nemůže ho najít.', '😢'],
+      ['🎂', 'Péťa sfoukl svíčky na dortu.', '😀'], ['⚽', 'Kamarád vzal Ondrovi míč a nechce ho vrátit.', '😠'], ['👻', 'Ze skříně vyskočil převlečený tatínek.', '😮'],
+      ['🛏️', 'Sára celý den běhala venku a teď leží v posteli.', '😴'], ['🎠', 'Vojta jede na kolotoči.', '😀'], ['🩹', 'Adam spadl a odřel si koleno.', '😢'],
+      ['🖍️', 'Bráška Elišce počmáral obrázek.', '😠'], ['🎉', 'Do pokoje vběhli kamarádi a křičí PŘEKVAPENÍ!', '😮']];
+    const t = S[rand(S.length)], F = ['😀', '😢', '😠', '😮', '😴'], opts = lgShuffle([t[2], ...lgPick(F, 2, [t[2]])]);
+    return { key: t[1], say: `${t[1]} Jak se cítí?`, prompt: `${t[1]} <b>Jak se cítí?</b>`, q: lgEm(t[0], 'big'), cols: 3, choices: opts.map(f => ({ html: lgEm(f), ok: f === t[2] })) };
   } },
   color: { name: 'Barvy', ico: '🎨', make() {
     const C = LG_CFG.colors, opts = lgPick(C, 3), t = opts[0];
-    return { say: `Najdi něco ${t[1]}.`, prompt: `Najdi něco <b style="color:${t[2]}">${t[1]}</b>`, cols: 3,
+    return { key: t[0], say: `Najdi něco ${t[1]}.`, prompt: `Najdi něco <b style="color:${t[2]}">${t[1]}</b>`, cols: 3,
       choices: lgShuffle(opts.map(c => ({ html: lgEm(c[3][rand(c[3].length)]), ok: c === t }))) };
   } }
 };
 // "what goes with what" lists from the app config become task types too
 Object.entries(LG_CFG.pairs).forEach(([id, P]) => {
   LG_TYPES[id] = { name: P.name, ico: P.ico, make() {
-    const opts = lgPick(P.list, 3), t = opts[0];
-    return { say: t[1], prompt: t[1], q: lgEm(t[0], 'big'), cols: 3, choices: lgShuffle(opts.map(o => ({ html: lgEm(o[2]), ok: o === t }))) };
+    const fresh = P.list.filter(o => !LG.seen.has(o[1])), t = (fresh.length ? fresh : P.list)[rand((fresh.length ? fresh : P.list).length)];
+    const opts = [t, ...lgPick(P.list.filter(o => o[2] !== t[2]), 3)];
+    return { key: t[1], say: t[1], prompt: t[1], q: lgEm(t[0], 'big'), cols: 4, choices: lgShuffle(opts.map(o => ({ html: lgEm(o[2]), ok: o === t }))) };
   } };
 });
 const LG_ORDER = LG_CFG.order.filter(id => LG_TYPES[id]);
@@ -2842,7 +2869,7 @@ $('#lgBack').addEventListener('click', () => { if (!$('#lgPlay').hidden) lgShowP
 $('#lgPrompt').addEventListener('click', () => { if (LG && LG.task) say(LG.task.say); });
 function lgStart(type) {
   lgStop();
-  LG = { type, step: 0, timers: [], last: null };
+  LG = { type, step: 0, timers: [], last: null, seen: new Set() };
   $('#lgTitle').textContent = type === 'mix' ? 'Mix všeho' : LG_TYPES[type].name;
   $('#lgPick').hidden = true; $('#lgPlay').hidden = false;
   lgRound();
@@ -2853,7 +2880,8 @@ function lgRound() {
   let id = LG.type;
   if (id === 'mix') { do { id = LG_ORDER[rand(LG_ORDER.length)]; } while (id === LG.last && LG_ORDER.length > 1); }
   LG.last = id; LG.locked = false; LG.misses = 0;
-  const T = LG.task = LG_TYPES[id].make();
+  let T; for (let k = 0; k < 25; k++) { T = LG_TYPES[id].make(); if (!LG.seen.has(T.key)) break; }
+  LG.seen.add(T.key); LG.task = T;
   $('#lgPrompt').innerHTML = T.prompt;
   const f = $('#lgField');
   f.innerHTML = (T.q ? `<div class="lg-q">${T.q}</div>` : '') +
@@ -2891,13 +2919,13 @@ function lgFinish() {
 }
 
 /* pexeso: find the pairs */
-const MEMO_SIZES = [[6, '🟩', 'Snadné'], [12, '🟨', 'Střední'], [16, '🟥', 'Těžké']];
+const MEMO_SIZES = [[6, 3, 2], [12, 4, 3], [16, 4, 4]];
 let MM = null, memoSize = store.get('zd-memo', 6);
 if (!MEMO_SIZES.some(s => s[0] === memoSize)) memoSize = 6;
 function startMemo() { show('memo'); memoNew(); }
 function memoNew() {
   if (MM && MM.timer) clearTimeout(MM.timer);
-  $('#memoSeg').innerHTML = MEMO_SIZES.map(([n, ico, nm]) => `<button data-n="${n}" aria-pressed="${n === memoSize}"><span class="ico">${ico}</span>${nm}</button>`).join('');
+  $('#memoSeg').innerHTML = MEMO_SIZES.map(([n, c, r]) => `<button data-n="${n}" aria-pressed="${n === memoSize}" aria-label="${n} kartiček"><span class="memo-ico" style="grid-template-columns:repeat(${c},1fr)">${'<i></i>'.repeat(n)}</span><span class="memo-n">${n}</span></button>`).join('');
   const faces = lgShuffle(lgPick(LG_CFG.memo, memoSize / 2).flatMap(e => [e, e]));
   MM = { faces, open: [], done: 0, moves: 0, timer: null };
   const b = $('#memoBoard'); b.dataset.n = memoSize;
