@@ -70,16 +70,28 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .btn.green{background:var(--leaf);color:#fff;box-shadow:0 4px 0 #2B8A5A}
 
 /* HOME */
-#home{overflow:hidden}
+#home{overflow:hidden;background:linear-gradient(180deg,#6CC8FF 0%,#A9E2FF 34%,#DDF5FF 60%,#F1FBFF 100%)}
+.home-scene{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.home-sky{position:absolute;left:0;right:0;top:0;height:46%}
+.home-hills{position:absolute;left:0;right:0;bottom:0;height:min(30vh,260px)}
+.home-sky svg,.home-hills svg{width:100%;height:100%;display:block}
+.hm-cloud{animation:hmDrift 9s ease-in-out infinite alternate}
+.hm-cloud.c2{animation-duration:12s;animation-delay:-4s}.hm-cloud.c3{animation-duration:15s;animation-delay:-8s}
+@keyframes hmDrift{from{transform:translateX(-18px)}to{transform:translateX(22px)}}
+.hm-rays{transform-box:fill-box;transform-origin:center;animation:hmSpin 30s linear infinite}
+@keyframes hmSpin{to{transform:rotate(360deg)}}
+#home>.home-top,#home>.home-body,#home>.parade{position:relative;z-index:1}
 .home-top{display:flex;justify-content:space-between;align-items:center;padding:12px 16px}
 .stars{display:inline-flex;align-items:center;gap:6px;background:var(--card);border-radius:999px;padding:6px 14px;font-weight:800;font-size:18px;box-shadow:0 4px 0 var(--shadow);font-variant-numeric:tabular-nums}
-.home-body{flex:1;display:flex;flex-direction:column;justify-content:center;justify-content:safe center;gap:14px;padding:0 16px 10px;overflow-y:auto}
-.home-body h1{margin:0;font-size:clamp(38px,10.5vw,72px);line-height:.9;font-weight:800;letter-spacing:-.01em;text-wrap:balance}
-.home-body h1 span{display:block;background:linear-gradient(90deg,#FF4FA3,#B36BFF,#5BB8F5,#FFB84D,#FF4FA3);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 5s linear infinite}
+.home-body{flex:1;display:flex;flex-direction:column;justify-content:center;justify-content:safe center;gap:12px;padding:0 16px 8px;overflow-y:auto}
+.home-body h1{margin:0;font-size:clamp(40px,11vw,76px);line-height:.88;font-weight:800;letter-spacing:-.01em;text-wrap:balance;color:#3A2A5C;
+  text-shadow:3px 0 0 #fff,-3px 0 0 #fff,0 3px 0 #fff,0 -3px 0 #fff,2px 2px 0 #fff,-2px 2px 0 #fff,2px -2px 0 #fff,-2px -2px 0 #fff,0 6px 10px rgba(58,42,92,.22)}
+.home-body h1 span{display:block;background:linear-gradient(90deg,#FF4FA3,#A45CFF,#2E9BF0,#FFA21F,#FF4FA3);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 5s linear infinite;text-shadow:none;filter:drop-shadow(0 4px 0 #fff)}
 @keyframes shimmer{to{background-position:200% 0}}
 .hero-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.mascot{font-size:clamp(64px,19vw,124px);line-height:1;cursor:pointer;animation:bob 3s ease-in-out infinite;filter:drop-shadow(0 8px 10px rgba(180,90,200,.35))}
-@keyframes bob{50%{transform:translateY(-10px) rotate(-5deg)}}
+.mascot{flex:none;width:clamp(92px,26vw,160px);aspect-ratio:1;cursor:pointer;animation:bob 3s ease-in-out infinite;filter:drop-shadow(0 8px 8px rgba(110,60,170,.22))}
+.mascot svg{width:100%;height:100%;display:block;overflow:visible}
+@keyframes bob{50%{transform:translateY(-8px) rotate(-3deg)}}
 .scene-bg{position:fixed;left:0;right:0;bottom:0;height:30vh;z-index:0;pointer-events:none}
 .scene-bg svg{width:100%;height:100%;display:block}
 .twinkles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
@@ -88,30 +100,53 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9600}
 .hl{fill:#fff;stroke:none;pointer-events:none}
 .tile .sub{position:absolute;left:8px;top:6px;font-size:18px}
-.lead{margin:0;color:var(--muted);font-size:17px;font-weight:500;max-width:30ch}
-.modes{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media (min-width:760px){.modes{grid-template-columns:repeat(4,1fr)}}
-.mode{
-  display:flex;flex-direction:column;align-items:flex-start;gap:10px;text-align:left;min-width:0;
-  padding:14px;border-radius:26px;box-shadow:0 6px 0 var(--shadow);transition:transform .1s, box-shadow .1s;
-  position:relative;overflow:hidden;
-}
-.mode::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.6) 50%,transparent 65%);transform:translateX(-130%);animation:sheen 5s ease-in-out infinite}
-.mode:nth-child(2)::after{animation-delay:1.2s}.mode:nth-child(3)::after{animation-delay:2.4s}.mode:nth-child(4)::after{animation-delay:3.6s}
+.lead{margin:0;color:#4E3F75;font-size:17px;font-weight:600;max-width:30ch}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mode{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;min-width:0;padding:8px 10px 10px;border-radius:24px;color:#fff;
+  background:var(--g);box-shadow:0 6px 0 var(--e),inset 0 2px 0 rgba(255,255,255,.45);transition:transform .1s,box-shadow .1s;overflow:hidden}
+.mode::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 12% 0%,rgba(255,255,255,.42),transparent 46%),radial-gradient(circle at 105% 105%,rgba(255,255,255,.18) 0 22%,transparent 23%)}
+.mode::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.5) 50%,transparent 65%);transform:translateX(-130%);animation:sheen 6s ease-in-out infinite}
+.mode:nth-child(2)::after{animation-delay:1s}.mode:nth-child(3)::after{animation-delay:2s}.mode:nth-child(4)::after{animation-delay:3s}.mode:nth-child(5)::after{animation-delay:4s}.mode:nth-child(6)::after{animation-delay:5s}
 @keyframes sheen{0%,62%{transform:translateX(-130%)}100%{transform:translateX(130%)}}
-.mode:active{transform:translateY(4px);box-shadow:0 2px 0 var(--shadow)}
-.mode-puzzle{background:linear-gradient(145deg,#FFE08A,#FFB3D9)}
-.mode-color{background:linear-gradient(145deg,#A8DBFF,#D2B8FF)}
-.mode-count{background:linear-gradient(145deg,#A6F0CB,#9FD8FF)}
-.mode-abc{background:linear-gradient(145deg,#E2CCFF,#FFC2E2)}
-.mode-art{width:72px;height:72px;border-radius:18px;overflow:hidden;background:#fff;display:block;box-shadow:inset 0 0 0 4px rgba(255,255,255,.7)}
-@media (min-width:760px){.mode-art{width:100%;height:auto;aspect-ratio:1}}
+.mode:active{transform:translateY(4px);box-shadow:0 2px 0 var(--e),inset 0 2px 0 rgba(255,255,255,.45)}
+.mode-art{position:relative;flex:none;width:54px;height:54px;border-radius:16px;overflow:hidden;background:#fff;display:block;box-shadow:0 3px 0 rgba(0,0,0,.14)}
 .mode-art canvas,.mode-art svg{width:100%;height:100%;display:block}
-.art-txt{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
-.art-txt b{font-size:44px;font-weight:800;color:var(--tomato)}
-.art-txt span{font-size:20px;letter-spacing:-2px}
-.mode-name{display:block;font-size:26px;font-weight:800;line-height:1}
-.mode-sub{display:block;font-size:15px;font-weight:600;opacity:.8;margin-top:3px}
+.mode-txt{position:relative;display:flex;flex-direction:column;min-width:0;max-width:100%}
+.mode-name{display:block;font-size:clamp(17px,5.2vw,21px);font-weight:800;line-height:1.02;text-shadow:0 2px 0 rgba(0,0,0,.16);white-space:nowrap}
+.mode-sub{display:block;font-size:clamp(12px,3.6vw,14px);font-weight:700;opacity:.92;margin-top:2px;line-height:1.15}
+.mode.wide{grid-column:1/-1;flex-direction:row;align-items:center;gap:12px;padding:8px 14px 8px 8px;min-height:96px}
+.mode.wide .mode-art{width:clamp(80px,24vw,104px);height:auto;aspect-ratio:100/88;background:none;box-shadow:none;overflow:visible;margin:-6px 0 -2px}
+.mode.wide .mode-name{font-size:clamp(22px,7vw,30px)}
+.mode.wide .mode-sub{font-size:clamp(13px,4vw,16px)}
+.mode-new{position:absolute;right:12px;bottom:12px;background:#FFE14D;color:#6B3A00;font-weight:800;font-size:14px;line-height:1;padding:5px 10px;border-radius:999px;box-shadow:0 3px 0 #E0A800;transform:rotate(6deg);animation:hmNew 1.8s ease-in-out infinite}
+@keyframes hmNew{50%{transform:rotate(-4deg) scale(1.08)}}
+.mode-road{--g:linear-gradient(135deg,#FF77C1,#9A7BFF);--e:#7752D6}
+.mode-puzzle{--g:linear-gradient(135deg,#FFB13D,#FF6A8F);--e:#D44D70}
+.mode-color{--g:linear-gradient(135deg,#43BEFF,#6D78FF);--e:#4752D6}
+.mode-count{--g:linear-gradient(135deg,#34D29A,#1FAEC6);--e:#178A9B}
+.mode-abc{--g:linear-gradient(135deg,#B579FF,#FF6FBE);--e:#8A4CD4}
+.mode-logic{--g:linear-gradient(135deg,#FFC53A,#FF8A3D);--e:#D46E28}
+.mode-memo{--g:linear-gradient(135deg,#7FD653,#28BC86);--e:#1F9668}
+@media (min-width:600px){.modes{grid-template-columns:repeat(3,1fr)}.mode{flex-direction:row;align-items:center;gap:10px;min-height:88px}.mode-art{width:64px;height:64px}.mode-name{font-size:22px}}
+@media (max-width:420px){.lead{display:none}}
+/* phone on its side: title and Lili on the left, the games on the right */
+@media (orientation:landscape) and (max-height:520px){
+  .home-body{display:grid;grid-template-columns:minmax(190px,32%) 1fr;grid-template-rows:auto minmax(0,1fr);column-gap:18px;row-gap:8px;overflow:hidden;padding-bottom:2px}
+  .home-body>.install{grid-column:1/-1;grid-row:1}
+  .hero-row{grid-column:1;grid-row:2;flex-direction:column;align-items:flex-start;gap:4px;align-self:center}
+  .home-body h1{font-size:clamp(30px,5.4vw,46px)}
+  .mascot{width:clamp(84px,22vh,120px);align-self:center}
+  .lead{display:none}
+  .modes{grid-column:2;grid-row:2;grid-template-columns:repeat(2,1fr);gap:10px;align-content:start;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 2px 12px;min-height:0;max-height:100%}
+  .mode{flex-direction:row;align-items:center;gap:10px;min-height:0;padding:6px 10px}
+  .mode-art{width:46px;height:46px;border-radius:14px}
+  .mode-name{font-size:19px}
+  .mode.wide{min-height:0;padding:8px 12px 8px 8px}
+  .mode.wide .mode-art{width:72px;margin:0}
+  .mode.wide .mode-name{font-size:24px}
+  .parade{display:block;height:44px}
+  .parade-track svg{width:34px;height:34px}.parade-track svg.pl{width:42px;height:42px}
+}
 
 /* COUNTING */
 #count{background:linear-gradient(165deg,#FFE6F4 0%,#EDE0FF 50%,#D8EEFF 100%)}
@@ -221,10 +256,15 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .abc-key{aspect-ratio:1;max-width:100%;border-radius:18px;background:var(--card);box-shadow:0 4px 0 var(--shadow);font-size:30px;font-weight:800}
 .abc-key[aria-pressed="true"]{background:var(--tomato);color:#fff;box-shadow:0 4px 0 #C9307E}
 .abc-pane{flex:1;min-height:0;display:flex;flex-direction:column}
-.parade{flex:none;overflow:hidden;padding:4px 0 8px;white-space:nowrap;font-size:28px;line-height:1}
-@media (max-height:640px){.parade{display:none}.lead{display:none}}
-.parade-track{display:inline-block;animation:parade 60s linear infinite}
-@keyframes parade{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.parade{flex:none;overflow:hidden;height:58px;position:relative;background:linear-gradient(transparent 0 46%,#FFF1CF 46% 82%,#F2DDA8 82% 88%,transparent 88%)}
+@media (max-height:640px) and (orientation:portrait){.parade{display:none}.lead{display:none}}
+.parade-track{position:absolute;left:0;bottom:4px;display:flex;align-items:flex-end;width:max-content;animation:parade 70s linear infinite}
+.parade-track svg{display:block;flex:none;width:46px;height:46px;margin-right:4px}
+.parade-track svg.pl{width:58px;height:58px;margin-right:22px}
+.parade-track .pb{animation:hmStep .45s ease-in-out infinite alternate}
+.parade-track .pb:nth-child(2n){animation-delay:-.22s}
+@keyframes hmStep{to{transform:translateY(-4px)}}
+@keyframes parade{from{transform:translateX(-50%)}to{transform:translateX(0)}}
 
 /* PICKERS */
 .seg-row{display:flex;align-items:center;gap:10px;padding:0 16px 10px;flex:none;flex-wrap:wrap}
@@ -370,11 +410,6 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .ctile .lock{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:42px;z-index:2;pointer-events:none}
 
 /* HÁDANKY + PEXESO */
-.mode-logic{background:linear-gradient(145deg,#FFE08A,#FFB3B3)}
-.mode-memo{background:linear-gradient(145deg,#B8F0D8,#C9D8FF)}
-.memo-art{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:70%;aspect-ratio:1;margin:auto}
-.memo-art i{display:flex;align-items:center;justify-content:center;background:#fff;border-radius:12px;font-style:normal;font-size:26px;box-shadow:0 3px 0 rgba(0,0,0,.12)}
-.memo-art i.b{background:var(--tomato);color:#fff;font-weight:800}
 .lg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
 .lg-tile{position:relative;min-height:112px;border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 8px;box-shadow:0 4px 0 var(--shadow);background:var(--card)}
 .lg-tile:active{transform:translateY(3px)}
@@ -422,7 +457,6 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .memo-card.up{transform:rotateY(180deg) scaleX(-1)}
 .memo-card.up .face{opacity:1}.memo-card.up .back{opacity:0}
 .memo-card.got{animation:pop .4s;box-shadow:0 0 0 4px var(--leaf),0 4px 0 var(--shadow)}
-@media (min-width:760px){.modes{grid-template-columns:repeat(3,1fr)}}
 @media (prefers-reduced-motion:reduce){.lg-field.in,.lg-card.ok,.memo-card,.memo-card.got{animation:none;transition:none}}
 #memoSeg button{min-height:70px;gap:4px}
 .memo-ico{display:inline-grid;gap:2px;width:40px}
@@ -443,9 +477,77 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 
 @media (prefers-reduced-motion:reduce){
   .grp{animation:none}
-  .parade-track,.mascot,.mode::after,.twinkles i,.home-body h1 span{animation:none}
+  .parade-track,.parade-track .pb,.mascot,.mode::after,.mode-new,.hm-cloud,.hm-rays,.twinkles i,.home-body h1 span{animation:none}
   .win-card{animation:none}
   .piece.anim{transition:none}
+}
+/* DUHOVÁ CESTA */
+#road{background:linear-gradient(180deg,#BFEAFF 0%,#E9F8FF 34%,#D6F5C4 72%,#B9EA9F 100%)}
+#road.rd-play{background:var(--rd-bg,#86CF63)}
+#road .topbar{position:relative;z-index:2}
+#road.rd-play .topbar h2{color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.18)}
+#rdTitle{cursor:pointer}
+.rd-stage{flex:1;min-height:0;position:relative;touch-action:none}
+.rd-stage>svg{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;-webkit-user-select:none;user-select:none}
+.rd-tt{cursor:grab}
+.rd-tt.used{display:none}
+.rd-glow{animation:rdGlow .9s ease-in-out infinite alternate}
+@keyframes rdGlow{from{opacity:.45}to{opacity:1}}
+.rd-target{animation:rdGlow .5s ease-in-out infinite alternate}
+.rd-bubble{animation:rdBubble 1.8s ease-in-out infinite;transform-box:fill-box;transform-origin:20% 100%}
+@keyframes rdBubble{0%,100%{transform:scale(1)}50%{transform:scale(1.12) rotate(-4deg)}}
+.rd-fr-a{transform-box:fill-box;transform-origin:50% 100%}
+.rd-sad .rd-fr-a{animation:rdSway 2.6s ease-in-out infinite}
+@keyframes rdSway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+.rd-happy .rd-fr-a{animation:rdHop .55s cubic-bezier(.3,.7,.4,1) 4}
+@keyframes rdHop{0%,100%{transform:none}40%{transform:translateY(-14%) scale(.96,1.05)}70%{transform:scale(1.05,.95)}}
+.rd-tear{animation:rdTear 2.2s ease-in infinite}
+@keyframes rdTear{0%,30%{transform:none;opacity:0}40%{opacity:1}100%{transform:translateY(9px);opacity:0}}
+.rd-eye,.li-eye{transform-box:fill-box;transform-origin:center;animation:liBlink 4.2s infinite}
+@keyframes liBlink{0%,93%,100%{transform:none}96%{transform:scaleY(.12)}}
+.li-leg{transform-box:fill-box;transform-origin:50% 10%}
+.li-tail{transform-box:fill-box;transform-origin:95% 25%;animation:liTail 2.6s ease-in-out infinite}
+@keyframes liTail{50%{transform:rotate(-9deg)}}
+.li-head{transform-box:fill-box;transform-origin:35% 95%;animation:liHead 3.4s ease-in-out infinite}
+@keyframes liHead{50%{transform:rotate(-3deg)}}
+.rd-trot .li-l1,.rd-trot .li-l4{animation:liLegA .3s ease-in-out infinite alternate}
+.rd-trot .li-l2,.rd-trot .li-l3{animation:liLegB .3s ease-in-out infinite alternate}
+@keyframes liLegA{from{transform:rotate(-26deg)}to{transform:rotate(24deg)}}
+@keyframes liLegB{from{transform:rotate(24deg)}to{transform:rotate(-26deg)}}
+.rd-trot .li-bob{animation:liBob .15s ease-in-out infinite alternate}
+@keyframes liBob{to{transform:translateY(-3px)}}
+.rd-cheer .li-bob{animation:rdHop .5s cubic-bezier(.3,.7,.4,1) 3;transform-box:fill-box;transform-origin:50% 100%}
+.rd-shake{animation:shake .4s}
+/* picker */
+.rd-pick{padding-top:2px}
+.rd-parade{position:relative;height:96px;margin:0 0 12px;border-radius:26px;overflow:hidden;
+  background:linear-gradient(#C8F0FF 0 58%,#8ED46A 58%);box-shadow:0 5px 0 rgba(60,120,60,.25),inset 0 0 0 3px rgba(255,255,255,.6)}
+.rd-parade::before{content:"";position:absolute;left:0;right:0;top:63%;height:16%;background:repeating-linear-gradient(90deg,#FFF2D2 0 30px,#F7E3B6 30px 34px);opacity:.95}
+.rd-parade-in{position:absolute;left:10px;bottom:6px;display:flex;align-items:flex-end;gap:2px;animation:rdWalk 22s linear infinite}
+.rd-parade-in svg{display:block;flex:none}
+.rd-parade-in .rd-pf{animation:rdBounce .5s ease-in-out infinite alternate}
+.rd-parade-in .rd-pf:nth-child(2n){animation-delay:-.25s}
+@keyframes rdBounce{to{transform:translateY(-4px)}}
+@keyframes rdWalk{0%{transform:translateX(-30%)}100%{transform:translateX(calc(100vw - 20px))}}
+.rd-say{position:absolute;right:14px;top:10px;background:#fff;border-radius:16px;padding:6px 12px;font-weight:800;font-size:16px;box-shadow:0 3px 0 rgba(0,0,0,.12);color:var(--ink)}
+.rd-world{position:relative;border-radius:28px;padding:12px 12px 14px;margin:0 0 14px;box-shadow:0 6px 0 rgba(40,60,90,.22);overflow:hidden}
+.rd-world::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 90% 10%,rgba(255,255,255,.35),transparent 40%)}
+.rd-world h3{position:relative;z-index:1;margin:2px 4px 10px;color:#fff;font-size:21px;font-weight:800;line-height:1.1;text-shadow:0 2px 0 rgba(0,0,0,.18);display:flex;align-items:center;gap:8px}
+.rd-world h3 small{margin-left:auto;font-size:15px;background:rgba(255,255,255,.3);padding:2px 10px;border-radius:999px}
+.rd-lvls{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.rd-lv{position:relative;aspect-ratio:1;border-radius:24px;background:rgba(255,255,255,.92);box-shadow:0 5px 0 rgba(0,0,0,.16);display:flex;align-items:center;justify-content:center;transition:transform .08s}
+.rd-lv:active{transform:translateY(3px)}
+.rd-lv svg{width:92%;height:92%;display:block}
+.rd-lv.locked{background:rgba(255,255,255,.45)}
+.rd-lv.locked svg{opacity:.35;filter:grayscale(1)}
+.rd-lv .lock{position:absolute;font-size:24px;line-height:1}
+.rd-lv .st{position:absolute;right:-5px;top:-7px;font-size:22px;line-height:1;filter:drop-shadow(0 2px 0 rgba(0,0,0,.15))}
+.rd-lv .num{position:absolute;left:6px;top:4px;font-weight:800;font-size:14px;color:var(--muted)}
+.rd-lv.next{box-shadow:0 0 0 4px #FFE066,0 5px 0 rgba(0,0,0,.16);animation:rdPulse 1.3s ease-in-out infinite}
+@keyframes rdPulse{50%{transform:scale(1.07)}}
+.win-art svg.rd-win{width:250px;height:150px;border-radius:0;overflow:visible}
+@media (prefers-reduced-motion:reduce){
+  .li-tail,.li-head,.li-eye,.rd-eye,.rd-bubble,.rd-sad .rd-fr-a,.rd-tear,.rd-parade-in,.rd-parade-in .rd-pf,.rd-lv.next{animation:none}
 }
 </style>
 </head>
@@ -457,6 +559,7 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 <div id="app">
   <!-- HOME -->
   <section id="home" class="screen">
+    <div class="home-scene" aria-hidden="true"><div class="home-sky" id="homeSky"></div><div class="home-hills" id="homeHills"></div></div>
     <div class="home-top">
       <div class="stars" aria-label="Složená zvířátka">⭐ <span id="starCount">0</span></div>
       <button class="btn" id="muteBtn" aria-label="Zvuk"></button>
@@ -467,36 +570,41 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
         <span>Chceš hru jako aplikaci bez lišt prohlížeče? Ťukni na <span class="share"><svg viewBox="0 0 24 24"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M6 11H5v10h14V11h-1"/></svg></span> a vyber <b>Přidat na plochu</b>.</span>
         <button class="x" id="installClose" aria-label="Zavřít">✕</button>
       </div>
-      <div class="hero-row"><h1>Zvířátková <span>dílna</span></h1><div class="mascot" id="mascot" role="img" aria-label="Jednorožec">🦄</div></div>
+      <div class="hero-row"><h1>Zvířátková <span>dílna</span></h1><div class="mascot" id="mascot" role="img" aria-label="Jednorožčice Lili"></div></div>
       <p class="lead">Jednorožci, třpytky, zvířátka, čísla i písmenka.</p>
       <div class="modes">
+        <button class="mode mode-road wide" id="goRoad">
+          <span class="mode-art" id="artRoad"></span>
+          <span class="mode-txt"><span class="mode-name">Duhová cesta</span><span class="mode-sub">Zachraň zvířátka!</span></span>
+          <span class="mode-new">Nové!</span>
+        </button>
         <button class="mode mode-puzzle" id="goPuzzle">
-          <span class="mode-art"><canvas id="artPuzzle" width="224" height="224"></canvas></span>
-          <span><span class="mode-name">Puzzle</span><span class="mode-sub" id="puzzleCount"></span></span>
+          <span class="mode-art" id="artPuzzle"></span>
+          <span class="mode-txt"><span class="mode-name">Puzzle</span><span class="mode-sub" id="puzzleCount"></span></span>
         </button>
         <button class="mode mode-color" id="goColor">
           <span class="mode-art" id="artColor"></span>
-          <span><span class="mode-name">Omalovánky</span><span class="mode-sub" id="colorCount"></span></span>
+          <span class="mode-txt"><span class="mode-name">Omalovánky</span><span class="mode-sub" id="colorCount"></span></span>
         </button>
         <button class="mode mode-count" id="goCount">
-          <span class="mode-art"><span class="art-txt"><b>3</b><span>🐥🐥🐥</span></span></span>
-          <span><span class="mode-name">Čísla</span><span class="mode-sub">učíme se 1 až 10</span></span>
+          <span class="mode-art" id="artCount"></span>
+          <span class="mode-txt"><span class="mode-name">Čísla</span><span class="mode-sub">učíme se 1 až 10</span></span>
         </button>
         <button class="mode mode-abc" id="goAbc">
-          <span class="mode-art"><span class="art-txt"><b>A</b><span>🍍</span></span></span>
-          <span><span class="mode-name">Abeceda</span><span class="mode-sub">písmenka a slova</span></span>
+          <span class="mode-art" id="artAbc"></span>
+          <span class="mode-txt"><span class="mode-name">Abeceda</span><span class="mode-sub">písmenka a slova</span></span>
         </button>
         <button class="mode mode-logic" id="goLogic">
-          <span class="mode-art"><span class="art-txt"><b>?</b><span>🦊🐻🐸</span></span></span>
-          <span><span class="mode-name">Hádanky</span><span class="mode-sub">logika a pozornost</span></span>
+          <span class="mode-art" id="artLogic"></span>
+          <span class="mode-txt"><span class="mode-name">Hádanky</span><span class="mode-sub">logika a pozornost</span></span>
         </button>
         <button class="mode mode-memo" id="goMemo">
-          <span class="mode-art"><span class="memo-art"><i class="b">?</i><i>🐶</i><i>🐶</i><i class="b">?</i></span></span>
-          <span><span class="mode-name">Pexeso</span><span class="mode-sub">najdi dvojice</span></span>
+          <span class="mode-art" id="artMemo"></span>
+          <span class="mode-txt"><span class="mode-name">Pexeso</span><span class="mode-sub">najdi dvojice</span></span>
         </button>
       </div>
     </div>
-    <div class="parade" aria-hidden="true"><span class="parade-track" id="parade"></span></div>
+    <div class="parade" aria-hidden="true"><div class="parade-track" id="parade"></div></div>
   </section>
 
   <!-- PUZZLE PICKER -->
@@ -644,6 +752,20 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
     <div class="memo-board" id="memoBoard"></div>
   </section>
 
+  <!-- DUHOVÁ CESTA -->
+  <section id="road" class="screen" hidden>
+    <div class="topbar">
+      <button class="btn" id="rdBack" aria-label="Zpět"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <h2 id="rdTitle">Duhová cesta</h2>
+      <div class="stars" id="rdCount"></div>
+      <button class="btn" id="rdHelp" aria-label="Ukaž mi, jak na to" hidden><svg viewBox="0 0 24 24"><path d="M9 11V5.5a1.5 1.5 0 013 0V10m0-1.5a1.5 1.5 0 013 0V11m0-1a1.5 1.5 0 013 0v4.5c0 3.6-2.4 6.5-6 6.5-2.6 0-4.1-1.2-5.4-3.3L4.8 14a1.5 1.5 0 012.5-1.6L9 14.5"/></svg></button>
+    </div>
+    <div class="scroll rd-pick" id="rdPick">
+      <div class="rd-parade" id="rdParade"></div>
+      <div id="rdWorlds"></div>
+    </div>
+    <div class="rd-stage" id="rdStage" hidden></div>
+  </section>
   <div class="overlay" id="win" hidden>
     <div class="win-card">
       <div class="win-art" id="winArt"></div>
@@ -1345,25 +1467,24 @@ function renderHome() {
   $('#starCount').textContent = `${n} / ${ANIMALS.length}`;
   $('#puzzleCount').textContent = `${ANIMALS.length} zvířátek`;
   $('#colorCount').textContent = `${PAGES.length} obrázků`;
+  const rn = rdDone().size;
+  document.querySelector('#goRoad .mode-new').hidden = rn > 0;
+  document.querySelector('#goRoad .mode-sub').textContent = rn ? `Zachráněno ${rn} z ${RD_LV.length}` : 'Zachraň zvířátka!';
 }
 function drawHomeArt() {
-  const cv = $('#artPuzzle'), ctx = cv.getContext('2d'), S = cv.width;
-  const a0 = ANIMALS.find(a => a.e === '🦊') || ANIMALS[0];
-  drawScene(ctx, S, a0, true);
-  const t = document.createElement('canvas'); t.width = t.height = S; const tx = t.getContext('2d');
-  drawEmoji(tx, a0.e, S / 2, S / 2, S * .62);
-  const dk = document.createElement('canvas'); dk.width = dk.height = S; const dx = dk.getContext('2d');
-  dx.drawImage(t, 0, 0); dx.globalCompositeOperation = 'source-atop'; dx.fillStyle = 'rgba(25,20,55,.7)'; dx.fillRect(0, 0, S, S);
-  ctx.drawImage(dk, 0, 0);
-  ctx.save(); ctx.beginPath(); ctx.rect(0, 0, S * .56, S); ctx.clip(); ctx.drawImage(t, 0, 0); ctx.restore();
-  ctx.save(); ctx.translate(S * .1, -S * .06); ctx.rotate(.18); ctx.beginPath(); ctx.rect(S * .56, 0, S, S); ctx.clip(); ctx.drawImage(t, 0, 0); ctx.restore();
+  // new look: drawn scenery, Lili as the mascot, drawn pictures on the cards, a parade of friends
+  $('#homeSky').innerHTML = homeSkySvg();
+  $('#homeHills').innerHTML = homeHillsSvg();
+  $('#mascot').innerHTML = homeMascotSvg();
+  ['road', 'puzzle', 'count', 'abc', 'logic', 'memo'].forEach(k => { $('#art' + k[0].toUpperCase() + k.slice(1)).innerHTML = homeArtSvg(k); });
   const holder = $('#artColor');
   holder.innerHTML = pageSvg(PAGES.find(pg => pg.id === 'uni-baby'));
   const svg = holder.querySelector('svg');
   svg.querySelector('.r').style.fill = '#FFE4F5';
   svg.querySelectorAll('[data-d]').forEach(el => { el.style.fill = `url(#${el.dataset.d})`; });
-  const list = BASE_ANIMALS.flatMap((a, i) => i % 3 === 0 ? ['🦄', a.e] : [a.e]).join(' ');
-  $('#parade').textContent = list + ' ' + list + ' ';
+  const kinds = Object.keys(RD_FRIENDS);
+  const one = kinds.map(k => `<svg class="pb" viewBox="0 0 100 100">${friendSvg(k, 'happy')}</svg>`).join('') + `<svg class="pb pl" viewBox="0 0 100 100"><g class="rd-trot">${liliSvg()}</g></svg>`;
+  $('#parade').innerHTML = one + one;
 }
 $('#goPuzzle').addEventListener('click', () => { ac(); renderPuzzlePicker(); show('pickPuzzle'); });
 $('#goColor').addEventListener('click', () => { ac(); renderColorPicker(); show('pickColor'); });
@@ -2957,6 +3078,904 @@ $('#memoBoard').addEventListener('click', ev => {
 $('#goLogic').addEventListener('click', () => { ac(); startLogic(); });
 $('#goMemo').addEventListener('click', () => { ac(); startMemo(); });
 
+/* ---------- DUHOVÁ CESTA: KRESBY ---------- */
+// All drawings are SVG markup in a 100×100 box, flat shapes with soft coloured outlines.
+function rdShade(hex, k) { // k < 0 darker, k > 0 lighter
+  const n = parseInt(hex.slice(1), 16), ch = [n >> 16, n >> 8 & 255, n & 255];
+  return '#' + ch.map(v => Math.round(k < 0 ? v * (1 + k) : v + (255 - v) * k)).map(v => v.toString(16).padStart(2, '0')).join('');
+}
+const rdA = (o) => Object.entries(o).map(([k, v]) => `${k}="${v}"`).join(' ');
+const rdEl = (tag, o) => `<${tag} ${rdA(o)}/>`;
+const rdC = (cx, cy, r, fill, x = {}) => rdEl('circle', { cx, cy, r, fill, ...x });
+const rdE = (cx, cy, rx, ry, fill, x = {}) => rdEl('ellipse', { cx, cy, rx, ry, fill, ...x });
+const rdP = (d, fill, x = {}) => rdEl('path', { d, fill, ...x });
+const rdS = (d, stroke, w, x = {}) => rdEl('path', { d, fill: 'none', stroke, 'stroke-width': w, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', ...x });
+const rdLine = (fill, k = -.2, w = 1.8) => ({ stroke: rdShade(fill, k), 'stroke-width': w, 'stroke-linejoin': 'round' });
+
+/* --- Lili, the unicorn (faces right; groups are animated by CSS) --- */
+const LI_MANE = ['#FF78BF', '#A57CFF', '#5FCFF5', '#FFD45E'];
+// rainbow mane: one scalloped lock shape, repeated smaller in three colours (the head covers the inner part)
+const LI_MANE_D = 'M67 18.5 C61 10.5 50 12 49.6 21.6 C41 21 37.6 29.6 42.6 35.6 C34.6 39.6 35.6 49.6 43 50.6 C39.6 57.6 47.6 63.6 54.6 59 C58 57 60 53 60.6 49 L66 30 Z';
+function liliSvg() {
+  const LN = '#D5C6F0', W = '#FFFFFF';
+  const leg = (x, cls, far) => `<g class="li-leg ${cls}"><rect x="${x}" y="${far ? 71 : 72}" width="9" height="${far ? 18 : 19}" rx="4.5" fill="${far ? '#F1EBFC' : W}" stroke="${LN}" stroke-width="1.6"/><rect x="${x}" y="${far ? 84.5 : 86}" width="9" height="5" rx="2.5" fill="${far ? '#C7A9FF' : '#A57CFF'}"/></g>`;
+  return `<g class="li"><ellipse cx="52" cy="94" rx="27" ry="4.4" fill="rgba(60,30,100,.16)"/><g class="li-bob">` +
+    `<g class="li-tail">` +
+      rdP('M33 60 C20 51 7 59 10 74 C12 84 23 87 25 79 C18 77 17 68 23 65.5 C27 64 31 65.5 33 66.5 Z', LI_MANE[0]) +
+      rdP('M32.5 63.5 C24 61 16.5 67.5 18.6 76 C19.8 80.6 24.8 81.6 25.8 78 C22.4 75 23.4 70.2 27.8 68.8 C30 68.2 31.6 69 32.6 69.6 Z', LI_MANE[1]) +
+      rdP('M31.4 67 C27 66.6 23.8 70.2 25 73.6 C25.8 75.6 27.6 75.6 28.2 74.2 C27 72.2 28.4 70.8 30.8 71.2 Z', LI_MANE[2]) +
+    `</g>` +
+    leg(36, 'li-l1', true) + leg(60, 'li-l2', true) +
+    rdP('M29.5 66 C29.5 53 42.5 48 55 48.5 C68 49 76 56 75.5 66.5 C75 77 65 81.6 52.5 81.6 C40 81.6 29.5 77.5 29.5 66 Z', W, { stroke: LN, 'stroke-width': 1.8 }) +
+    rdP('M33.5 72.5 C42 80 63 80.5 72.5 72 C68.5 78.8 61 81.6 52.5 81.6 C43 81.6 36.6 78.6 33.5 72.5 Z', '#F0E8FF') +
+    rdP('M38 62.5 C36.2 60 32.8 61.4 34 64.4 C34.8 66.4 38 68.6 38 68.6 C38 68.6 41.2 66.4 42 64.4 C43.2 61.4 39.8 60 38 62.5 Z', '#FF8FCB') +
+    leg(41, 'li-l3') + leg(64, 'li-l4') +
+    `<g class="li-head">` +
+      [[1, 0], [.84, 1], [.68, 2]].map(([k, i]) => `<path d="${LI_MANE_D}" fill="${LI_MANE[i]}" transform="translate(${(66 * (1 - k)).toFixed(2)} ${(40 * (1 - k)).toFixed(2)}) scale(${k})"/>`).join('') +
+      rdS('M47 27 Q43 32 44.6 37 M41.6 43 Q40 48 43 51', '#FFFFFF', 1.6, { opacity: .75 }) +
+      rdC(68.5, 38.5, 19.5, W, { stroke: LN, 'stroke-width': 1.8 }) +
+      rdE(81, 45.5, 11.5, 9.6, '#FFEAF5', { stroke: LN, 'stroke-width': 1.6 }) +
+      rdP('M57.5 26.5 C55.5 18 56.6 11 59.8 6.8 C64.4 11.6 66.6 18 66.4 24.6 Z', W, { stroke: LN, 'stroke-width': 1.6 }) +
+      rdP('M59.6 22.6 C58.8 17.4 59.4 13.2 60.6 10.8 C62.6 14 63.8 17.4 63.6 21.4 Z', '#FFB6DB') +
+      rdP('M67.6 21.6 L79.6 2.6 L75.6 23.6 Z', '#FFD54D', { stroke: '#EFAE36', 'stroke-width': 1.4, 'stroke-linejoin': 'round' }) +
+      rdS('M70.4 16.6 L76.4 14.4 M72.8 11.6 L77.4 10.2', '#EFA03A', 1.6) +
+      rdP('M57.6 23.6 C58.6 17.6 64.6 14.6 70.6 17.4 C73.6 18.8 74.4 21.6 73 23.4 C70.6 20.6 66.6 20.6 64.6 23.6 C63 26.2 63.4 29.4 65 31.4 C60.6 31.2 57 27.8 57.6 23.6 Z', LI_MANE[0]) +
+      rdP('M60.6 24.4 C61.4 21 64.6 19.4 67.6 20.2 C65.4 21.4 63.8 23.6 63.6 26.6 C63.4 28.2 63.8 29.6 64.6 30.6 C61.8 29.6 60.2 27.2 60.6 24.4 Z', LI_MANE[1]) +
+      rdS('M62.4 19.6 Q66 18 69.4 19', '#FFFFFF', 1.3, { opacity: .8 }) +
+      `<g class="li-eye">` + rdE(72.4, 36.6, 4.4, 5.8, '#3B2A5E') + rdC(74, 34.2, 1.7, '#fff') + rdC(71.2, 39.2, .9, '#fff') + `</g>` +
+      rdS('M75.8 32 L79 29.6 M77 34.8 L80.6 33.6', '#3B2A5E', 1.4) +
+      rdE(77.6, 46.4, 4, 2.6, '#FF9FCF', { opacity: .85 }) +
+      rdE(87.6, 43, 1.2, 1.6, '#E7A2C8') +
+      rdS('M80.5 50.4 Q84.4 53.6 88.4 50', '#C9789F', 1.5) +
+    `</g></g></g>`;
+}
+
+/* --- the animal friends (sitting, front view). mood: 'sad' | 'happy' | '' --- */
+const RD_FRIENDS = {
+  kitten:   { name: 'Koťátko',  body: '#FFB45E', belly: '#FFE6C4' },
+  chick:    { name: 'Kuřátko',  body: '#FFD84A', belly: '#FFEA94' },
+  bunny:    { name: 'Zajíček',  body: '#F5F1FB', belly: '#FFFFFF', line: '#D2C7E6' },
+  puppy:    { name: 'Štěňátko', body: '#F3D3A4', belly: '#FFF2DF' },
+  hedgehog: { name: 'Ježeček',  body: '#F6DDBC', belly: '#FBEBD5' },
+  squirrel: { name: 'Veverka',  body: '#E8914A', belly: '#FFE6C6' },
+  owl:      { name: 'Sovička',  body: '#9C7BE0', belly: '#E9DDFF' },
+  fawn:     { name: 'Koloušek', body: '#D99A5C', belly: '#FBE8D2' },
+  duck:     { name: 'Kachňátko', body: '#FFD84A', belly: '#FFEA94' },
+  frog:     { name: 'Žabka',    body: '#7BD65C', belly: '#DDF8B0' },
+  turtle:   { name: 'Želvička', body: '#A7DD7C', belly: '#E3F6C9' },
+  otter:    { name: 'Vydra',    body: '#A97452', belly: '#EFD2B2' },
+  lamb:     { name: 'Jehňátko', body: '#FFFFFF', belly: '#FFE4D8', line: '#DCD2EA' },
+  panda:    { name: 'Pandička', body: '#FFFFFF', belly: '#FFFFFF', line: '#D5D3E2' },
+  piglet:   { name: 'Prasátko', body: '#FFB3C8', belly: '#FFD3DF' },
+  dragon:   { name: 'Dráček',   body: '#A08BFF', belly: '#FFEBB8' }
+};
+const RD_INK = '#2E2142';
+function rdEyes(mood, x1, x2, y, s = 1, col = RD_INK) {
+  if (mood === 'happy') return [x1, x2].map(x => rdS(`M${x - 4.8 * s} ${y + 1.2} Q${x} ${y - 5.4 * s} ${x + 4.8 * s} ${y + 1.2}`, col, 2.6 * s)).join('');
+  let o = [x1, x2].map(x => `<g class="rd-eye">${rdE(x, y, 4.4 * s, 5.6 * s, col)}${rdC(x + 1.6 * s, y - 2.3 * s, 1.75 * s, '#fff')}${rdC(x - 1.2 * s, y + 2.1 * s, .9 * s, '#fff')}</g>`).join('');
+  if (mood === 'sad') o += rdS(`M${x1 - 5.5 * s} ${y - 8.2 * s} L${x1 + 3.4 * s} ${y - 11.4 * s} M${x2 + 5.5 * s} ${y - 8.2 * s} L${x2 - 3.4 * s} ${y - 11.4 * s}`, col, 2.1 * s);
+  return o;
+}
+function rdMouth(mood, x, y, col = RD_INK, w = 1) {
+  if (mood === 'happy') return rdP(`M${x - 5.6 * w} ${y - 1} Q${x} ${y + 8} ${x + 5.6 * w} ${y - 1} Z`, '#7A2E4E') + rdP(`M${x - 3 * w} ${y + 3} Q${x} ${y + 6.2} ${x + 3 * w} ${y + 3} Q${x} ${y + 1.4} ${x - 3 * w} ${y + 3} Z`, '#FF84AA');
+  if (mood === 'sad') return rdS(`M${x - 4 * w} ${y + 2.6} Q${x} ${y - 1.4} ${x + 4 * w} ${y + 2.6}`, col, 2);
+  return rdS(`M${x - 3.6 * w} ${y} Q${x} ${y + 3} ${x + 3.6 * w} ${y}`, col, 2);
+}
+const rdCheeks = (x1, x2, y, r = 4.6) => rdE(x1, y, r, r * .62, '#FF8FB8', { opacity: .55 }) + rdE(x2, y, r, r * .62, '#FF8FB8', { opacity: .55 });
+const rdTear = (x, y) => `<path class="rd-tear" d="M${x} ${y} C${x - 2.6} ${y + 4} ${x - 2.6} ${y + 6.6} ${x} ${y + 7.4} C${x + 2.6} ${y + 6.6} ${x + 2.6} ${y + 4} ${x} ${y} Z" fill="#7FD3FF"/>`;
+function rdSpikes(cx, cy, r1, r2, n, a0, a1) {
+  let d = '';
+  for (let i = 0; i <= n * 2; i++) {
+    const a = a0 + (a1 - a0) * i / (n * 2), r = i % 2 ? r2 : r1;
+    d += (i ? 'L' : 'M') + (cx + r * Math.cos(a)).toFixed(1) + ' ' + (cy + r * Math.sin(a)).toFixed(1) + ' ';
+  }
+  return d + 'Z';
+}
+function rdScallop(cx, cy, R, n, b) {
+  let d = '';
+  for (let i = 0; i < n; i++) {
+    const a0 = i / n * Math.PI * 2, a1 = (i + 1) / n * Math.PI * 2, am = (a0 + a1) / 2;
+    if (!i) d += `M${(cx + R * Math.cos(a0)).toFixed(1)} ${(cy + R * Math.sin(a0)).toFixed(1)} `;
+    d += `Q${(cx + (R + b * 2) * Math.cos(am)).toFixed(1)} ${(cy + (R + b * 2) * Math.sin(am)).toFixed(1)} ${(cx + R * Math.cos(a1)).toFixed(1)} ${(cy + R * Math.sin(a1)).toFixed(1)} `;
+  }
+  return d + 'Z';
+}
+function friendSvg(kind, mood = '') {
+  const F = RD_FRIENDS[kind], B = F.body, L = F.line || rdShade(B, -.2), ln = { stroke: L, 'stroke-width': 1.8, 'stroke-linejoin': 'round' };
+  const shadow = rdE(50, 94, 25, 4.2, 'rgba(40,30,70,.16)');
+  const feet = (c = B) => rdE(40.5, 90.5, 7, 4.2, c, ln) + rdE(59.5, 90.5, 7, 4.2, c, ln);
+  const torso = (cy = 75, rx = 20.5, ry = 16.5) => rdE(50, cy, rx, ry, B, ln) + rdE(50, cy + 4, rx * .6, ry * .62, F.belly);
+  const head = (cy = 46, rx = 25.5, ry = 22.5) => rdE(50, cy, rx, ry, B, ln);
+  const face = (y = 47, dx = 10, s = 1) => rdEyes(mood, 50 - dx, 50 + dx, y, s) + rdCheeks(50 - dx - 5.5, 50 + dx + 5.5, y + 7.5) + (mood === 'sad' ? rdTear(50 - dx - 6, y + 4) : '');
+  let o = shadow;
+  switch (kind) {
+    case 'kitten':
+      o += rdP('M64 84 C80 86 88 72 83 61 C80.6 55.6 74.6 57.4 77 62.6 C80.4 70 75.6 77.6 64.6 76.6 Z', B, ln) + rdS('M79 62 L83.4 60.6 M81.6 70 L86 70.6', rdShade(B, -.22), 2.2);
+      o += feet() + torso();
+      o += rdP('M27 37 C24.5 26 26 17 30.5 10.5 C37.5 14.5 42.5 20.5 45.5 26.5 Z', B, ln) + rdP('M73 37 C75.5 26 74 17 69.5 10.5 C62.5 14.5 57.5 20.5 54.5 26.5 Z', B, ln);
+      o += rdP('M30.5 31 C29.6 24.6 30.6 19.2 32.6 15.6 C36.6 18.4 39.6 22 41.4 25.6 Z', '#FF9FB6') + rdP('M69.5 31 C70.4 24.6 69.4 19.2 67.4 15.6 C63.4 18.4 60.4 22 58.6 25.6 Z', '#FF9FB6');
+      o += head() + rdS('M50 25 L50 31.5 M44 26 L45.4 31 M56 26 L54.6 31', rdShade(B, -.22), 2.4);
+      o += face() + rdP('M47.4 54.6 L52.6 54.6 L50 57.6 Z', '#FF7A93');
+      o += mood === 'happy' ? rdMouth(mood, 50, 59.5) : rdS('M50 57.6 Q47 61.2 44.4 59 M50 57.6 Q53 61.2 55.6 59', RD_INK, 1.8);
+      o += rdS('M33 56 L21 54 M33.4 59.4 L22 61.6 M67 56 L79 54 M66.6 59.4 L78 61.6', rdShade(B, -.35), 1.3);
+      break;
+    case 'chick': case 'duck': {
+      const duck = kind === 'duck';
+      if (duck) o = rdE(50, 90, 33, 7.5, '#8FDBFF') + rdS('M24 90 Q30 87 36 90 M64 90 Q70 87 76 90', '#D8F4FF', 1.8);
+      else o += rdP('M38 88 L36 94 M38 88 L40 94.6 M38 88 L43 93 M62 88 L60 94.6 M62 88 L64 94 M62 88 L57 93', 'none', { stroke: '#FF9A3C', 'stroke-width': 2.4, 'stroke-linecap': 'round' });
+      o += rdP(duck ? 'M47 31 C44 23 48 17 54 16 C51.6 21 53.6 25.6 51 31 Z' : 'M48 31 C44.6 23.6 46.6 17.6 51.6 15.6 C50.6 20.6 53 25 50.6 31 Z M51 31 C53 25 57.4 22.6 61.4 23 C58.4 25.6 56.8 28.6 53.6 32 Z', B, ln);
+      o += rdC(50, 60, 30, B, ln) + rdE(50, 70, 18, 13.5, F.belly);
+      o += rdP('M21.6 58 C15 61 15.4 71.6 23.6 73.6 C26.6 69.6 26 62.6 21.6 58 Z', rdShade(B, -.06), ln) + rdP('M78.4 58 C85 61 84.6 71.6 76.4 73.6 C73.4 69.6 74 62.6 78.4 58 Z', rdShade(B, -.06), ln);
+      o += rdEyes(mood, 40, 60, 53) + rdCheeks(33, 67, 61.5) + (mood === 'sad' ? rdTear(34, 57) : '');
+      o += duck ? rdE(50, 63.6, 8.6, 4.4, '#FF9A3C', { stroke: '#E07A22', 'stroke-width': 1.4 }) + rdS('M43.4 63.6 Q50 65.6 56.6 63.6', '#E07A22', 1.3)
+        : rdP('M44.6 59.4 L55.4 59.4 L50 66 Z', '#FF9A3C', { stroke: '#E07A22', 'stroke-width': 1.3, 'stroke-linejoin': 'round' }) + rdS('M44.6 59.4 L55.4 59.4', '#FFC27A', 1.2);
+      if (mood === 'happy') o += rdP('M45.6 66.6 Q50 71 54.4 66.6 Z', '#7A2E4E');
+      break;
+    }
+    case 'bunny':
+      o += rdC(72, 81, 7.5, '#FFFFFF', ln) + feet() + torso();
+      o += rdE(39, 19, 7.2, 19.5, B, { ...ln, transform: 'rotate(-12 39 19)' }) + rdE(61, 19, 7.2, 19.5, B, { ...ln, transform: 'rotate(12 61 19)' });
+      o += rdE(39, 20, 3.6, 14, '#FFB3CF', { transform: 'rotate(-12 39 20)' }) + rdE(61, 20, 3.6, 14, '#FFB3CF', { transform: 'rotate(12 61 20)' });
+      o += head(48, 24, 21) + face(47);
+      o += rdE(50, 55.4, 3.2, 2.3, '#FF8FB1') + rdS('M50 57.6 L50 59.6 M50 59.6 Q47 61.6 44.8 60 M50 59.6 Q53 61.6 55.2 60', RD_INK, 1.6);
+      o += mood === 'happy' ? rdMouth(mood, 50, 61.5, RD_INK, .8) : rdP('M48 60.2 L52 60.2 L52 64 L48 64 Z', '#fff', { stroke: L, 'stroke-width': 1 });
+      break;
+    case 'puppy':
+      o += rdP('M66 80 C76 78 80 70 78 64 C76 62 73.6 63.4 74 66 C74.4 70.6 70 74 65 74 Z', B, ln) + feet() + torso();
+      o += head(46, 24.5, 22) + rdE(60.5, 45, 8.2, 7.8, '#D69D63');
+      o += rdP('M29 31 C17 34 13.6 53 22 61 C29.6 60.4 32.6 49.6 33.6 39 Z', '#A8703F', { stroke: '#8A5A31', 'stroke-width': 1.6 }) + rdP('M71 31 C83 34 86.4 53 78 61 C70.4 60.4 67.4 49.6 66.4 39 Z', '#A8703F', { stroke: '#8A5A31', 'stroke-width': 1.6 });
+      o += rdE(50, 57, 11.5, 8.2, F.belly) + face(46);
+      o += rdP('M45.6 52.6 Q50 50.6 54.4 52.6 Q53.6 56.4 50 57 Q46.4 56.4 45.6 52.6 Z', '#3A2A3A');
+      o += mood === 'happy' ? rdP('M44.6 59 Q50 63 55.4 59 Q55 66 50 68 Q45 66 44.6 59 Z', '#FF7FA8', { stroke: '#D9577F', 'stroke-width': 1 }) : rdMouth(mood, 50, 60);
+      break;
+    case 'hedgehog':
+      o += rdP(rdSpikes(50, 66, 27, 36, 9, Math.PI * .92, Math.PI * 2.08), '#8C5A43', { stroke: '#6E4433', 'stroke-width': 1.6, 'stroke-linejoin': 'round' });
+      o += rdP(rdSpikes(50, 46, 24, 33, 8, Math.PI * .95, Math.PI * 2.05), '#9E6A50', { stroke: '#6E4433', 'stroke-width': 1.6, 'stroke-linejoin': 'round' });
+      o += feet('#E9C49C') + torso(76, 19, 14);
+      o += rdC(30, 36, 5.4, B, ln) + rdC(70, 36, 5.4, B, ln) + rdC(30, 36, 2.6, '#FFB3C2') + rdC(70, 36, 2.6, '#FFB3C2');
+      o += head(49, 22, 19.5) + face(47, 9) + rdE(50, 57, 7.6, 5.6, F.belly, ln) + rdC(50, 55, 3, '#3A2A3A');
+      o += rdMouth(mood, 50, 61.5, RD_INK, .8);
+      break;
+    case 'squirrel':
+      o += rdP('M63 88 C88 88 96 60 86 43 C78 30 61 33 64.6 45 C67.6 54 80 55.6 77.6 67 C75.6 77 65 77 61 79 Z', '#D9772F', { stroke: '#B85E1F', 'stroke-width': 1.8 });
+      o += rdS('M70 46 C76 52 84 56 82 68', '#F2A35A', 3);
+      o += feet() + torso();
+      o += rdP('M30 33 L28.6 13.6 L42.4 25 Z', B, ln) + rdP('M70 33 L71.4 13.6 L57.6 25 Z', B, ln) + rdS('M29 15 L27 9 M29.4 15 L31.6 9.6 M71 15 L73 9 M70.6 15 L68.4 9.6', '#B85E1F', 2);
+      o += head(46, 23.5, 21.5) + rdE(50, 56.6, 10, 7, F.belly) + face(45.5, 9.6);
+      o += rdE(50, 53.4, 3, 2.2, '#5A3A2A') + rdMouth(mood, 50, 58.6, RD_INK, .8);
+      if (mood === 'happy') o += rdE(50, 81, 6.2, 6.8, '#C98A4A', { stroke: '#9B6532', 'stroke-width': 1.4 }) + rdP('M43.4 78 Q50 70.6 56.6 78 Z', '#8A5A31') + rdS('M50 72.6 L51 69.6', '#8A5A31', 1.6);
+      break;
+    case 'owl':
+      o += rdE(50, 64, 28, 30, B, ln) + rdE(50, 74, 17, 15, F.belly);
+      o += rdS('M42 70 l3 3 l3 -3 M52 70 l3 3 l3 -3 M47 78 l3 3 l3 -3', rdShade(B, -.1), 1.8);
+      o += rdP('M23 54 C17 62 18 76 26 84 C30 76 30 64 23 54 Z', rdShade(B, -.12), ln) + rdP('M77 54 C83 62 82 76 74 84 C70 76 70 64 77 54 Z', rdShade(B, -.12), ln);
+      o += rdP('M27 34 L22 16 L39 27 Z', B, ln) + rdP('M73 34 L78 16 L61 27 Z', B, ln);
+      o += rdC(39, 45, 13, '#F4EAFF') + rdC(61, 45, 13, '#F4EAFF');
+      o += rdC(39, 45, 8.6, '#FFD54D') + rdC(61, 45, 8.6, '#FFD54D');
+      o += mood === 'happy' ? rdEyes('happy', 39, 61, 46, .95) : rdEyes(mood, 39, 61, 45, .95);
+      o += rdP('M46.6 54 L53.4 54 L50 60.4 Z', '#FFA23D', { stroke: '#E07A22', 'stroke-width': 1.2, 'stroke-linejoin': 'round' });
+      o += rdE(44, 92, 5, 2.8, '#FFA23D') + rdE(56, 92, 5, 2.8, '#FFA23D') + (mood === 'sad' ? rdTear(30, 52) : '');
+      break;
+    case 'fawn':
+      o += feet('#B87A3F') + torso();
+      o += rdC(41, 72, 2.2, '#FFF6EA') + rdC(61, 70, 2.6, '#FFF6EA') + rdC(55, 66, 1.8, '#FFF6EA') + rdC(44, 66, 1.6, '#FFF6EA');
+      o += rdE(25, 35, 13, 6.6, B, { ...ln, transform: 'rotate(-28 25 35)' }) + rdE(75, 35, 13, 6.6, B, { ...ln, transform: 'rotate(28 75 35)' });
+      o += rdE(26, 35.4, 8, 3.4, '#FFC2C8', { transform: 'rotate(-28 26 35.4)' }) + rdE(74, 35.4, 8, 3.4, '#FFC2C8', { transform: 'rotate(28 74 35.4)' });
+      o += head(46, 22.5, 21.5) + rdC(50, 30, 2, '#FFF6EA') + rdC(43, 31.6, 1.5, '#FFF6EA') + rdC(57, 31.6, 1.5, '#FFF6EA');
+      o += rdE(50, 57, 10.5, 8, F.belly) + face(45, 10);
+      o += rdE(50, 53.6, 3.6, 2.6, '#3A2A3A') + rdMouth(mood, 50, 59.6, RD_INK, .8);
+      break;
+    case 'frog':
+      o += rdE(36, 90.5, 9, 4, B, ln) + rdE(64, 90.5, 9, 4, B, ln) + torso(76, 22, 15);
+      o += rdE(50, 52, 30, 20, B, ln) + rdC(35, 35, 9.6, B, ln) + rdC(65, 35, 9.6, B, ln);
+      o += rdC(30, 52, 1.8, rdShade(B, -.18)) + rdC(70, 50, 2.2, rdShade(B, -.18)) + rdC(64, 58, 1.4, rdShade(B, -.18));
+      if (mood === 'happy') o += rdEyes('happy', 35, 65, 36, .9);
+      else {
+        o += rdC(35, 35, 6.6, '#fff') + rdC(65, 35, 6.6, '#fff') + rdC(35.6, 35.6, 3.8, RD_INK) + rdC(65.6, 35.6, 3.8, RD_INK) + rdC(36.8, 34, 1.3, '#fff') + rdC(66.8, 34, 1.3, '#fff');
+        if (mood === 'sad') o += rdS('M27 26 L35 23.6 M73 26 L65 23.6', RD_INK, 2) + rdTear(27, 44);
+      }
+      o += rdCheeks(31, 69, 57, 4.4);
+      o += mood === 'happy' ? rdP('M38 56 Q50 70 62 56 Q50 61 38 56 Z', '#7A2E4E') : rdS(mood === 'sad' ? 'M41 61 Q50 55 59 61' : 'M37 57 Q50 66 63 57', RD_INK, 2);
+      break;
+    case 'turtle':
+      o += rdE(28, 86, 7, 5, B, ln) + rdE(72, 86, 7, 5, B, ln);
+      o += rdC(50, 42, 17.5, B, ln);
+      o += rdP('M18 84 C18 60 32 50 50 50 C68 50 82 60 82 84 Z', '#5DB46B', { stroke: '#3E8E52', 'stroke-width': 1.8, 'stroke-linejoin': 'round' });
+      o += rdP('M50 57 L59 62 L59 72 L50 77 L41 72 L41 62 Z', '#4C9E5C') + rdP('M24 78 C25 70 29 64 34 61 L38 70 Z M76 78 C75 70 71 64 66 61 L62 70 Z', '#4C9E5C');
+      o += rdE(50, 84, 32, 3.6, '#E6C77A', { stroke: '#C9A75A', 'stroke-width': 1.4 });
+      o += rdEyes(mood, 43, 57, 40, .82) + rdCheeks(36.6, 63.4, 46, 3.6) + rdMouth(mood, 50, 47.6, RD_INK, .7) + (mood === 'sad' ? rdTear(37, 43) : '');
+      break;
+    case 'otter':
+      o += rdP('M64 86 C82 90 92 80 90 70 C86 74 78 79 66 78 Z', rdShade(B, -.08), ln) + feet() + torso();
+      o += rdC(29, 33, 5.8, B, ln) + rdC(71, 33, 5.8, B, ln) + rdC(29, 33, 2.8, '#7A4E32') + rdC(71, 33, 2.8, '#7A4E32');
+      o += head(46, 24, 21) + rdE(50, 56, 13, 9, F.belly) + face(44.5, 10);
+      o += rdP('M46 51.6 Q50 49.6 54 51.6 Q53 55 50 55.4 Q47 55 46 51.6 Z', '#3A2A3A') + rdMouth(mood, 50, 58.8, RD_INK, .8);
+      o += rdS('M37 55 L26 53.6 M37.4 58.4 L27 60 M63 55 L74 53.6 M62.6 58.4 L73 60', '#7A4E32', 1.2);
+      if (mood === 'happy') o += rdE(50, 79, 7, 5.6, '#FFB3C8', { stroke: '#E98AA6', 'stroke-width': 1.3 }) + rdS('M45.6 79 L54.4 79 M47 76 L53 76 M47 82 L53 82', '#E98AA6', 1);
+      break;
+    case 'lamb':
+      o += rdE(41, 91, 5.6, 3.6, '#8C7F96') + rdE(59, 91, 5.6, 3.6, '#8C7F96');
+      o += rdP(rdScallop(50, 74, 19, 11, 3), B, ln);
+      o += rdE(29, 47, 9.6, 4.6, '#FFD2C4', { stroke: '#E8B4A4', 'stroke-width': 1.4, transform: 'rotate(22 29 47)' }) + rdE(71, 47, 9.6, 4.6, '#FFD2C4', { stroke: '#E8B4A4', 'stroke-width': 1.4, transform: 'rotate(-22 71 47)' });
+      o += rdE(50, 49, 18.5, 17.5, F.belly, { stroke: '#E8B9A6', 'stroke-width': 1.6 });
+      o += rdP(rdScallop(50, 31, 12, 9, 2.6), B, ln);
+      o += face(49, 7.8, .92) + rdE(50, 56.6, 2.8, 2, '#FF8FB1') + rdMouth(mood, 50, 60, RD_INK, .7);
+      break;
+    case 'panda':
+      o += rdE(40.5, 90.5, 7, 4.2, '#3A3646') + rdE(59.5, 90.5, 7, 4.2, '#3A3646');
+      o += rdE(50, 75, 20.5, 16.5, B, ln) + rdE(31.6, 74, 6, 9, '#3A3646', { transform: 'rotate(20 31.6 74)' }) + rdE(68.4, 74, 6, 9, '#3A3646', { transform: 'rotate(-20 68.4 74)' });
+      o += rdC(29, 28, 8.4, '#3A3646') + rdC(71, 28, 8.4, '#3A3646');
+      o += head(46, 25.5, 22.5);
+      o += rdE(40, 47, 7, 8.6, '#3A3646', { transform: 'rotate(-28 40 47)' }) + rdE(60, 47, 7, 8.6, '#3A3646', { transform: 'rotate(28 60 47)' });
+      if (mood === 'happy') o += rdEyes('happy', 40, 60, 47.5, .8, '#fff');
+      else {
+        o += rdC(40.6, 47, 3.4, '#fff') + rdC(59.4, 47, 3.4, '#fff') + rdC(41, 47.4, 2.2, RD_INK) + rdC(59, 47.4, 2.2, RD_INK) + rdC(41.8, 46.2, .8, '#fff') + rdC(59.8, 46.2, .8, '#fff');
+        if (mood === 'sad') o += rdS('M33 37 L41 34.6 M67 37 L59 34.6', RD_INK, 2) + rdTear(33, 55);
+      }
+      o += rdCheeks(32, 68, 56, 4) + rdE(50, 54.6, 3.6, 2.6, '#3A3646') + rdMouth(mood, 50, 59.6, RD_INK, .8);
+      break;
+    case 'piglet':
+      o += rdS('M69 80 C76 80 78 74 74 72 C71 71 70 75 73 76 C76 77 79 74 79 71', rdShade(B, -.15), 2.2);
+      o += feet() + torso();
+      o += rdP('M28 31 L25 13 L42.6 24 Z', B, ln) + rdP('M72 31 L75 13 L57.4 24 Z', B, ln) + rdP('M29.4 27 L28 18 L37.6 24 Z', '#FF8FAE') + rdP('M70.6 27 L72 18 L62.4 24 Z', '#FF8FAE');
+      o += head(47, 25.5, 22) + face(45, 10.4);
+      o += rdE(50, 56.6, 8.8, 6.4, '#FF92B2', { stroke: '#E9799B', 'stroke-width': 1.4 }) + rdE(46.8, 56.6, 1.6, 2.4, '#C9577C') + rdE(53.2, 56.6, 1.6, 2.4, '#C9577C');
+      o += rdMouth(mood, 50, 65, RD_INK, .8);
+      break;
+    case 'dragon':
+      o += rdP('M66 82 C80 84 90 76 92 66 L97 62 L93 70 Z', B, ln);
+      o += rdP('M30 64 C18 54 12 58 10 66 C15 64 18 68 16 74 C21 72 24 76 24 80 C27 74 30 70 30 64 Z', '#CFC2FF', ln) + rdP('M70 64 C82 54 88 58 90 66 C85 64 82 68 84 74 C79 72 76 76 76 80 C73 74 70 70 70 64 Z', '#CFC2FF', ln);
+      o += feet() + torso() + rdS('M42 74 Q50 76 58 74 M43 80 Q50 82 57 80', '#F0CD7A', 1.6);
+      o += rdP('M36 28 L33 14 L44 25 Z', '#FFE08A', { stroke: '#E9B949', 'stroke-width': 1.4, 'stroke-linejoin': 'round' }) + rdP('M64 28 L67 14 L56 25 Z', '#FFE08A', { stroke: '#E9B949', 'stroke-width': 1.4, 'stroke-linejoin': 'round' });
+      o += rdP('M44 25 L47 16 L50 24 L53 15 L56 25 Z', '#FF8FC8', { stroke: '#E86AAC', 'stroke-width': 1.3, 'stroke-linejoin': 'round' });
+      o += head(46, 25, 22) + face(45, 10.4);
+      o += rdC(46.4, 55, 1.4, rdShade(B, -.35)) + rdC(53.6, 55, 1.4, rdShade(B, -.35)) + rdMouth(mood, 50, 60, RD_INK, .9);
+      break;
+  }
+  return o;
+}
+
+/* --- cells: path tiles and obstacles --- */
+// connection bits: N 1, E 2, S 4, W 8; edge midpoints of a 100×100 cell
+const RD_END = { 1: [50, 0], 2: [100, 50], 4: [50, 100], 8: [0, 50] };
+function rdPathD(mask, half) { // centre line of a tile; half: only from the centre out to that side
+  if (half) { const [x, y] = RD_END[half]; return `M50 50 L${x} ${y}`; }
+  const ends = [1, 2, 4, 8].filter(b => mask & b), [a, b] = ends.map(e => RD_END[e]);
+  return (mask === 5 || mask === 10) ? `M${a[0]} ${a[1]} L${b[0]} ${b[1]}` : `M${a[0]} ${a[1]} Q50 50 ${b[0]} ${b[1]}`;
+}
+const RD_ROAD = ['#E6BE7E', '#FFF2D2', '#F1D49E'];
+function rdRoad(d, extra = '') {
+  return rdS(d, RD_ROAD[0], 58, { 'stroke-linecap': 'butt', ...extra }) + rdS(d, RD_ROAD[1], 46, { 'stroke-linecap': 'butt' }) +
+    rdS(d, RD_ROAD[2], 7, { 'stroke-dasharray': '0 17', 'stroke-dashoffset': '-8.5' });
+}
+const RD_RAINBOW = ['#FF6B8B', '#FFA94D', '#FFE066', '#6EDC8C', '#5AB8FF', '#A783FF'];
+function rdRainbow(d, x = {}) { return RD_RAINBOW.map((c, i) => rdS(d, c, 54 - i * 8.4, { 'stroke-linecap': 'butt', ...x })).join(''); }
+// a loose path tile: grass square with a 3D edge
+function rdTileSvg(mask, grass) {
+  return `<rect x="3" y="7" width="94" height="93" rx="16" fill="${rdShade(grass, -.25)}"/>` +
+    `<rect x="3" y="2" width="94" height="93" rx="16" fill="${grass}"/>` +
+    `<svg x="3" y="2" width="94" height="93" viewBox="0 0 100 100" preserveAspectRatio="none">${rdRoad(rdPathD(mask))}</svg>`;
+}
+function rdObstSvg(k, seed = 0) {
+  const r = (i) => ((Math.sin(seed * 12.9898 + i * 78.233) * 43758.5453) % 1 + 1) % 1;
+  switch (k) {
+    case 'b': return rdE(50, 84, 34, 8, 'rgba(20,60,30,.18)') + rdC(30, 62, 20, '#3FAE5A') + rdC(70, 62, 20, '#3FAE5A') + rdC(50, 46, 24, '#4CC066') + rdC(42, 38, 9, '#6FD786') +
+      rdC(36, 58, 3.6, '#FF8FC8') + rdC(62, 44, 3.6, '#FFFFFF') + rdC(70, 66, 3.6, '#FF8FC8') + rdC(48, 66, 3, '#FFE066') + rdC(26, 70, 3, '#FFFFFF');
+    case 'f': {
+      const fl = (x, y, c) => rdS(`M${x} ${y} L${x} ${y + 26}`, '#3FAE5A', 4) + rdE(x + 6, y + 16, 6, 3, '#4CC066', { transform: `rotate(-30 ${x + 6} ${y + 16})` }) +
+        [0, 72, 144, 216, 288].map(a => rdC(x + 7 * Math.cos(a * Math.PI / 180), y + 7 * Math.sin(a * Math.PI / 180), 6, c)).join('') + rdC(x, y, 5, '#FFD34D');
+      return rdE(50, 86, 30, 6, 'rgba(20,60,30,.16)') + fl(32, 46, '#FF7FB5') + fl(66, 40, '#FFFFFF') + fl(50, 58, '#B48CFF');
+    }
+    case 'r': return rdE(50, 82, 34, 8, 'rgba(30,30,60,.2)') + rdP('M18 78 C14 58 26 36 48 32 C70 28 88 46 84 70 C82 82 70 86 50 86 C32 86 20 86 18 78 Z', '#A9B4CC') +
+      rdP('M26 60 C28 46 38 38 50 37 C42 44 36 52 34 64 Z', '#CBD3E4') + rdP('M60 80 C72 78 80 72 82 64 C82 74 76 82 64 84 Z', '#8F9BB6') + rdE(66, 40, 10, 5, '#7CCB6A', { opacity: .9 });
+    case 's': return rdE(50, 84, 30, 7, 'rgba(40,30,20,.18)') + rdP('M22 44 L22 76 Q50 90 78 76 L78 44 Z', '#A9713F') + rdE(50, 44, 28, 11, '#E3B077') +
+      rdE(50, 44, 18, 7, 'none', { stroke: '#C08A52', 'stroke-width': 3 }) + rdE(50, 44, 8, 3, 'none', { stroke: '#C08A52', 'stroke-width': 3 }) + rdS('M34 58 L34 74 M60 60 L60 78', '#8A5A31', 3);
+    case 'p': return rdE(50, 58, 38, 24, '#7FD1FF') + rdE(46, 54, 30, 17, '#A5E0FF') + rdS('M30 52 Q36 48 42 52 M54 62 Q60 58 66 62', '#FFFFFF', 3);
+    case 't': return rdE(50, 88, 26, 6, 'rgba(10,50,30,.2)') + rdP('M45 76 L55 76 L55 92 L45 92 Z', '#8A5A31') +
+      rdP('M50 6 L76 44 Q50 50 24 44 Z', '#3DB36A') + rdP('M50 24 L82 66 Q50 74 18 66 Z', '#33A35E') + rdP('M50 44 L86 82 Q50 90 14 82 Z', '#2B9353') +
+      rdP('M50 6 L40 22 L46 21 Z M50 24 L36 44 L44 42 Z', '#5FD08A');
+    case 'm': return rdE(50, 88, 26, 6, 'rgba(40,20,20,.18)') + rdP('M38 58 Q36 80 40 88 L60 88 Q64 80 62 58 Z', '#FFF1DB') +
+      rdP('M14 60 C14 34 30 18 50 18 C70 18 86 34 86 60 Q50 70 14 60 Z', '#F25462') + rdC(36, 40, 6, '#fff') + rdC(58, 32, 5, '#fff') + rdC(70, 50, 5.6, '#fff') + rdC(46, 56, 4, '#fff');
+    case 'l': return rdE(50, 80, 40, 7, 'rgba(40,30,20,.18)') + rdP('M14 50 L80 50 L80 78 L14 78 Z', '#A9713F') + rdE(14, 64, 8, 14, '#8A5A31') + rdE(80, 64, 9, 14, '#E3B077') +
+      rdE(80, 64, 5, 9, 'none', { stroke: '#C08A52', 'stroke-width': 2.4 }) + rdS('M28 58 L50 58 M40 70 L66 70', '#8A5A31', 3) + rdE(40, 50, 8, 4, '#7CCB6A');
+    case 'n': return rdE(50, 86, 28, 6, 'rgba(10,50,30,.16)') + [[-50, 0], [-20, 1], [10, 2], [40, 3]].map(([a, i]) => `<g transform="rotate(${a} 50 86)">${rdP('M50 86 C44 66 44 40 50 18 C56 40 56 66 50 86 Z', i % 2 ? '#3DB36A' : '#4CC066')}${rdS('M50 80 L50 26', '#2B9353', 2)}</g>`).join('');
+    case 'w': return '';
+    case 'y': return rdP('M50 50 L84 38 A34 26 0 1 1 78 32 Z', '#5CC46A', { transform: 'translate(-6 4)' }) + rdC(58, 40, 7, '#FF8FC8') + rdC(58, 40, 3, '#FFE066');
+    case 'd': return rdE(50, 88, 26, 6, 'rgba(10,50,30,.16)') + [[34, 30], [50, 16], [66, 34]].map(([x, y]) => rdS(`M${x} 90 L${x} ${y + 18}`, '#3FAE5A', 4) + rdP(`M${x - 5} ${y} Q${x} ${y - 6} ${x + 5} ${y} L${x + 5} ${y + 18} Q${x} ${y + 22} ${x - 5} ${y + 18} Z`, '#9A6440')).join('') +
+      rdP('M26 90 Q20 60 14 50 Q26 62 32 90 Z M74 90 Q80 64 88 54 Q78 66 68 90 Z', '#4CC066');
+    case 'c': return rdE(50, 84, 32, 6, 'rgba(120,80,170,.16)') + rdC(30, 62, 16, '#FFFFFF') + rdC(50, 50, 22, '#FFFFFF') + rdC(70, 62, 16, '#FFFFFF') + rdP('M16 66 L84 66 Q84 80 70 80 L30 80 Q16 80 16 66 Z', '#FFFFFF') +
+      rdP('M24 74 Q50 84 78 72 Q72 80 62 80 L34 80 Q26 80 24 74 Z', '#E9DDFF') + rdC(44, 42, 6, '#FFFFFF', { opacity: .9 });
+    case 'g': return rdE(50, 86, 28, 6, 'rgba(120,60,170,.2)') + rdP('M50 14 L66 34 L58 86 L42 86 L34 34 Z', '#C79BFF') + rdP('M50 14 L58 34 L54 86 L42 86 L34 34 Z', '#E2C9FF') +
+      rdP('M26 46 L36 58 L32 86 L22 86 L18 58 Z', '#FF8FCB') + rdP('M74 50 L82 60 L80 86 L68 86 L66 60 Z', '#8FD8FF') + rdS('M48 30 L52 24', '#fff', 3);
+    case 'k': return rdE(50, 88, 22, 5, 'rgba(120,60,170,.16)') + rdS('M50 50 L50 88', '#FFFFFF', 5) + rdC(50, 36, 22, '#FF8FCB') +
+      rdS('M50 36 m0 0 a4 4 0 0 1 8 0 a8 8 0 0 1 -16 0 a12 12 0 0 1 24 0 a16 16 0 0 1 -30 4', '#FFFFFF', 4) + rdC(42, 28, 3, '#fff', { opacity: .8 });
+    case 'v': return rdE(50, 90, 28, 6, 'rgba(120,60,170,.2)') + rdP('M28 40 L72 40 L72 90 L28 90 Z', '#FFC2E2') + rdP('M28 40 L72 40 L72 48 L28 48 Z', '#FFA6D2') +
+      rdP('M22 42 L50 6 L78 42 Z', '#A783FF') + rdP('M50 6 L50 -6 L62 -1 L50 2', '#FF6B8B') + rdP('M43 90 L43 72 Q50 62 57 72 L57 90 Z', '#B37BE8') + rdC(50, 56, 5, '#FFF4B8');
+    default: return '';
+  }
+}
+// scenery props (bigger, around the board)
+function rdPropSvg(k) {
+  switch (k) {
+    case 'tree': return rdE(50, 92, 30, 6, 'rgba(10,50,30,.18)') + rdP('M44 60 L56 60 L57 92 L43 92 Z', '#8A5A31') + rdC(50, 40, 30, '#3FAE5A') + rdC(32, 50, 18, '#3FAE5A') + rdC(68, 50, 18, '#3FAE5A') + rdC(42, 30, 14, '#5CC874') + rdC(64, 36, 4, '#FF6B8B') + rdC(36, 52, 4, '#FF6B8B') + rdC(56, 54, 4, '#FF6B8B');
+    case 'pine': return rdObstSvg('t');
+    case 'bush': return rdObstSvg('b');
+    case 'flowers': return rdObstSvg('f');
+    case 'mush': return rdObstSvg('m');
+    case 'cloud': return rdC(30, 60, 16, '#FFFFFF') + rdC(50, 48, 22, '#FFFFFF') + rdC(70, 60, 16, '#FFFFFF') + rdP('M16 64 L84 64 Q84 78 70 78 L30 78 Q16 78 16 64 Z', '#FFFFFF');
+    case 'reeds': return rdObstSvg('d');
+    case 'crystal': return rdObstSvg('g');
+    case 'candy': return rdObstSvg('k');
+    case 'tower': return rdObstSvg('v');
+    case 'pond': return rdE(50, 64, 46, 24, '#F6E7B4') + rdE(50, 62, 42, 20, '#5EC8F2') + rdE(44, 58, 30, 12, '#86D8F7') +
+      rdP('M64 66 L80 60 A12 8 0 1 1 76 56 Z', '#5CC46A') + rdC(72, 60, 3.4, '#FF8FC8') + rdS('M24 66 Q30 62 36 66', '#C9F0FF', 2.4);
+    default: return '';
+  }
+}
+// the pointing hand that shows how to drag a tile
+// a white cartoon glove: index finger up, thumb out to the side (fingertip at 50,8)
+function rdHandSvg() {
+  const ln = { stroke: '#4A3A6A', 'stroke-width': 3, 'stroke-linejoin': 'round' };
+  return `<g transform="rotate(-14 50 8)">` +
+    rdP('M37 82 L71 82 L73 97 L35 97 Z', '#B37BE8', ln) +
+    rdP('M44 52 L44 13 C44 5 56 5 56 13 L56 46 C56 42 66 42 66 48 L66 51 C67 46 76 47 75 54 L75 58 C77 54 84 56 83 63 L82 70 C81 78 76 84 68 84 L46 84 C38 84 33 78 32 70 L30 61 C27 55 21 52 22 46 C23 41 30 42 34 47 L39 54 Z', '#FFFFFF', ln) +
+    rdS('M56 46 L56 58 M66 51 L66 60 M75 58 L75 63', '#4A3A6A', 2.4) + rdS('M47.6 12 Q50 9.6 52.4 12', '#D9D2EC', 2) +
+    `</g>`;
+}
+
+/* --- HOME: scenery and card pictures in the same drawn style --- */
+function homeSkySvg() {
+  const cloud = (x, y, k, c) => `<g class="hm-cloud ${c}"><g transform="translate(${x} ${y}) scale(${k})">${rdC(30, 60, 16, '#fff')}${rdC(50, 48, 22, '#fff')}${rdC(70, 60, 16, '#fff')}${rdP('M16 64 L84 64 Q84 78 70 78 L30 78 Q16 78 16 64 Z', '#fff')}${rdP('M20 72 Q50 80 82 70 Q78 78 70 78 L30 78 Q22 78 20 72 Z', '#E6F4FF')}</g></g>`;
+  const rays = Array.from({ length: 12 }, (_, i) => { const a = i * Math.PI / 6; return `M${(Math.cos(a) * 34).toFixed(1)} ${(Math.sin(a) * 34).toFixed(1)} L${(Math.cos(a) * 46).toFixed(1)} ${(Math.sin(a) * 46).toFixed(1)}`; }).join(' ');
+  return `<svg viewBox="0 0 400 260" preserveAspectRatio="xMidYMin slice">` +
+    `<g transform="translate(352 46)"><g class="hm-rays">${rdS(rays, '#FFE27A', 7)}</g>${rdC(0, 0, 30, '#FFD93D')}${rdC(-8, -8, 12, '#FFE98A')}</g>` +
+    cloud(-6, 40, .9, 'c1') + cloud(170, 6, .62, 'c2') + cloud(268, 120, .7, 'c3') + `</svg>`;
+}
+function homeHillsSvg() {
+  const tree = (x, y, k) => `<g transform="translate(${x} ${y}) scale(${k})">${rdPropSvg('tree')}</g>`;
+  const fl = (x, y, c) => rdC(x, y, 2.6, c) + rdC(x, y, 1.1, '#FFE066');
+  return `<svg viewBox="0 0 400 150" preserveAspectRatio="xMidYMax slice">` +
+    rdP('M-20 70 C40 40 110 38 170 58 C230 78 300 34 420 52 V160 H-20Z', '#A9E58C') +
+    `<g transform="translate(296 6) scale(.62)">${rdP('M10 44 L90 44 L90 92 L10 92 Z', '#FFD3EA')}${rdP('M0 30 L20 30 L20 92 L0 92 Z M80 30 L100 30 L100 92 L80 92 Z M38 20 L62 20 L62 92 L38 92 Z', '#FFC2E2')}` +
+      `${rdP('M-4 32 L10 8 L24 32 Z M76 32 L90 8 L104 32 Z M34 22 L50 -6 L66 22 Z', '#A783FF')}${rdP('M50 -6 L50 -16 L60 -12 L50 -9', '#FF6B8B')}${rdP('M42 92 L42 72 Q50 62 58 72 L58 92 Z', '#B37BE8')}${rdC(10, 50, 3.4, '#FFF4B8')}${rdC(90, 50, 3.4, '#FFF4B8')}${rdC(50, 40, 4, '#FFF4B8')}</g>` +
+    tree(20, 18, .42) + tree(62, 26, .36) + tree(236, 30, .34) +
+    rdP('M-20 100 C60 76 150 82 220 96 C290 110 350 84 420 90 V160 H-20Z', '#7FD763') +
+    fl(30, 112, '#FF8FC8') + fl(70, 120, '#FFFFFF') + fl(120, 106, '#B48CFF') + fl(180, 118, '#FF8FC8') + fl(250, 112, '#FFFFFF') + fl(300, 120, '#FF8FC8') + fl(360, 108, '#B48CFF') +
+    rdP('M-20 128 C80 116 200 124 420 120 V160 H-20Z', '#6DCB52') + `</svg>`;
+}
+function homeMascotSvg() {
+  return `<svg viewBox="-6 -10 112 112">` + RD_RAINBOW.map((c, i) => `<path d="M${2 + i * 5} 70 A${48 - i * 5} ${48 - i * 5} 0 0 1 ${98 - i * 5} 70" fill="none" stroke="${c}" stroke-width="5.2" opacity=".9"/>`).join('') +
+    rdE(18, 70, 14, 8, '#fff') + rdE(84, 70, 14, 8, '#fff') + `<g transform="translate(6 4) scale(.9)">${liliSvg()}</g></svg>`;
+}
+function homeArtSvg(k) {
+  const blk = (x, y, s, c, t, r = 0) => `<g transform="rotate(${r} ${x + s / 2} ${y + s / 2})"><rect x="${x}" y="${y + s * .1}" width="${s}" height="${s}" rx="${s * .24}" fill="${rdShade(c, -.22)}"/><rect x="${x}" y="${y}" width="${s}" height="${s}" rx="${s * .24}" fill="${c}"/>` +
+    `<text x="${x + s / 2}" y="${y + s * .53}" font-size="${s * .66}" font-weight="800" fill="#fff" text-anchor="middle" dominant-baseline="central">${t}</text></g>`;
+  switch (k) {
+    case 'road': return `<svg viewBox="0 0 100 88">` + RD_RAINBOW.map((c, i) => `<path d="M${4 + i * 5} 82 A${46 - i * 5} ${46 - i * 5} 0 0 1 ${96 - i * 5} 82" fill="none" stroke="${c}" stroke-width="5.2"/>`).join('') +
+      `<g transform="translate(10 0) scale(.84)">${liliSvg()}</g></svg>`;
+    case 'puzzle': return `<svg viewBox="0 0 100 100">${rdP('M0 0 H100 V100 H0 Z', '#FFF3E0')}` +
+      rdP('M18 26 H40 C38 18 44 12 50 12 C56 12 62 18 60 26 H82 V48 C90 46 96 52 96 58 C96 64 90 70 82 68 V90 H18 Z', '#FFD36E', { stroke: '#F0A93B', 'stroke-width': 2.4, 'stroke-linejoin': 'round' }) +
+      `<g transform="translate(19 24) scale(.62)">${friendSvg('puppy', 'happy')}</g>` +
+      `<g transform="rotate(-18 14 14)">${rdP('M2 8 H10 C9 4 12 2 14 2 C16 2 19 4 18 8 H26 V26 H2 Z', '#FF8FB5', { stroke: '#E9658F', 'stroke-width': 1.6, 'stroke-linejoin': 'round' })}</g></svg>`;
+    case 'count': return `<svg viewBox="0 0 100 100">${rdP('M0 0 H100 V100 H0 Z', '#E8FBF3')}${blk(8, 52, 40, '#FF6FA8', '1', -6)}${blk(52, 52, 40, '#4DB6FF', '2', 5)}${blk(30, 10, 40, '#FFB52E', '3', -3)}</svg>`;
+    case 'abc': return `<svg viewBox="0 0 100 100">${rdP('M0 0 H100 V100 H0 Z', '#FBF0FF')}${blk(8, 52, 40, '#A783FF', 'A', 5)}${blk(52, 52, 40, '#FF6FA8', 'B', -5)}${blk(30, 10, 40, '#34C98F', 'C', 3)}</svg>`;
+    case 'logic': return `<svg viewBox="0 0 100 100">${rdP('M0 0 H100 V100 H0 Z', '#FFF6E0')}<g transform="translate(-2 22) scale(.8)">${friendSvg('owl', 'happy')}</g>` +
+      rdP('M58 8 H92 Q98 8 98 14 V40 Q98 46 92 46 H76 L68 54 L69 46 H58 Q52 46 52 40 V14 Q52 8 58 8 Z', '#FFFFFF', { stroke: '#FFC53A', 'stroke-width': 2.4, 'stroke-linejoin': 'round' }) +
+      `<text x="75" y="28" font-size="30" font-weight="800" fill="#A783FF" text-anchor="middle" dominant-baseline="central">?</text></svg>`;
+    case 'memo': return `<svg viewBox="0 0 100 100">${rdP('M0 0 H100 V100 H0 Z', '#EFFCE8')}` +
+      `<g transform="rotate(-12 32 52)"><rect x="10" y="22" width="44" height="60" rx="10" fill="#D9578F"/><rect x="10" y="18" width="44" height="60" rx="10" fill="#FF7FB6"/>` +
+      `${rdP('M32 40 C28 34 20 38 24 45 C26 49 32 54 32 54 C32 54 38 49 40 45 C44 38 36 34 32 40 Z', '#FFFFFF', { opacity: .9 })}${rdC(18, 26, 2, '#fff')}${rdC(46, 70, 2, '#fff')}</g>` +
+      `<g transform="rotate(10 66 50)"><rect x="44" y="20" width="44" height="60" rx="10" fill="#C9D4E8"/><rect x="44" y="16" width="44" height="60" rx="10" fill="#FFFFFF" stroke="#E3E8F4" stroke-width="1.5"/>` +
+      `<g transform="translate(46 24) scale(.4)">${friendSvg('chick', 'happy')}</g></g></svg>`;
+  }
+  return '';
+}
+
+/* ---------- DUHOVÁ CESTA: SVĚTY, ÚROVNĚ A ŘEŠIČ ---------- */
+// Maps: '.' grass, 'U' Lili, 'F' the friend, '=' a road piece already in place,
+// other letters are obstacles (see rdObstSvg). 'path' is the intended road from Lili (N E S W);
+// any other road that uses the same pieces is accepted too.
+const RD_W = [
+  { name: 'Rozkvetlá louka', grass: ['#97D872', '#8ACE65'], tile: '#A9E283', bg: '#86CF63', hedge: '#4DAA4E', props: ['tree', 'bush', 'flowers', 'tree'], card: 'linear-gradient(150deg,#97E06F,#3FB37F)' },
+  { name: 'Kouzelný les', grass: ['#77C46E', '#6AB963'], tile: '#8BD27C', bg: '#5DAE5E', hedge: '#2F8048', props: ['pine', 'mush', 'pine', 'bush'], card: 'linear-gradient(150deg,#5BC07E,#2A8C6C)' },
+  { name: 'Duhové jezírko', grass: ['#A3DE80', '#95D473'], tile: '#B4E792', bg: '#7FCE69', hedge: '#4DAA4E', props: ['pond', 'reeds', 'tree', 'bush'], card: 'linear-gradient(150deg,#63CDF4,#5A86EC)' },
+  { name: 'Zámek v oblacích', grass: ['#F7DDFF', '#EFCFFB'], tile: '#FBE9FF', bg: '#CDB9FF', hedge: '#A98BEF', props: ['cloud', 'crystal', 'tower', 'candy', 'cloud'], card: 'linear-gradient(150deg,#C49BFF,#FF8ECB)' }
+];
+const RD_LV = [
+  { w: 0, f: 'kitten', map: ['.f.b', 'U..F', 'b.f.'], path: 'EEE',
+    say: 'Koťátko se ztratilo na louce. Přetáhni kousky cesty na trávu a postav Lili cestu ke koťátku!', ok: 'Hurá! Koťátko je zachráněné!' },
+  { w: 0, f: 'chick', map: ['U.fb', 'b.r.', 'f.F.'], path: 'ESSE',
+    say: 'Kuřátko zabloudilo mezi kytičkami. Pomoz mu!', ok: 'Hurá! Kuřátko je zachráněné!' },
+  { w: 0, f: 'bunny', map: ['b...F', 'U..r.', 'f.b.s'], path: 'EENEE',
+    say: 'Zajíček se schoval za kamínkem a bojí se.', ok: 'Hurá! Zajíček je zachráněný!' },
+  { w: 0, f: 'puppy', map: ['U.b.f', 'r.b..', 'f...r', '.sfF.'], path: 'ESSEES',
+    say: 'Štěňátko hledá kamarády. Dovez k němu Lili!', ok: 'Hurá! Štěňátko je zachráněné!' },
+  { w: 1, f: 'hedgehog', map: ['tm..F', '.=.r.', '.lt.m', 'U.sn.'], path: 'NNEENEE',
+    say: 'Ježeček zabloudil v lese. Postav mu cestu!', ok: 'Hurá! Ježeček je zachráněný!' },
+  { w: 1, f: 'squirrel', map: ['U..tm.', 'nt=l.F', 'm....s', 'tsnmt.'], path: 'EESSEENE',
+    say: 'Veverka ztratila oříšky a pláče.', ok: 'Hurá! Veverka je zachráněná!' },
+  { w: 1, f: 'owl', map: ['F..mtn', 'tl=.rt', 'm....s', 'ntsr.U'], path: 'WNWWNNWW',
+    say: 'Sovička vypadla z hnízda. Lili jí pomůže!', ok: 'Hurá! Sovička je zachráněná!' },
+  { w: 1, f: 'fawn', map: ['tmtn.t', 's..=.m', 'ml=r.F', '...nts', 'Utm.sn'], path: 'NEENNEESE',
+    say: 'Koloušek hledá maminku. Postav cestu!', ok: 'Hurá! Koloušek je zachráněný!' },
+  { w: 2, f: 'duck', map: ['Uwwdrf', '...wwd', 'dw.yww', 'rw..Fw', 'fdwwdr'], path: 'SEESSEE', decoy: [6],
+    say: 'Kachňátko uvízlo u rybníčku. Pozor, jeden kousek cesty je navíc!', ok: 'Hurá! Kachňátko je zachráněné!' },
+  { w: 2, f: 'frog', map: ['dwwydr', 'wF.wwd', 'wy..ww', 'rww...', 'drwydU'], path: 'NWWNWNW', decoy: [5],
+    say: 'Žabka se bojí přeskočit vodu.', ok: 'Hurá! Žabka je zachráněná!' },
+  { w: 2, f: 'turtle', map: ['dwwwywd', 'w.=.wwr', 'U.w.yFw', 'rwy.=.d', 'dwwrwwy'], path: 'ENEESSEEN', decoy: [12],
+    say: 'Želvička je moc pomalá. Lili pro ni dojde.', ok: 'Hurá! Želvička je zachráněná!' },
+  { w: 2, f: 'otter', map: ['dwry..U', 'wy.=.wd', 'rw=wyww', 'wd...dr', 'dwywFwd'], path: 'WWSWWSSEES', decoy: [3],
+    say: 'Malá vydra nemůže najít cestu domů.', ok: 'Hurá! Vydra je zachráněná!' },
+  { w: 3, f: 'lamb', map: ['ck.gc.v', 'g.c..Fc', 'k...cgk', 'c.gkc.g', 'U.cvkgc'], path: 'ENNEENEE', decoy: [12],
+    say: 'Jehňátko se zamotalo do obláčků.', ok: 'Hurá! Jehňátko je zachráněné!' },
+  { w: 3, f: 'panda', map: ['cgkcvgc', 'kc.=.cg', 'gk=c.=.', 'F..gkc.', 'ckgcgkU'], path: 'NNWWNWWSSWW', decoy: [6],
+    say: 'Pandička nemůže slézt z obláčku.', ok: 'Hurá! Pandička je zachráněná!' },
+  { w: 3, f: 'piglet', map: ['U.=cgkv', 'g..kcgc', 'k=c..Fk', 'c.=.gcg', 'gkcvckc'], path: 'EESWSSEENEE', decoy: [5],
+    say: 'Prasátko se ztratilo v duhové zahradě.', ok: 'Hurá! Prasátko je zachráněné!' },
+  { w: 3, f: 'dragon', map: ['vc.=.kv', 'gk=c=gc', 'U..g.kc', 'kcgc..F', 'cvkgcgv'], path: 'EENNEESSSEE', decoy: [3],
+    say: 'Malý dráček je ve věži smutný a sám. Lili ho jde pozvat na oslavu!', ok: 'Hurá! Dráček má kamarády!' }
+];
+// directions N E S W as bits 1 2 4 8
+const RD_DX = [0, 1, 0, -1], RD_DY = [-1, 0, 1, 0];
+const rdBitDir = b => (b === 1 ? 0 : b === 2 ? 1 : b === 4 ? 2 : 3);
+const rdOpp = b => (b === 1 ? 4 : b === 4 ? 1 : b === 2 ? 8 : 2);
+const rdIsObst = ch => ch !== '.' && ch !== '=' && ch !== 'U' && ch !== 'F';
+function rdPrep(L) {
+  const rows = L.map.length, cols = L.map[0].length;
+  let start, goal;
+  L.map.forEach((row, y) => [...row].forEach((ch, x) => { if (ch === 'U') start = [x, y]; if (ch === 'F') goal = [x, y]; }));
+  const cells = [start];
+  let [x, y] = start;
+  for (const m of L.path) { const d = 'NESW'.indexOf(m); x += RD_DX[d]; y += RD_DY[d]; cells.push([x, y]); }
+  const dirTo = (a, b) => (b[0] > a[0] ? 2 : b[0] < a[0] ? 8 : b[1] > a[1] ? 4 : 1);
+  const sol = [];
+  for (let i = 1; i < cells.length - 1; i++) {
+    const [cx, cy] = cells[i];
+    sol.push({ x: cx, y: cy, m: dirTo(cells[i], cells[i - 1]) | dirTo(cells[i], cells[i + 1]), pre: L.map[cy][cx] === '=' });
+  }
+  const last = cells[cells.length - 1];
+  return { cols, rows, map: L.map, start, goal, startExit: dirTo(start, cells[1]), sol, ok: last[0] === goal[0] && last[1] === goal[1],
+    tray: [...sol.filter(c => !c.pre).map(c => c.m), ...(L.decoy || [])] };
+}
+// Is there a road from Lili to the friend that runs through every placed piece and uses only
+// pieces still in the tray? Returns the cells of such a road (or null).
+function rdSolve(P, placed, counts) {
+  const [gx, gy] = P.goal, need = placed.size, seen = new Set([P.start.join()]), path = [];
+  let budget = Object.values(counts).reduce((a, b) => a + b, 0);
+  function go(x, y, from, used) {
+    if (x < 0 || y < 0 || x >= P.cols || y >= P.rows) return false;
+    if (x === gx && y === gy) return used === need;
+    const key = x + ',' + y; if (seen.has(key)) return false;
+    const pm = placed.get(key);
+    if (pm != null) {
+      if (!(pm & from)) return false;
+      const out = pm & ~from, d = rdBitDir(out);
+      seen.add(key); path.push([x, y, pm]);
+      if (go(x + RD_DX[d], y + RD_DY[d], rdOpp(out), used + 1)) return true;
+      seen.delete(key); path.pop(); return false;
+    }
+    if (rdIsObst(P.map[y][x]) || budget <= 0) return false;
+    if (Math.abs(gx - x) + Math.abs(gy - y) - 1 > budget - 1 + need - used) return false;
+    for (const b of [1, 2, 4, 8]) {
+      if (b === from) continue;
+      const m = from | b; if (!counts[m]) continue;
+      counts[m]--; budget--; seen.add(key); path.push([x, y, m]);
+      const d = rdBitDir(b);
+      if (go(x + RD_DX[d], y + RD_DY[d], rdOpp(b), used)) return true;
+      counts[m]++; budget++; seen.delete(key); path.pop();
+    }
+    return false;
+  }
+  const d0 = rdBitDir(P.startExit);
+  return go(P.start[0] + RD_DX[d0], P.start[1] + RD_DY[d0], rdOpp(P.startExit), 0) ? path.slice() : null;
+}
+
+/* ---------- DUHOVÁ CESTA: HRA ---------- */
+// Lili the unicorn rescues animal friends. The child drags road pieces from the tray onto the
+// meadow until a road joins Lili with the friend; then Lili trots along a rainbow to them.
+// Levels are stored "landscape"; on a tall screen the board is shown transposed.
+let RD = null;
+const rdDone = () => new Set(store.get('zd-road', []));
+const rdNextIdx = () => { const d = rdDone(); for (let i = 0; i < RD_LV.length; i++) if (!d.has(i)) return i; return -1; };
+const rdIsOpen = i => i === 0 || rdDone().has(i) || rdDone().has(i - 1);
+const rdTr = m => ((m & 1) ? 8 : 0) | ((m & 8) ? 1 : 0) | ((m & 2) ? 4 : 0) | ((m & 4) ? 2 : 0);
+const rdDm = m => (RD.port ? rdTr(m) : m);           // mask as drawn on screen
+const rdDc = (x, y) => (RD.port ? [y, x] : [x, y]);   // level cell -> screen cell (and back)
+const rdEase = k => 1 - Math.pow(1 - k, 3);
+function rdLater(fn, ms) { const R = RD; const id = setTimeout(() => { if (RD === R && current === 'road') fn(); }, ms); R.timers.push(id); return id; }
+function rdStop() { if (!RD) return; RD.timers.forEach(clearTimeout); cancelAnimationFrame(RD.raf); RD = null; }
+function rdTween(dur, step, done) {
+  const R = RD; if (!R) return;
+  R.tweens.push({ t0: performance.now(), dur, step, done });
+  if (!R.rafOn) { R.rafOn = true; R.raf = requestAnimationFrame(rdFrame); }
+}
+function rdFrame(now) {
+  const R = RD; if (!R) return;
+  const list = R.tweens; R.tweens = [];
+  for (const tw of list) {
+    const k = Math.min(1, (now - tw.t0) / tw.dur);
+    tw.step(k);
+    if (k < 1) R.tweens.push(tw); else if (tw.done) tw.done();
+  }
+  if (RD === R && R.tweens.length) R.raf = requestAnimationFrame(rdFrame); else R.rafOn = false;
+}
+function rdHearts(x, y, n = 12) {
+  if (reduceMotion || !fx.ctx) return;
+  for (let i = 0; i < n; i++) {
+    const a = -Math.PI / 2 + (Math.random() - .5) * 2.4, sp = 2 + Math.random() * 3.4;
+    fx.parts.push({ emoji: ['💖', '💗', '✨'][i % 3], x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, g: .05, drag: .97,
+      size: 14 + Math.random() * 12, rot: (Math.random() - .5) * .6, vr: (Math.random() - .5) * .05, life: 60 + Math.random() * 35 });
+  }
+  fxRun();
+}
+
+/* --- picker: the four worlds and the friends waiting in them --- */
+function startRoad() { show('road'); rdShowPick(); }
+function rdShowPick() {
+  rdStop();
+  const sec = $('#road'); sec.classList.remove('rd-play');
+  $('#win').hidden = true; $('#rdTitle').textContent = 'Duhová cesta';
+  $('#rdHelp').hidden = true; $('#rdCount').hidden = false;
+  $('#rdPick').hidden = false; $('#rdStage').hidden = true; $('#rdStage').innerHTML = '';
+  const done = rdDone(), nx = rdNextIdx();
+  $('#rdCount').textContent = `💖 ${done.size} / ${RD_LV.length}`;
+  const fr = RD_LV.filter((L, i) => done.has(i)).map(L => L.f);
+  $('#rdParade').innerHTML = `<div class="rd-parade-in">${fr.map(f => `<svg class="rd-pf" width="54" height="54" viewBox="0 0 100 100">${friendSvg(f, 'happy')}</svg>`).join('')}` +
+    `<svg class="rd-trot" width="76" height="76" viewBox="0 0 100 100">${liliSvg()}</svg></div>` +
+    (fr.length ? '' : '<div class="rd-say">Pomůžeš mi zachránit zvířátka?</div>');
+  $('#rdWorlds').innerHTML = RD_W.map((w, wi) => {
+    const lv = RD_LV.map((L, i) => [L, i]).filter(([L]) => L.w === wi);
+    const got = lv.filter(([, i]) => done.has(i)).length;
+    return `<div class="rd-world" style="background:${w.card}"><h3>${w.name}<small>${got} / ${lv.length}</small></h3><div class="rd-lvls">` +
+      lv.map(([L, i]) => {
+        const ok = done.has(i), open = rdIsOpen(i);
+        return `<button class="rd-lv${open ? '' : ' locked'}${i === nx ? ' next' : ''}" data-i="${i}" aria-label="${RD_FRIENDS[L.f].name}">` +
+          `<svg viewBox="0 0 100 100">${friendSvg(L.f, ok ? 'happy' : open ? 'sad' : '')}</svg>${ok ? '<span class="st">⭐</span>' : ''}${open ? '' : '<span class="lock">🔒</span>'}</button>`;
+      }).join('') + '</div></div>';
+  }).join('');
+}
+$('#rdWorlds').addEventListener('click', ev => {
+  const b = ev.target.closest('.rd-lv'); if (!b) return;
+  const i = +b.dataset.i;
+  if (!rdIsOpen(i)) { bounce(b); b.classList.remove('rd-shake'); void b.offsetWidth; b.classList.add('rd-shake'); const nx = rdNextIdx(); if (nx >= 0) say(`Nejdřív zachraň: ${RD_FRIENDS[RD_LV[nx].f].name}.`); return; }
+  sfx.pick(); rdStart(i);
+});
+$('#rdBack').addEventListener('click', () => { if (!$('#rdStage').hidden) rdShowPick(); else { rdStop(); goHome(); } });
+$('#rdHelp').addEventListener('click', () => { ac(); rdHint(); });
+$('#rdTitle').addEventListener('click', () => { if (RD && !RD.done) say(RD.L.say); });
+
+/* --- one level --- */
+function rdStart(i) {
+  rdStop();
+  const L = RD_LV[i], P = rdPrep(L), rnd = seeded(i * 7919 + 13), tray = P.tray.slice();
+  for (let k = tray.length - 1; k > 0; k--) { const j = Math.floor(rnd() * (k + 1)); [tray[k], tray[j]] = [tray[j], tray[k]]; }
+  RD = { i, L, P, placed: new Map(P.sol.filter(c => c.pre).map(c => [c.x + ',' + c.y, c.m])), tiles: tray.map(m => ({ m, used: false })),
+    timers: [], tweens: [], raf: 0, rafOn: false, done: false, drag: null, miss: 0, idle: 0, hint: null, port: false };
+  const sec = $('#road'); sec.classList.add('rd-play'); sec.style.setProperty('--rd-bg', RD_W[L.w].bg);
+  $('#win').hidden = true; $('#rdTitle').textContent = RD_FRIENDS[L.f].name;
+  $('#rdCount').hidden = true; $('#rdHelp').hidden = false;
+  $('#rdPick').hidden = true; $('#rdStage').hidden = false;
+  if (current !== 'road') show('road');
+  const R = RD;
+  requestAnimationFrame(() => { if (RD === R) { rdRender(); rdIdle(i === 0 && !rdDone().has(0) ? 2600 : 10000); } });
+  say(L.say);
+}
+function rdLayout() {
+  const st = $('#rdStage'), W = Math.max(200, st.clientWidth), H = Math.max(200, st.clientHeight), P = RD.P;
+  const port = H > W * 1.02 && P.cols > P.rows;
+  const cols = port ? P.rows : P.cols, rows = port ? P.cols : P.rows, n = RD.tiles.length, pad = 12, fr = .16, gapBT = 16;
+  let best = null;
+  for (const side of [false, true]) {
+    let s = 60, o = null;
+    for (let k = 0; k < 4; k++) {
+      const t = Math.max(44, Math.min(92, s * .9)), g = Math.max(7, t * .13);
+      if (!side) {
+        const per = Math.max(1, Math.floor((W - 2 * pad - g) / (t + g))), tr = Math.ceil(n / per);
+        const trayW = Math.min(n, per) * (t + g) + g, trayH = tr * (t + g) + g;
+        s = Math.min((W - 2 * pad) / (cols + 2 * fr), (H - 2 * pad - trayH - gapBT) / (rows + 2 * fr), 116);
+        o = { side, s, t, g, per, trayW, trayH };
+      } else {
+        const per = Math.max(1, Math.floor((H - 2 * pad - g) / (t + g))), tc = Math.ceil(n / per);
+        const trayW = tc * (t + g) + g, trayH = Math.min(n, per) * (t + g) + g;
+        s = Math.min((W - 2 * pad - trayW - gapBT) / (cols + 2 * fr), (H - 2 * pad) / (rows + 2 * fr), 116);
+        o = { side, s, t, g, per, trayW, trayH };
+      }
+    }
+    if (!best || o.s > best.s * 1.06) best = o;
+  }
+  const { side, s, t, g, per, trayW, trayH } = best, f = s * fr, bw = cols * s + 2 * f, bh = rows * s + 2 * f;
+  let fx0, fy0, tx0, ty0;
+  if (!side) { const tot = bh + gapBT + trayH, y0 = Math.max(pad, (H - tot) / 2); fx0 = (W - bw) / 2; fy0 = y0; tx0 = (W - trayW) / 2; ty0 = y0 + bh + gapBT; }
+  else { const tot = bw + gapBT + trayW, x0 = Math.max(pad, (W - tot) / 2); fx0 = x0; fy0 = (H - bh) / 2; tx0 = x0 + bw + gapBT; ty0 = (H - trayH) / 2; }
+  const slots = RD.tiles.map((_, i) => {
+    const a = Math.floor(i / per), b = i % per, inLine = Math.min(per, n - a * per), off = ((per - inLine) * (t + g)) / 2 * (n > per ? 1 : 0);
+    return side ? [tx0 + g + a * (t + g) + t / 2, ty0 + g + off + b * (t + g) + t / 2] : [tx0 + g + off + b * (t + g) + t / 2, ty0 + g + a * (t + g) + t / 2];
+  });
+  return { W, H, port, cols, rows, s, t, g, f, bx: fx0 + f, by: fy0 + f, frame: [fx0, fy0, bw, bh], tray: [tx0, ty0, trayW, trayH], slots };
+}
+function rdRender() {
+  const lay = RD.lay = rdLayout(); RD.port = lay.port;
+  const L = RD.L, P = RD.P, w = RD_W[L.w], { W, H, s, bx, by, cols, rows } = lay;
+  const cc = (x, y) => { const [dx, dy] = rdDc(x, y); return [bx + (dx + .5) * s, by + (dy + .5) * s]; };
+  let o = `<svg id="rdSvg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">` + rdSceneSvg(lay);
+  // board: hedge frame with a 3D edge, checkered grass, water, obstacles
+  const [fx0, fy0, bw, bh] = lay.frame, rr = s * .26;
+  o += `<rect x="${fx0}" y="${fy0 + s * .1}" width="${bw}" height="${bh}" rx="${rr + lay.f}" fill="${rdShade(w.hedge, -.28)}"/>` +
+    `<rect x="${fx0}" y="${fy0}" width="${bw}" height="${bh}" rx="${rr + lay.f}" fill="${w.hedge}"/>`;
+  const rnd = seeded(hash('rdb' + RD.i));
+  for (let k = 0; k < (cols + rows) * 3; k++) {
+    const e = rnd() * 2 * (bw + bh), side = e < bw ? 0 : e < bw + bh ? 1 : e < 2 * bw + bh ? 2 : 3;
+    const px = side === 0 ? fx0 + e : side === 1 ? fx0 + bw : side === 2 ? fx0 + (e - bw - bh) : fx0, py = side === 0 ? fy0 : side === 1 ? fy0 + (e - bw) : side === 2 ? fy0 + bh : fy0 + (e - 2 * bw - bh);
+    const ix = Math.min(Math.max(px, fx0 + lay.f * .5), fx0 + bw - lay.f * .5), iy = Math.min(Math.max(py, fy0 + lay.f * .5), fy0 + bh - lay.f * .5);
+    o += rdC(ix.toFixed(1), iy.toFixed(1), (lay.f * (.18 + rnd() * .14)).toFixed(1), ['#FFFFFF', '#FF9ACB', '#FFE066', '#C9A6FF'][k % 4], { opacity: .9 });
+  }
+  o += `<defs><clipPath id="rdClip"><rect x="${bx}" y="${by}" width="${cols * s}" height="${rows * s}" rx="${rr}"/></clipPath></defs><g clip-path="url(#rdClip)">`;
+  const isW = (x, y) => x >= 0 && y >= 0 && x < P.cols && y < P.rows && 'wy'.includes(P.map[y][x]);
+  for (let y = 0; y < P.rows; y++) for (let x = 0; x < P.cols; x++) {
+    const [dx, dy] = rdDc(x, y), X = bx + dx * s, Y = by + dy * s;
+    if (isW(x, y)) {
+      o += `<rect x="${X - .5}" y="${Y - .5}" width="${s + 1}" height="${s + 1}" fill="#5EC8F2"/>` + rdS(`M${X + s * .18} ${Y + s * .35} q${s * .08} ${-s * .06} ${s * .16} 0 M${X + s * .55} ${Y + s * .7} q${s * .08} ${-s * .06} ${s * .16} 0`, '#A9E6FF', s * .035);
+      [[1, 0, -1], [2, 1, 0], [4, 0, 1], [8, -1, 0]].forEach(([bit, ox, oy]) => {
+        if (isW(x + ox, y + oy) || x + ox < 0 || y + oy < 0 || x + ox >= P.cols || y + oy >= P.rows) return;
+        const b = rdDm(bit), e = s * .05, seg = b === 1 ? `M${X} ${Y + e} H${X + s}` : b === 4 ? `M${X} ${Y + s - e} H${X + s}` : b === 8 ? `M${X + e} ${Y} V${Y + s}` : `M${X + s - e} ${Y} V${Y + s}`;
+        o += rdS(seg, '#F6E7B4', s * .1, { 'stroke-linecap': 'butt' });
+      });
+    } else {
+      o += `<rect x="${X}" y="${Y}" width="${s}" height="${s}" fill="${w.grass[(dx + dy) % 2]}"/>`;
+      if (rnd() < .45) { const gx = X + s * (.2 + rnd() * .6), gy = Y + s * (.25 + rnd() * .55); o += rdS(`M${gx} ${gy} l${s * .04} ${-s * .08} M${gx + s * .07} ${gy} l${s * .03} ${-s * .1} M${gx + s * .13} ${gy} l${-s * .02} ${-s * .07}`, rdShade(w.grass[0], -.18), s * .025); }
+    }
+  }
+  o += '</g>';
+  for (let y = 0; y < P.rows; y++) for (let x = 0; x < P.cols; x++) {
+    const ch = P.map[y][x]; if (!rdIsObst(ch) || ch === 'w') continue;
+    const [dx, dy] = rdDc(x, y);
+    o += `<g transform="translate(${bx + dx * s} ${by + dy * s}) scale(${s / 100})">${rdObstSvg(ch, x * 7 + y)}</g>`;
+  }
+  // start pad + road stub, placed roads
+  const [sx, sy] = cc(...P.start);
+  o += rdE(sx, sy + s * .26, s * .4, s * .13, '#FFFFFF', { opacity: .45 });
+  o += `<g id="rdRoads" transform="translate(${bx} ${by})">`;
+  { const [dx, dy] = rdDc(...P.start); o += `<g transform="translate(${dx * s} ${dy * s}) scale(${s / 100})">${rdRoad(rdPathD(0, rdDm(P.startExit)))}</g>`; }
+  RD.placed.forEach((m, key) => { o += rdRoadAt(...key.split(',').map(Number), m); });
+  o += `</g><g id="rdFx" transform="translate(${bx} ${by})"><rect id="rdHl" x="0" y="0" width="${s}" height="${s}" rx="${s * .2}" fill="rgba(255,255,255,.5)" stroke="#FFFFFF" stroke-width="${Math.max(2, s * .06)}" visibility="hidden" class="rd-target"/></g>`;
+  // the friend waiting (sad) and Lili
+  const [gx, gy] = cc(...P.goal), kf = s * .96 / 100;
+  o += `<g id="rdLili">${liliSvg()}</g>`;
+  o += `<g id="rdFriend" class="rd-sad" transform="translate(${gx - 50 * kf} ${gy + s * .36 - 92 * kf}) scale(${kf})"><g class="rd-fr-a">${friendSvg(L.f, 'sad')}</g></g>`;
+  o += `<g id="rdBub" transform="translate(${gx + s * .3} ${gy - s * .44})"><g class="rd-bubble">${rdC(0, 0, s * .2, '#FFFFFF', { stroke: '#FFB6DA', 'stroke-width': s * .03 })}` +
+    `<text x="0" y="${s * .01}" font-size="${s * .3}" font-weight="800" fill="#FF4FA3" text-anchor="middle" dominant-baseline="central">!</text></g></g>`;
+  // tray
+  const [tx0, ty0, tw, th] = lay.tray;
+  o += `<rect x="${tx0}" y="${ty0 + 6}" width="${tw}" height="${th}" rx="${lay.t * .3}" fill="#E8A93A"/><rect x="${tx0}" y="${ty0}" width="${tw}" height="${th}" rx="${lay.t * .3}" fill="#FFE07A"/>`;
+  o += `<g id="rdTray">` + lay.slots.map(([x, y]) => `<rect x="${x - lay.t / 2}" y="${y - lay.t / 2 + 2}" width="${lay.t}" height="${lay.t}" rx="${lay.t * .2}" fill="#F7CB5C"/>`).join('');
+  o += RD.tiles.map((tl, i) => `<g class="rd-tt${tl.used ? ' used' : ''}" data-i="${i}" transform="translate(${lay.slots[i][0]} ${lay.slots[i][1]})"><g transform="translate(${-lay.t / 2} ${-lay.t / 2}) scale(${lay.t / 100})">${rdTileSvg(rdDm(tl.m), w.tile)}</g></g>`).join('');
+  o += `</g><g id="rdTop"></g></svg>`;
+  $('#rdStage').innerHTML = o;
+  RD.svg = $('#rdSvg'); RD.drag = null; RD.hint = null;
+  rdPlaceLili(sx, sy, rdDm(P.startExit) === 8 ? -1 : 1);
+}
+function rdRoadAt(x, y, m, pop) {
+  const s = RD.lay.s, [dx, dy] = rdDc(x, y);
+  return `<g transform="translate(${(dx + .5) * s} ${(dy + .5) * s})"><g${pop ? ' class="rd-new"' : ''} transform="scale(${s / 100}) translate(-50 -50)">${rdRoad(rdPathD(rdDm(m)))}</g></g>`;
+}
+function rdPlaceLili(px, py, dir) {
+  const k = RD.lay.s * 1.14 / 100, el = $('#rdLili'); if (!el) return;
+  RD.liDir = dir;
+  el.setAttribute('transform', `translate(${px - 52 * k * dir} ${py + RD.lay.s * .22 - 90 * k}) scale(${k * dir} ${k})`);
+}
+function rdSceneSvg(lay) {
+  const w = RD_W[RD.L.w], { W, H, s } = lay, rnd = seeded(hash('rds' + RD.i));
+  let o = `<rect width="${W}" height="${H}" fill="${w.bg}"/>`;
+  for (let k = 0; k < 9; k++) o += rdE(rnd() * W, rnd() * H, 40 + rnd() * 90, 20 + rnd() * 40, rdShade(w.bg, .14), { opacity: .55 });
+  for (let k = 0; k < 40; k++) { const x = rnd() * W, y = rnd() * H; o += rdS(`M${x} ${y} l3 -7 M${x + 6} ${y} l2 -9 M${x + 11} ${y} l-2 -6`, rdShade(w.bg, -.14), 2); }
+  const box = (r, m) => [r[0] - m, r[1] - m, r[2] + 2 * m, r[3] + 2 * m];
+  const avoid = [box(lay.frame, 4), box(lay.tray, 4)];
+  const ps = Math.max(44, s * 1.1), spots = [];
+  for (let y = -ps * .2; y < H - ps * .4; y += ps * .78) for (let x = -ps * .3; x < W - ps * .3; x += ps * .78) {
+    const jx = x + (rnd() - .5) * ps * .35, jy = y + (rnd() - .5) * ps * .35, sz = ps * (.75 + rnd() * .45);
+    if (!avoid.some(r => jx < r[0] + r[2] && jx + sz > r[0] && jy < r[1] + r[3] && jy + sz > r[1])) spots.push([jx, jy, sz]);
+  }
+  for (let k = spots.length - 1; k > 0; k--) { const j = Math.floor(rnd() * (k + 1)); [spots[k], spots[j]] = [spots[j], spots[k]]; }
+  spots.slice(0, 22).sort((a, b) => a[1] + a[2] - b[1] - b[2]).forEach(([x, y, sz], k) => {
+    o += `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${(sz / 100).toFixed(3)})">${rdPropSvg(w.props[k % w.props.length])}</g>`;
+  });
+  return o;
+}
+
+/* --- dragging road pieces --- */
+const rdStageEl = $('#rdStage');
+function rdPt(ev) { const r = RD.svg.getBoundingClientRect(); return { x: ev.clientX - r.left, y: ev.clientY - r.top }; }
+function rdCellAt(cx, cy) {
+  const { bx, by, s, cols, rows } = RD.lay, dx = Math.floor((cx - bx) / s), dy = Math.floor((cy - by) / s);
+  if (dx < 0 || dy < 0 || dx >= cols || dy >= rows) return null;
+  const [x, y] = rdDc(dx, dy);
+  return RD.P.map[y][x] === '.' && !RD.placed.has(x + ',' + y) ? [x, y] : null;
+}
+function rdCounts() { const c = {}; RD.tiles.forEach(t => { if (!t.used) c[t.m] = (c[t.m] || 0) + 1; }); return c; }
+function rdCanPlace(x, y, m) {
+  const key = x + ',' + y, counts = rdCounts(); counts[m]--;
+  RD.placed.set(key, m);
+  const ok = !!rdSolve(RD.P, RD.placed, counts);
+  RD.placed.delete(key);
+  return ok;
+}
+function rdTrace() { // the road from Lili, if it already reaches the friend
+  const P = RD.P, cells = []; let [x, y] = P.start, out = P.startExit;
+  for (let k = 0; k < 99; k++) {
+    const d = rdBitDir(out); x += RD_DX[d]; y += RD_DY[d];
+    if (x === P.goal[0] && y === P.goal[1]) return cells;
+    const m = RD.placed.get(x + ',' + y), from = rdOpp(out);
+    if (m == null || !(m & from)) return null;
+    cells.push([x, y, m]); out = m & ~from;
+  }
+  return null;
+}
+function rdDragTo(D, p) {
+  D.cx = p.x; D.cy = p.y - (D.moved ? D.lift : 0);
+  D.el.setAttribute('transform', `translate(${D.cx} ${D.cy}) scale(${D.k})`);
+  const c = rdCellAt(D.cx, D.cy), hl = $('#rdHl');
+  if (c) { const [dx, dy] = rdDc(...c); hl.setAttribute('x', dx * RD.lay.s); hl.setAttribute('y', dy * RD.lay.s); hl.setAttribute('visibility', 'visible'); }
+  else hl.setAttribute('visibility', 'hidden');
+}
+rdStageEl.addEventListener('pointerdown', ev => {
+  if (!RD || !RD.svg || RD.done || RD.drag) return;
+  if (ev.target.closest('#rdLili')) { say('Ahoj, já jsem Lili!'); return; }
+  if (ev.target.closest('#rdFriend') || ev.target.closest('#rdBub')) { say(RD.L.say); return; }
+  const el = ev.target.closest('.rd-tt'); if (!el) return;
+  const i = +el.dataset.i; if (RD.tiles[i].used) return;
+  ev.preventDefault(); ac(); rdHintStop();
+  try { rdStageEl.setPointerCapture(ev.pointerId); } catch (e) {}
+  const p = rdPt(ev);
+  const D = RD.drag = { i, el, pid: ev.pointerId, x0: p.x, y0: p.y, lift: ev.pointerType === 'mouse' ? 0 : RD.lay.s * .45, moved: false, k: 1.08, cx: p.x, cy: p.y };
+  $('#rdTop').appendChild(el);
+  clearTimeout(RD.idle); sfx.pick();
+  rdDragTo(D, p);
+});
+rdStageEl.addEventListener('pointermove', ev => {
+  const D = RD && RD.drag; if (!D || ev.pointerId !== D.pid) return;
+  const p = rdPt(ev);
+  if (!D.moved && Math.hypot(p.x - D.x0, p.y - D.y0) > 8) { D.moved = true; D.k = RD.lay.s / RD.lay.t * 1.06; }
+  rdDragTo(D, p);
+});
+function rdDrop(ev, cancel) {
+  const D = RD && RD.drag; if (!D || ev.pointerId !== D.pid) return;
+  RD.drag = null; $('#rdHl').setAttribute('visibility', 'hidden');
+  const t = RD.tiles[D.i];
+  if (!D.moved && !cancel) { rdReturn(D, false); rdHint(D.i); return; }
+  const c = cancel ? null : rdCellAt(D.cx, D.cy);
+  if (c && rdCanPlace(c[0], c[1], t.m)) rdSnap(D, c); else rdReturn(D, !cancel);
+}
+rdStageEl.addEventListener('pointerup', ev => rdDrop(ev, false));
+rdStageEl.addEventListener('pointercancel', ev => rdDrop(ev, true));
+function rdSnap(D, [x, y]) {
+  const lay = RD.lay, [dx, dy] = rdDc(x, y), tx = lay.bx + (dx + .5) * lay.s, ty = lay.by + (dy + .5) * lay.s, k1 = lay.s / lay.t;
+  const t = RD.tiles[D.i]; t.used = true; RD.placed.set(x + ',' + y, t.m);
+  const fx0 = D.cx, fy0 = D.cy, k0 = D.k;
+  rdTween(120, k => { const e = rdEase(k); D.el.setAttribute('transform', `translate(${fx0 + (tx - fx0) * e} ${fy0 + (ty - fy0) * e}) scale(${k0 + (k1 - k0) * e})`); }, () => {
+    D.el.classList.add('used'); $('#rdTray').appendChild(D.el);
+    $('#rdRoads').insertAdjacentHTML('beforeend', rdRoadAt(x, y, t.m, true));
+    const nw = $('#rdRoads').lastElementChild.firstElementChild, s = lay.s;
+    rdTween(220, k => nw.setAttribute('transform', `scale(${s / 100 * (1.18 - .18 * rdEase(k))}) translate(-50 -50)`));
+    sfx.snap(); RD.miss = 0;
+    const r = RD.svg.getBoundingClientRect(); if (!reduceMotion) sparkleAt(r.left + tx, r.top + ty, 12);
+    const path = rdTrace();
+    if (path) { RD.done = true; clearTimeout(RD.idle); rdLater(() => rdFinish(path), 280); } else rdIdle();
+  });
+}
+function rdReturn(D, nope) {
+  const [tx, ty] = RD.lay.slots[D.i], fx0 = D.cx, fy0 = D.cy, k0 = D.k;
+  rdTween(230, k => { const e = rdEase(k); D.el.setAttribute('transform', `translate(${fx0 + (tx - fx0) * e} ${fy0 + (ty - fy0) * e}) scale(${k0 + (1 - k0) * e})`); },
+    () => { if ($('#rdTray') && D.el.isConnected) $('#rdTray').appendChild(D.el); });
+  if (nope) {
+    tone(220, .12, 'sine', .1); tone(170, .16, 'sine', .08, .08);
+    if (++RD.miss >= 2) { RD.miss = 0; rdLater(() => rdHint(D.i), 260); }
+  }
+  rdIdle();
+}
+
+/* --- help: a hand shows where a piece goes --- */
+function rdIdle(ms = 11000) { if (!RD || RD.done) return; clearTimeout(RD.idle); RD.idle = rdLater(() => { rdHint(); rdIdle(16000); }, ms); }
+function rdHintStop() { if (!RD || !RD.hint) return; RD.hint.stop = true; const g = $('#rdHint'); if (g) g.remove(); RD.hint = null; }
+function rdHint(only) {
+  if (!RD || !RD.svg || RD.done || RD.drag) return;
+  rdHintStop();
+  const sol = rdSolve(RD.P, RD.placed, rdCounts()); if (!sol) return;
+  let cell = null, ti = -1;
+  for (const [x, y, m] of sol) {
+    if (RD.placed.has(x + ',' + y)) continue;
+    const i = RD.tiles.findIndex((t, j) => !t.used && t.m === m && (only == null || j === only));
+    if (i >= 0) { cell = [x, y]; ti = i; break; }
+  }
+  if (ti < 0) {
+    if (only != null) { say('Tenhle kousek se sem nehodí. Zkus jiný!'); const el = document.querySelector(`.rd-tt[data-i="${only}"]`); if (el) { el.classList.remove('rd-shake'); void el.getBBox(); el.classList.add('rd-shake'); } }
+    return;
+  }
+  const lay = RD.lay, [dx, dy] = rdDc(...cell), [ax, ay] = lay.slots[ti], bx = lay.bx + (dx + .5) * lay.s, by = lay.by + (dy + .5) * lay.s;
+  const hs = Math.max(56, lay.s * 1.05) / 100;
+  $('#rdTop').insertAdjacentHTML('beforeend', `<g id="rdHint" pointer-events="none"><g id="rdHintTile" opacity=".75"><g transform="translate(${-lay.t / 2} ${-lay.t / 2}) scale(${lay.t / 100})">${rdTileSvg(rdDm(RD.tiles[ti].m), RD_W[RD.L.w].tile)}</g></g><g id="rdHand">${rdHandSvg()}</g></g>`);
+  const H = RD.hint = { stop: false }, tile = $('#rdHintTile'), hand = $('#rdHand'), k1 = lay.s / lay.t;
+  const hl = $('#rdHl'); hl.setAttribute('x', dx * lay.s); hl.setAttribute('y', dy * lay.s);
+  const put = (x, y, k, a) => {
+    tile.setAttribute('transform', `translate(${x} ${y}) scale(${k})`); tile.setAttribute('opacity', a);
+    hand.setAttribute('transform', `translate(${x + lay.s * .08 - 50 * hs} ${y + lay.s * .14 - 8 * hs}) scale(${hs})`);
+  };
+  let round = 0;
+  const run = () => {
+    if (H.stop || RD.hint !== H) return;
+    put(ax, ay, 1, .8);
+    rdTween(450, () => {}, () => {
+      if (H.stop) return;
+      hl.setAttribute('visibility', 'visible');
+      rdTween(1000, k => { if (!H.stop) { const e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2; put(ax + (bx - ax) * e, ay + (by - ay) * e, 1 + (k1 - 1) * e, .8); } }, () => {
+        if (H.stop) return;
+        rdTween(500, () => {}, () => {
+          if (H.stop) return;
+          if (++round < 2) run(); else { hl.setAttribute('visibility', 'hidden'); rdHintStop(); }
+        });
+      });
+    });
+  };
+  run();
+}
+
+/* --- the road is complete: rainbow, trot, rescue --- */
+function rdFinish(cells) {
+  if (!RD || !RD.svg) return;
+  rdHintStop(); $('#rdHelp').hidden = true;
+  const d0 = rdDone(); d0.add(RD.i); store.set('zd-road', [...d0]);
+  const { s, bx, by } = RD.lay, P = RD.P;
+  const C = (x, y) => { const [dx, dy] = rdDc(x, y); return [((dx + .5) * s).toFixed(1), ((dy + .5) * s).toFixed(1)]; };
+  const E = (x, y, bit) => { const [dx, dy] = rdDc(x, y), [ex, ey] = RD_END[rdDm(bit)]; return [((dx + ex / 100) * s).toFixed(1), ((dy + ey / 100) * s).toFixed(1)]; };
+  let d = `M${C(...P.start)} L${E(...P.start, P.startExit)}`, out = P.startExit;
+  for (const [x, y, m] of cells) { const o2 = m & ~rdOpp(out); d += (m === 5 || m === 10) ? ` L${E(x, y, o2)}` : ` Q${C(x, y)} ${E(x, y, o2)}`; out = o2; }
+  $('#rdFx').insertAdjacentHTML('beforeend', `<path id="rdTrack" d="${d}" fill="none" stroke="none"/><g id="rdRb">${RD_RAINBOW.map((c, i) => `<path d="${d}" fill="none" stroke="${c}" stroke-width="${(s * (.5 - i * .078)).toFixed(1)}" stroke-linecap="round" stroke-linejoin="round" opacity=".92"/>`).join('')}</g>`);
+  const track = $('#rdTrack'), len = track.getTotalLength(), rb = [...document.querySelectorAll('#rdRb path')];
+  rb.forEach(p => { p.style.strokeDasharray = `${len} ${len}`; p.style.strokeDashoffset = len; });
+  RD.tiles.forEach((t, i) => { const el = document.querySelector(`.rd-tt[data-i="${i}"]`); if (el && !t.used) rdTween(400, k => el.setAttribute('opacity', 1 - k)); });
+  const li = $('#rdLili'); li.classList.add('rd-trot');
+  const dur = Math.min(4200, Math.max(1400, len / (s * 2.8) * 1000)), r = RD.svg.getBoundingClientRect();
+  let lastX = null, dir = RD.liDir, nextSpark = 0;
+  tone(660, .1, 'triangle', .12); tone(880, .12, 'triangle', .12, .1);
+  rdTween(dur, k => {
+    const e = k < .08 ? k * k / .16 : k, at = len * Math.min(1, e), pt = track.getPointAtLength(at);
+    rb.forEach(p => { p.style.strokeDashoffset = len - at; });
+    if (lastX != null && Math.abs(pt.x - lastX) > .3) dir = pt.x < lastX ? -1 : 1;
+    lastX = pt.x;
+    rdPlaceLili(bx + pt.x, by + pt.y, dir);
+    if (k > nextSpark && !reduceMotion) { nextSpark = k + .07; sparkleAt(r.left + bx + pt.x, r.top + by + pt.y + s * .2, 3); tone(520 + k * 500, .05, 'sine', .05); }
+  }, () => {
+    li.classList.remove('rd-trot'); li.classList.add('rd-cheer');
+    const fr = $('#rdFriend'); fr.classList.remove('rd-sad'); fr.classList.add('rd-happy');
+    fr.querySelector('.rd-fr-a').innerHTML = friendSvg(RD.L.f, 'happy');
+    const bub = $('#rdBub'); if (bub) bub.remove();
+    const [gx, gy] = C(...P.goal);
+    rdHearts(r.left + bx + +gx, r.top + by + +gy - s * .2, 16);
+    sfx.win(); confetti(); say(RD.L.ok);
+    rdLater(rdWin, 2000);
+  });
+}
+function rdWin() {
+  const i = RD.i, L = RD.L, F = RD_FRIENDS[L.f], next = i + 1 < RD_LV.length ? i + 1 : -1, all = rdDone().size === RD_LV.length;
+  const heart = (x, y, k, c) => `<path transform="translate(${x} ${y}) scale(${k})" d="M0 6 C-8 -1 -6 -9 0 -5 C6 -9 8 -1 0 6 Z" fill="${c}"/>`;
+  const art = `<svg class="rd-win" viewBox="0 0 250 150"><g transform="translate(4 14) scale(1.3)"><g class="rd-cheer">${liliSvg()}</g></g>` +
+    `<g transform="translate(138 36) scale(1.06)" class="rd-happy"><g class="rd-fr-a">${friendSvg(L.f, 'happy')}</g></g>` +
+    heart(128, 30, 1.6, '#FF6FAE') + heart(150, 14, 1.1, '#FF9ACB') + heart(112, 12, .9, '#C9A6FF') + `</svg>`;
+  showWin(art, next < 0 && all ? 'Všichni zachránění!' : 'Zachráněno!', next < 0 ? 'Dráček jde s Lili na velkou oslavu.' : `${F.name} jde s Lili.`, [
+    next >= 0 ? { label: `Další kamarád: ${RD_FRIENDS[RD_LV[next].f].name}`, cls: 'primary', fn: () => rdStart(next) } : null,
+    { label: 'Všichni kamarádi', cls: next >= 0 ? '' : 'primary', fn: () => rdShowPick() },
+    { label: 'Hrát znovu', cls: '', fn: () => rdStart(i) }
+  ].filter(Boolean), () => say(L.ok));
+}
+let rdRsT;
+window.addEventListener('resize', () => {
+  clearTimeout(rdRsT);
+  rdRsT = setTimeout(() => {
+    if (current !== 'road' || !RD || !RD.svg || RD.done || $('#rdStage').hidden) return;
+    if (RD.drag) { RD.drag = null; }
+    rdHintStop(); rdRender();
+  }, 220);
+});
+$('#goRoad').addEventListener('click', () => { ac(); startRoad(); });
 /* ---------- BOOT ---------- */
 $('#sceneBg').innerHTML = SCENE_SVG;
 if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => { czVoice = null; czechVoice(); }; } catch (e) {} }
@@ -2970,7 +3989,7 @@ document.addEventListener('pointerdown', ev => { if (!reduceMotion) sparkleAt(ev
   for (let i = 0; i < 28; i++) h += `<i style="left:${(Math.random() * 100).toFixed(1)}%;top:${(Math.random() * 100).toFixed(1)}%;font-size:${Math.round(10 + Math.random() * 18)}px;color:${cols[i % cols.length]};animation-delay:${(Math.random() * 2.4).toFixed(2)}s;animation-duration:${(1.8 + Math.random() * 1.8).toFixed(2)}s">✦</i>`;
   $('#twinkles').innerHTML = h;
 })();
-$('#mascot').addEventListener('click', ev => { bounce(ev.currentTarget); sparkleAt(ev.clientX, ev.clientY, 24); say('Ahoj! Já jsem jednorožec!'); });
+$('#mascot').addEventListener('click', ev => { bounce(ev.currentTarget); sparkleAt(ev.clientX, ev.clientY, 24); say('Ahoj! Já jsem Lili. Pojď si se mnou hrát!'); });
 (function installHint() {
   const standalone = navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
   let framed = false; try { framed = window.self !== window.top; } catch (e) { framed = true; }
