@@ -14,41 +14,26 @@
   const cnt = (k) => new Set(list(k)).size;
   const safe = (fn) => { try { return fn(); } catch (e) { return null; } };
 
-  // progress per section: [done, total], read from what the app already stores
+  // progress per section: [done, total]; done from what the app stores, totals from window.appTotals()
   const PROGRESS = {
-    'zviratkova-dilna': () => ({
-      puzzle: [cnt('zd-solved'), ANIMALS.length],
-      omalovanky: [cnt('zd-ndone'), PAGES.length],
-      cesta: [cnt('zd-road'), RD_LV.length],
-      cisla: [cnt('zd-num'), 10],
-      abeceda: [cnt('zd-traced'), LETTERS.length],
-      logika: [cnt('zd-lg'), LG_ORDER.length],
-      spojovacky: [cnt('zd-dots'), DOTS.length],
+    'zviratkova-dilna': (T) => ({
+      puzzle: [cnt('zd-solved'), T.puzzle], omalovanky: [cnt('zd-ndone'), T.omalovanky], cesta: [cnt('zd-road'), T.cesta],
+      cisla: [cnt('zd-num'), T.cisla], abeceda: [cnt('zd-traced'), T.abeceda], logika: [cnt('zd-lg'), T.logika], spojovacky: [cnt('zd-dots'), T.spojovacky],
     }),
-    'marusky-apka': () => {
+    'marusky-apka': (T) => {
       const stars = safe(() => JSON.parse(ls.get('mm-stars') || '{}')) || {};
+      const sum = (ts) => ts.reduce((a, t) => a + Math.min(3, stars[t.id] || 0), 0);
       const out = {
-        ucivo: [Object.values(stars).reduce((a, b) => a + b, 0), TOPICS.length * 3],
-        puzzle: [cnt('mm-solved'), ANIMALS.length],
-        omalovanky: [cnt('mm-ndone'), PAGES.length],
-        kartičky: [cnt('mm-cards'), CARDS.length],
-        cisla: [cnt('mm-num'), 10],
-        abeceda: [cnt('mm-traced'), LETTERS.length],
-        logika: [cnt('mm-lg'), LG_ORDER.length],
+        ucivo: [sum(T.topics), T.topics.length * 3],
+        puzzle: [cnt('mm-solved'), T.puzzle], omalovanky: [cnt('mm-ndone'), T.omalovanky], karticky: [cnt('mm-cards'), T.karticky],
+        cisla: [cnt('mm-num'), T.cisla], abeceda: [cnt('mm-traced'), T.abeceda], logika: [cnt('mm-lg'), T.logika],
       };
-      [1, 2, 3, 4, 5].forEach(g => {
-        const ts = TOPICS.filter(t => t.grade === g);
-        out[`${g}. třída`] = [ts.reduce((a, t) => a + (stars[t.id] || 0), 0), ts.length * 3];
-      });
+      [1, 2, 3, 4, 5].forEach(g => { const ts = T.topics.filter(t => t.grade === g); out[`${g}. třída`] = [sum(ts), ts.length * 3]; });
       return out;
     },
-    'garaz': () => ({
-      auta: [cnt('gz-built'), VEHICLES.length],
-      omalovanky: [cnt('gz-ndone'), PAGES.length],
-      draha: [cnt('gz-tracks'), TRACKS.length],
-      cisla: [cnt('gz-num'), 10],
-      abeceda: [cnt('gz-traced'), LETTERS.length],
-      logika: [cnt('gz-lg'), LG_ORDER.length],
+    'garaz': (T) => ({
+      auta: [cnt('gz-built'), T.auta], omalovanky: [cnt('gz-ndone'), T.omalovanky], draha: [cnt('gz-tracks'), T.draha],
+      cisla: [cnt('gz-num'), T.cisla], abeceda: [cnt('gz-traced'), T.abeceda], logika: [cnt('gz-lg'), T.logika],
     }),
   };
 
@@ -78,7 +63,7 @@
   }
 
   function progress() {
-    const p = safe(PROGRESS[APP]);
+    const p = safe(() => PROGRESS[APP](window.appTotals()));
     if (!p) return;
     const parts = Object.entries(p).filter(([, v]) => v && v[1] > 0).map(([k, [d, t]]) => [k, Math.min(1, d / t)]);
     const key = JSON.stringify(parts);

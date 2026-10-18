@@ -4002,6 +4002,8 @@ renderMute();
 renderHome();
 drawHomeArt();
 show('home');
+// totals for the anonymous play statistics (analytics.js)
+window.appTotals = () => ({ puzzle: ANIMALS.length, omalovanky: PAGES.length, cesta: RD_LV.length, cisla: 10, abeceda: LETTERS.length, logika: LG_ORDER.length, spojovacky: DOTS.length });
 })();
 </script>
 
