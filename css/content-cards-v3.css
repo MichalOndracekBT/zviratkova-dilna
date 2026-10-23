@@ -217,18 +217,19 @@
 #fx{opacity:.72}
 
 @media(max-width:700px),(orientation:portrait) and (max-width:900px){
-  #abc #abcCard{min-height:360px}
+  /* the letter and the picture are the biggest things on the card (STYLE_GUIDE: Ochrana výuky) */
+  #abc #abcCard{min-height:370px}
   #abc .abc-scene-v3{
-    grid-template-columns:35% 1fr;
+    grid-template-columns:38% 1fr;
     gap:3%;
     padding:5% 4% 7%;
   }
   #abc .abc-letter-v3{border-radius:34px}
-  #abc .abc-letter-v3 b{font-size:clamp(64px,20vw,100px)}
-  #abc .abc-letter-v3 i{font-size:24px}
-  #abc .abc-object-v3{min-height:65%;padding:12px 10px 15px;border-radius:27px}
-  #abc .abc-emoji-v3{font-size:clamp(68px,24vw,120px)}
-  #abc .abc-word-v3{font-size:clamp(21px,7vw,31px)}
+  #abc .abc-letter-v3 b{font-size:clamp(72px,24vw,118px)}
+  #abc .abc-letter-v3 i{font-size:28px}
+  #abc .abc-object-v3{min-height:72%;padding:12px 10px 15px;border-radius:27px}
+  #abc .abc-emoji-v3{font-size:clamp(84px,31vw,150px)}
+  #abc .abc-word-v3{font-size:clamp(23px,7.8vw,34px)}
   #abc .abc-object-v3 small{font-size:10px;text-align:center}
   #abc .abc-lumi-v3{width:73px;right:1%;bottom:-1%}
 }

@@ -234,18 +234,26 @@
   line-height:1.15;
   box-shadow:0 8px 18px rgba(66,58,82,.10);
 }
+/* The objects to count are the main content of the lesson (STYLE_GUIDE: Ochrana výuky):
+   numIntro() sets --cols (n up to 5 in one row, more in two balanced rows, e.g. 7 = 4 + 3),
+   so small numbers get big objects. */
 #count .num-row-v3{
   align-self:start;
   width:100%;
+  max-width:none; /* the old .num-row capped the row at 6.5em, which kept the objects tiny */
   display:grid;
-  grid-template-columns:repeat(5,minmax(54px,1fr));
+  grid-template-columns:repeat(var(--cols,5),minmax(54px,1fr));
+  justify-items:center;
   gap:10px;
   padding:4px 0;
 }
 #count .num-object-v3{
   position:relative;
+  width:100%;
+  max-width:104px;
   min-width:0;
   aspect-ratio:1;
+  container-type:inline-size;
   display:grid;
   place-items:center;
   border-radius:24px;
@@ -257,7 +265,7 @@
 }
 #count .num-object-v3 i{
   font-style:normal;
-  font-size:clamp(30px,5cqw,54px);
+  font-size:58cqw; /* relative to the object tile itself */
   line-height:1;
   filter:drop-shadow(0 5px 4px rgba(62,55,73,.12));
 }
@@ -348,32 +356,44 @@
 @media(max-width:700px),(orientation:portrait) and (max-width:900px){
   #count .num-story-v3{
     grid-template-columns:1fr;
-    grid-template-rows:minmax(210px,43%) 1fr;
+    grid-template-rows:minmax(190px,36%) 1fr;
   }
   #count .num-lesson-v3{
-    width:min(78%,300px);
-    padding:12px 12px 13px;
+    width:min(72%,280px);
+    padding:10px 12px 12px;
   }
   #count .num-crystal-v3{width:min(29cqw,118px)}
   #count .num-crystal-v3 b{font-size:min(21cqw,88px)}
   #count .num-word-v3{font-size:30px}
+  /* Lili + her bubble in one row, the objects full width below and as big as possible */
   #count .num-count-v3{
-    grid-template-columns:82px 1fr;
+    grid-template-columns:64px 1fr;
     grid-template-rows:auto 1fr;
-    padding:3px 16px 10px;
-    gap:5px 8px;
+    align-content:start;
+    padding:8px 16px 12px;
+    gap:10px 8px;
   }
-  #count .num-lumi-v3{width:82px}
-  #count .num-speech-v3{font-size:13px;padding:7px 10px}
+  #count .num-lumi-v3{grid-row:1;align-self:center;width:64px}
+  #count .num-speech-v3{grid-row:1;align-self:center;font-size:16px;padding:8px 12px}
   #count .num-row-v3{
-    grid-template-columns:repeat(5,minmax(40px,1fr));
-    gap:6px;
+    grid-column:1/-1;
+    grid-row:2;
+    align-self:center;
+    grid-template-columns:repeat(var(--cols,5),minmax(0,1fr));
+    gap:10px;
   }
-  #count .num-object-v3{border-radius:18px}
-  #count .num-object-v3 i{font-size:clamp(25px,8vw,42px)}
+  #count .num-object-v3{border-radius:20px;max-width:96px}
   #count .num-object-v3 b{
     min-width:21px;height:21px;font-size:11px;border-width:1.5px;
   }
+}
+/* short phones upright (iPhone SE): smaller number card, more room for the objects */
+@media(orientation:portrait) and (max-height:700px){
+  #count .num-story-v3{grid-template-rows:minmax(150px,32%) 1fr}
+  #count .num-lesson-v3{padding:8px 10px 9px;gap:4px;margin-top:8px}
+  #count .num-crystal-v3{width:min(22cqw,86px)}
+  #count .num-crystal-v3 b{font-size:min(16cqw,64px)}
+  #count .num-word-v3{font-size:24px}
 }
 
 @media(orientation:landscape) and (max-height:520px){

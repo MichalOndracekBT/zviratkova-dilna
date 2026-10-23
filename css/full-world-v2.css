@@ -113,6 +113,7 @@
   -webkit-backdrop-filter:blur(10px);
 }
 .dots{gap:5px}
+.dots:empty{display:none} /* pickers have no progress yet: no empty white pill */
 .dots i{width:10px;height:10px;background:#DAD3E6}
 .dots i.on{background:#FFD86B;box-shadow:0 0 0 2px rgba(255,255,255,.95),0 2px 7px rgba(205,159,38,.28)}
 
@@ -239,11 +240,12 @@
   opacity:.55;
   filter:drop-shadow(0 0 8px rgba(255,255,255,.45));
 }
+/* loose pieces keep a white sticker edge, so they stand out even on a background of the same colour */
 #puzzle .pz-piece{
-  filter:drop-shadow(0 6px 5px rgba(36,48,62,.16));
+  filter:drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff) drop-shadow(0 6px 6px rgba(36,48,62,.2));
 }
 #puzzle .pz-piece.lift{
-  filter:drop-shadow(0 16px 13px rgba(36,48,62,.25));
+  filter:drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff) drop-shadow(0 16px 13px rgba(36,48,62,.25));
 }
 /* placed pieces merge into one picture: no shadow, no visible seams */
 #puzzle .pz-piece.placed{filter:none}
