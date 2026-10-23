@@ -72,3 +72,28 @@ Animovat hlavně transform a opacity. Omezit filter, blur a layout properties. R
 - reduced motion?
 - výkon?
 - progress se neztrácí?
+
+
+## Stav implementace — 23. 10. 2026
+
+Hotovo v první redesign iteraci:
+- [x] branch redesign-v2
+- [x] dokumentace a README odkazy
+- [x] základ design tokenů
+- [x] nový world-map vizuální směr Home
+- [x] sjednocený tap feedback
+- [x] odstraněný starý full-screen 170-particle confetti shower
+- [x] nový lokální reward burst 5–7 hvězd
+- [x] kultivovanější český browser voice fallback
+- [x] voice bank + cooldown pro pochvaly
+- [x] Lumi interakce na Home
+- [x] reduced-motion respektován v redesign vrstvě
+
+Další:
+- [ ] skutečné kvalitní audio voice assety
+- [ ] samostatný audio manager a music ducking
+- [ ] puzzle idle hint
+- [ ] polish puzzle completion
+- [ ] reward/collection systém
+- [ ] nový visual pass omalovánek
+- [ ] nový visual pass čísel a abecedy
