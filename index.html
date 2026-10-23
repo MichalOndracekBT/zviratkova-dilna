@@ -550,6 +550,11 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
   .li-tail,.li-head,.li-eye,.rd-eye,.rd-bubble,.rd-sad .rd-fr-a,.rd-tear,.rd-parade-in,.rd-parade-in .rd-pf,.rd-lv.next{animation:none}
 }
 </style>
+<link rel="stylesheet" href="css/redesign-v2.css?v=3">
+<link rel="stylesheet" href="css/full-world-v2.css?v=3">
+<link rel="stylesheet" href="css/count-world-v3.css?v=2">
+<link rel="stylesheet" href="css/content-cards-v3.css?v=3">
+<link rel="stylesheet" href="css/world-art.css?v=1">
 </head>
 <body>
 
@@ -875,21 +880,48 @@ function tone(f, dur, type = 'triangle', vol = .16, when = 0) {
 }
 const sfx = {
   pick() { tone(480, .07, 'sine', .12); },
-  snap() { tone(660, .09); tone(990, .14, 'triangle', .14, .06); },
+  // redesign v2: softer, shorter snap and win (AUDIO_MOTION_GUIDE: no aggressive transients)
+  snap() { tone(560, .06, 'sine', .075); tone(760, .09, 'sine', .055, .035); },
   paint() { tone(380 + Math.random() * 320, .08, 'sine', .1); },
-  win() { [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, .3, 'triangle', .16, i * .11)); }
+  win() { [523, 659, 784].forEach((f, i) => tone(f, .18, 'sine', .095, i * .085)); }
 };
 let czVoice = null, lastUtterance = null;
+// prefer a natural Czech voice (Zuzana, enhanced/premium) over compact or eSpeak ones
+function voiceScore(v) {
+  const name = String(v.name || '').toLowerCase();
+  let s = String(v.lang || '').toLowerCase() === 'cs-cz' ? 100 : 80;
+  if (/zuzana|vlasta/.test(name)) s += 35;
+  if (/enhanced|premium|natural|neural/.test(name)) s += 25;
+  if (/google|microsoft|apple/.test(name)) s += 20;
+  if (/espeak|compact/.test(name)) s -= 35;
+  if (v.default) s += 5;
+  return s;
+}
 function czechVoice() {
   if (czVoice) return czVoice;
-  try { czVoice = speechSynthesis.getVoices().find(v => /^cs([-_]|$)/i.test(v.lang)) || null; } catch (e) {}
+  try { czVoice = speechSynthesis.getVoices().filter(v => /^cs([-_]|$)/i.test(v.lang)).sort((a, b) => voiceScore(b) - voiceScore(a))[0] || null; } catch (e) {}
   return czVoice;
 }
+try { speechSynthesis.addEventListener('voiceschanged', () => { czVoice = null; }); } catch (e) {}
+// Lili's prosody (AUDIO_MOTION_GUIDE): calm, clear instructions; brighter praise; curious questions;
+// single words (numbers, letters, animal names) slower, so a small child hears every sound.
+function prosody(text) {
+  if (/^[a-záčďéěíňóřšťúůýž]+$/i.test(text) && text.length <= 12) return { rate: .88, pitch: 1.02 }; // still fits the 0.85 s counting pace
+  if (/!$/.test(text)) return { rate: .96, pitch: 1.1 };
+  if (/\?$/.test(text)) return { rate: .9, pitch: 1.06 };
+  return { rate: .9, pitch: 1.03 };
+}
+let EMOJI_RE = null;
+try { EMOJI_RE = new RegExp('[\\p{Extended_Pictographic}\\uFE0F\\u200D]', 'gu'); } catch (e) {} // older engines: skip the clean-up
 function say(text) {
   if (muted || !('speechSynthesis' in window)) return;
+  text = String(text == null ? '' : text);
+  if (EMOJI_RE) text = text.replace(EMOJI_RE, ''); // never read emoji aloud ("unicorn face")
+  text = text.replace(/\s+/g, ' ').trim();
+  if (!text) return;
   try {
-    const synth = window.speechSynthesis;
-    const u = new SpeechSynthesisUtterance(text); u.lang = 'cs-CZ'; u.rate = .95; u.pitch = 1;
+    const synth = window.speechSynthesis, p = prosody(text);
+    const u = new SpeechSynthesisUtterance(text); u.lang = 'cs-CZ'; u.rate = p.rate; u.pitch = p.pitch;
     const v = czechVoice(); if (v) u.voice = v;
     lastUtterance = u; // keep a reference: Chrome can garbage-collect a playing utterance and cut it off
     const go = () => { try { synth.resume(); synth.speak(u); } catch (e) {} };
@@ -1515,9 +1547,11 @@ function renderPuzzlePicker() {
   }).join('');
   $('#catChips').innerHTML = CATS.map(([id, nm]) => `<button class="chip" data-c="${id}" aria-pressed="${id === cat}">${nm}</button>`).join('');
   $('#animalGrid').innerHTML = filtered().map(a => {
-    const i = ANIMALS.indexOf(a), h = sceneOf(a);
-    return `<button class="tile" data-i="${i}" style="background:linear-gradient(${h.sky[0]},${h.ground || h.sky[1]});${h.night ? 'color:#fff' : ''}">
-      ${a.icon ? `<span class="sub">${a.icon}</span>` : ''}${solved.has(akey(a)) ? '<span class="badge">⭐</span>' : ''}<span class="em">${a.e}</span><span class="nm">${a.short || a.name}</span></button>`;
+    const i = ANIMALS.indexOf(a), h = sceneOf(a), src = `img/${imgCode(a.e)}.svg`;
+    return `<button class="tile tile-v3" data-i="${i}" style="--tile-sky:${h.sky[0]};--tile-ground:${h.ground || h.sky[1]};${h.night ? 'color:#fff' : ''}">
+      ${a.icon ? `<span class="sub">${a.icon}</span>` : ''}${solved.has(akey(a)) ? '<span class="badge">⭐</span>' : ''}
+      <span class="tile-art-v3"><span class="tile-fallback-v3">${a.e}</span><img src="${src}" alt="" onerror="this.remove()"></span>
+      <span class="nm">${a.short || a.name}</span></button>`;
   }).join('');
 }
 $('#pzMode').addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; pzMode = b.dataset.m; store.set('zd-pzmode', pzMode); sfx.pick(); renderPuzzlePicker(); });
@@ -1545,7 +1579,8 @@ function animalImg(e) {
 }
 function openPuzzle(a) {
   ac();
-  P = { animal: a, diff, seed: Math.random(), zTop: 10, drag: null, done: false };
+  if (P && P.idleTimer) clearTimeout(P.idleTimer);
+  P = { animal: a, diff, seed: Math.random(), zTop: 10, drag: null, done: false, idleTimer: null };
   $('#pzTitle').textContent = a.name; $('#pzArea').innerHTML = '';
   show('puzzle');
   const mine = P;
@@ -1626,6 +1661,7 @@ function buildPuzzle() {
   });
   scatterPieces();
   $('#pzProgress').textContent = `0/${P.pieces.length}`;
+  schedulePuzzleIdleHint();
 }
 function setPiece(p) { p.el.style.transform = `translate3d(${p.x}px,${p.y}px,0) rotate(${p.rot}deg)${p.lift ? ' scale(1.06)' : ''}`; }
 function scatterPieces(animate) {
@@ -1657,8 +1693,32 @@ function hitPiece(p, x, y) {
   return false;
 }
 function localXY(ev) { const r = $('#pzArea').getBoundingClientRect(); return [ev.clientX - r.left, ev.clientY - r.top]; }
+function clearPuzzleIdleHint() {
+  if (P && P.idleTimer) { clearTimeout(P.idleTimer); P.idleTimer = null; }
+}
+function showPuzzleHint(p, manual = false) {
+  if (!P || P.done || !p || p.placed) return;
+  const g = document.createElement('canvas'); g.width = p.cw; g.height = p.ch; g.getContext('2d').drawImage(p.el, 0, 0);
+  g.className = 'pz-hint';
+  Object.assign(g.style, { width: p.w + 'px', height: p.h + 'px', transform: `translate3d(${p.tx}px,${p.ty}px,0)` });
+  $('#pzArea').appendChild(g);
+  setTimeout(() => g.remove(), manual ? 1500 : 1100);
+  p.el.classList.remove('wiggle'); void p.el.offsetWidth; p.el.classList.add('wiggle');
+  if (manual) tone(700, .07, 'sine', .055);
+}
+function schedulePuzzleIdleHint(delay = 7000) {
+  clearPuzzleIdleHint();
+  if (!P || P.done || current !== 'puzzle') return;
+  P.idleTimer = setTimeout(() => {
+    if (!P || P.done || P.drag || current !== 'puzzle') return;
+    const p = P.pieces && P.pieces.find(q => !q.placed);
+    if (p) showPuzzleHint(p, false);
+    schedulePuzzleIdleHint(11000);
+  }, delay);
+}
 $('#pzArea').addEventListener('pointerdown', ev => {
   if (!P || P.done || !P.pieces || P.drag) return;
+  clearPuzzleIdleHint();
   const [x, y] = localXY(ev);
   const p = P.pieces.filter(q => !q.placed).sort((a, b) => b.z - a.z).find(q => hitPiece(q, x, y));
   if (!p) return;
@@ -1676,7 +1736,6 @@ $('#pzArea').addEventListener('pointermove', ev => {
   p.x = Math.max(-p.w * .5, Math.min(P.W - p.w * .5, x - d.ox));
   p.y = Math.max(-p.h * .5, Math.min(P.H - p.h * .5, y - d.oy));
   setPiece(p);
-  if (Math.random() < .25) sparkleAt(ev.clientX, ev.clientY, 1);
 });
 function endDrag(ev) {
   const d = P && P.drag; if (!d || ev.pointerId !== d.id) return;
@@ -1686,26 +1745,31 @@ function endDrag(ev) {
     p.x = p.tx; p.y = p.ty; p.rot = 0; p.placed = true;
     p.el.classList.add('anim', 'placed'); p.el.style.zIndex = 2;
     setTimeout(() => p.el.classList.remove('anim'), 240);
-    P.placed++; sfx.snap(); sparkleAt(ev.clientX, ev.clientY, 18);
+    P.placed++; sfx.snap();
+    if (window.ZDBurst) window.ZDBurst(p.el, 4); else sparkleAt(ev.clientX, ev.clientY, 4);
     $('#pzProgress').textContent = `${P.placed}/${P.pieces.length}`;
     if (P.placed === P.pieces.length) finishPuzzle();
   }
   setPiece(p);
+  if (P && !P.done) schedulePuzzleIdleHint();
 }
 $('#pzArea').addEventListener('pointerup', endDrag);
 $('#pzArea').addEventListener('pointercancel', endDrag);
-// hint: the next piece briefly shows where it belongs
+// hint: after idle time the next target breathes once; the button gives the same hint immediately
 $('#hintBtn').addEventListener('click', () => {
   if (!P || P.done || !P.pieces) return;
+  clearPuzzleIdleHint();
   const p = P.pieces.find(q => !q.placed); if (!p) return;
-  const g = document.createElement('canvas'); g.width = p.cw; g.height = p.ch; g.getContext('2d').drawImage(p.el, 0, 0);
-  g.className = 'pz-hint'; Object.assign(g.style, { width: p.w + 'px', height: p.h + 'px', transform: `translate3d(${p.tx}px,${p.ty}px,0)` });
-  $('#pzArea').appendChild(g); setTimeout(() => g.remove(), 1600);
-  p.el.classList.remove('wiggle'); void p.el.offsetWidth; p.el.classList.add('wiggle');
-  tone(700, .08, 'sine', .08);
+  showPuzzleHint(p, true);
+  schedulePuzzleIdleHint(10000);
 });
-$('#shuffleBtn').addEventListener('click', () => { if (P && !P.done && P.pieces) { scatterPieces(true); sfx.pick(); } });
+$('#shuffleBtn').addEventListener('click', () => {
+  if (P && !P.done && P.pieces) {
+    clearPuzzleIdleHint(); scatterPieces(true); sfx.pick(); schedulePuzzleIdleHint();
+  }
+});
 function finishPuzzle() {
+  clearPuzzleIdleHint();
   P.done = true;
   const solved = solvedSet(); solved.add(akey(P.animal)); store.set('zd-solved', [...solved]);
   setTimeout(() => {
@@ -1720,8 +1784,8 @@ function finishPuzzle() {
         page ? { label: `🎨 Vybarvit: ${page.name}`, cls: '', fn: () => openColor(page) } : null,
         { label: 'Vybrat jiné zvířátko', cls: '', fn: () => { renderPuzzlePicker(); show('pickPuzzle'); } }
       ].filter(Boolean), () => say(a.name));
-    }, 1300);
-  }, 250);
+    }, 900);
+  }, 220);
 }
 let rsT;
 window.addEventListener('resize', () => {
@@ -1799,14 +1863,13 @@ function sparkleAt(x, y, n = 9) {
   }
   fxRun();
 }
-// celebration: a shower of glitter and unicorns
+// celebration: short local burst around the reward instead of a full-screen particle shower
 function confetti() {
-  if (reduceMotion || !fx.ctx) return;
-  for (let i = 0; i < 170; i++) fx.parts.push({ x: Math.random() * fx.w, y: -20 - Math.random() * fx.h * .6, vx: (Math.random() - .5) * 1.5, vy: 1.5 + Math.random() * 2.5,
-    g: .03, drag: .995, size: 3 + Math.random() * 7, rot: Math.random() * 3, vr: (Math.random() - .5) * .2, life: 150 + Math.random() * 60, c: FX_COLS[Math.floor(Math.random() * FX_COLS.length)], tw: true });
-  ['🦄', '🦄', '🦄', '✨', '💖', '🌈', '⭐', '🦄', '💎', '🦄', '✨', '💖', '🦄'].forEach(em => fx.parts.push({ emoji: em, x: Math.random() * fx.w, y: -40 - Math.random() * fx.h * .5,
-    vx: (Math.random() - .5) * 1.2, vy: 1.6 + Math.random() * 2, g: .025, drag: .995, size: 26 + Math.random() * 18, rot: (Math.random() - .5) * .5, vr: (Math.random() - .5) * .02, life: 170 + Math.random() * 50 }));
-  fxRun();
+  if (reduceMotion) return;
+  const origin = document.querySelector('#win:not([hidden]) #winArt') || document.querySelector('.screen:not([hidden]) .board.done');
+  if (window.ZDBurst) { window.ZDBurst(origin, 7); return; }
+  const r = origin && origin.getBoundingClientRect ? origin.getBoundingClientRect() : null;
+  sparkleAt(r ? r.left + r.width / 2 : innerWidth / 2, r ? r.top + r.height / 2 : innerHeight * .44, 7);
 }
 
 /* ---------- COLORING EXTRAS: stickers, scenes, numbers, coming alive ---------- */
@@ -2191,7 +2254,7 @@ function numTap(ev) {
   const i = C.regions.indexOf(el); if (i < 0) return;
   ev.preventDefault();
   const P = C.plan;
-  if (P.auto[i] || C.ndone[i]) { sparkleAt(ev.clientX, ev.clientY, 5); return; }
+  if (P.auto[i] || C.ndone[i]) { if (window.ZDBurst) window.ZDBurst(ev.target.closest('.r') || $('#clSvg'), 2); return; }
   const lab = C.num.querySelector(`.nlab[data-i="${i}"]`);
   if (P.num[i] !== C.curN) {
     if (lab) { lab.classList.remove('nope'); void lab.getBBox(); lab.classList.add('nope'); }
@@ -2201,7 +2264,7 @@ function numTap(ev) {
     return;
   }
   C.ndone[i] = true; el.style.fill = P.col[i]; if (lab) lab.remove();
-  syncAuto(); C.undo.push({ t: 'nfill', i }); saveNum(); sfx.paint(); sparkleAt(ev.clientX, ev.clientY, 12);
+  syncAuto(); C.undo.push({ t: 'nfill', i }); saveNum(); sfx.paint(); if (window.ZDBurst) window.ZDBurst(ev.target.closest('.r') || $('#clSvg'), 3);
   if (!numLeft(C.curN)) { const nx = firstOpenNum(C.curN + 1); if (nx) { C.curN = nx; tone(990, .12, 'triangle', .1, .08); } }
   renderNumPalette();
   if (!totalLeft()) {
@@ -2264,14 +2327,14 @@ $('#clSvg').addEventListener('pointerdown', ev => {
     const prev = el.style.fill || '';
     el.style.fill = curColor;
     if (el.style.fill === prev) return;
-    C.undo.push({ t: 'sfill', el, prev }); sfx.paint(); saveStk(); sparkleAt(ev.clientX, ev.clientY, 12);
+    C.undo.push({ t: 'sfill', el, prev }); sfx.paint(); saveStk(); if (window.ZDBurst) window.ZDBurst(ev.target.closest('.r') || $('#clSvg'), 3);
     return;
   }
   const i = C.regions.indexOf(el); if (i < 0) return;
   const prev = el.style.fill || '';
   el.style.fill = curColor;
   if (el.style.fill === prev) return;
-  C.undo.push({ t: 'fill', list: [[i, prev]] }); sfx.paint(); saveColor(); sparkleAt(ev.clientX, ev.clientY, 12);
+  C.undo.push({ t: 'fill', list: [[i, prev]] }); sfx.paint(); saveColor(); if (window.ZDBurst) window.ZDBurst(ev.target.closest('.r') || $('#clSvg'), 3);
 });
 $('#clSvg').addEventListener('pointermove', ev => {
   const g = C && C.drag;
@@ -2511,7 +2574,7 @@ function makeTracer(host, text, onDone, opts = {}) {
     if (bd > R * 2.3) { drag = null; tone(220, .12, 'sine', .08); render(); return; } // left the road: the marker waits
     if (bd < R * 1.15 && best > pi) {
       pi = best; lastMove = Date.now();
-      if (Math.random() < .15) sparkleAt(ev.clientX, ev.clientY, 1);
+      
       if (pi >= pts.length - 3) nextStroke();
       render();
     }
@@ -2634,16 +2697,41 @@ function numIntro() {
   const { n } = N, t = pickThing();
   renderDots($('#cntDots'), N.tasks.length, 0);
   N.type = 'intro'; N.thing = t;
-  const f = $('#cntField'); f.className = 'cnt-field'; f.dataset.scene = SCENE_OF[t[0]] || 'meadow';
-  f.innerHTML = `<div class="num-intro"><div class="num-hero">${n}</div><div class="num-word">${NUM_WORDS[n]}</div><div class="num-row" id="numRow"></div></div>`;
-  $('#cntAnswers').innerHTML = '<button class="btn primary play-btn" id="playBtn">Hrajeme!</button>';
+  const scene = SCENE_OF[t[0]] || 'meadow';
+  const f = $('#cntField'); f.className = 'cnt-field num-story-field'; f.dataset.scene = scene;
+  f.innerHTML = `
+    <div class="num-story-v3">
+      <div class="num-story-sky" aria-hidden="true">
+        <i class="v3-cloud c1"></i><i class="v3-cloud c2"></i>
+        <i class="v3-glow"></i><i class="v3-hill h1"></i><i class="v3-hill h2"></i>
+      </div>
+      <div class="num-lesson-v3">
+        <span class="num-kicker-v3">Dnešní číslo</span>
+        <button class="num-crystal-v3 num-hero" aria-label="Číslo ${n}">
+          <span class="num-crystal-ring"></span><b>${n}</b>
+        </button>
+        <div class="num-word-v3">${NUM_WORDS[n]}</div>
+      </div>
+      <div class="num-count-v3">
+        <div class="num-lumi-v3" aria-hidden="true">
+          <svg viewBox="0 0 100 100">${liliSvg()}</svg>
+        </div>
+        <div class="num-speech-v3">Tohle je číslo ${NUM_WORDS[n]}.</div>
+        <div class="num-row-v3 num-row" id="numRow" style="--cols:${n <= 5 ? n : Math.ceil(n / 2)}"></div>
+      </div>
+    </div>`;
+  $('#cntAnswers').innerHTML = '<button class="btn primary play-btn v3-play" id="playBtn"><span>Jdeme hrát</span><b>→</b></button>';
   setPrompt(`Tohle je číslo <b>${n}</b>`, `Tohle je číslo ${NUM_WORDS[n]}.`);
+  // Count every object aloud, one by one ("jedna, dva, tři…"): one-to-one counting is the point of the lesson.
+  // The bubble shows exactly what Lili says and the pace lets each word finish (STYLE_GUIDE: Ochrana výuky).
+  const bubble = text => { const s = f.querySelector('.num-speech-v3'); if (s) s.textContent = text; };
   for (let i = 1; i <= n; i++) {
     later(() => {
       const row = $('#numRow'); if (!row) return;
-      row.insertAdjacentHTML('beforeend', `<span>${t[0]}</span>`);
-      tone(380 + i * 60, .12); say(NUM_WORDS[i]);
-      if (i === n) later(() => say(`Číslo ${NUM_WORDS[n]}!`), 900);
+      row.insertAdjacentHTML('beforeend', `<span class="num-object-v3" style="--i:${i}"><i>${t[0]}</i><b>${i}</b></span>`);
+      tone(380 + i * 46, .10, 'sine', .065);
+      say(NUM_WORDS[i]); bubble(NUM_WORDS[i][0].toUpperCase() + NUM_WORDS[i].slice(1) + '…');
+      if (i === n) later(() => { bubble(`Číslo ${NUM_WORDS[n]}!`); say(`Číslo ${NUM_WORDS[n]}!`); }, 900);
     }, 1500 + (i - 1) * 850);
   }
 }
@@ -2776,8 +2864,16 @@ function renderLearn() {
 }
 function renderAbcCard() {
   const [L, words] = LETTERS[abcSel], [em, w] = words[abcWord % words.length];
-  $('#abcCard').innerHTML = `<span class="abc-big">${capL(L)} <small>${L.toLowerCase()}</small></span><span class="abc-emoji">${em}</span>
-    <span class="abc-word"><span class="first">${w.slice(0, L.length)}</span>${w.slice(L.length)}</span>`;
+  $('#abcCard').innerHTML = `
+    <span class="abc-scene-v3">
+      <span class="abc-letter-v3"><small>Písmeno</small><b>${capL(L)}</b><i>${L.toLowerCase()}</i></span>
+      <span class="abc-object-v3">
+        <span class="abc-emoji-v3">${em}</span>
+        <span class="abc-word-v3"><b>${w.slice(0,L.length)}</b>${w.slice(L.length)}</span>
+        <small class="abc-hear-v3" aria-hidden="true">🔊</small>
+      </span>
+      <span class="abc-lumi-v3" aria-hidden="true"><svg viewBox="0 0 100 100">${liliSvg()}</svg></span>
+    </span>`;
 }
 function sayLearn() { const [L, words] = LETTERS[abcSel]; say(`${spoken(L)}. ${words[abcWord % words.length][1].toLowerCase()}`); }
 $('#abcGrid').addEventListener('click', ev => {
@@ -2799,7 +2895,7 @@ function startTrace(speak) {
   const build = () => {
     if (current !== 'abc' || abcMode !== 'trace' || abcSel !== sel) return;
     TR = makeTracer(host, capL(L), () => {
-      sfx.win(); sparkleAt(innerWidth / 2, innerHeight / 2, 40);
+      sfx.win(); if (window.ZDBurst) window.ZDBurst($('#trHost'), 7);
       say(`Výborně! ${spoken(L)} jako ${w.toLowerCase()}.`);
       const traced = new Set(store.get('zd-traced', [])); traced.add(L); store.set('zd-traced', [...traced]);
       setTimeout(() => { if (current === 'abc' && abcMode === 'trace' && abcSel === sel) { abcSel = (abcSel + 1) % LETTERS.length; startTrace(true); } }, 2200);
@@ -3021,7 +3117,7 @@ $('#lgField').addEventListener('click', ev => {
     return;
   }
   LG.locked = true; b.classList.add('ok');
-  const r = b.getBoundingClientRect(); sparkleAt(r.left + r.width / 2, r.top + r.height / 2, 16);
+  const r = b.getBoundingClientRect(); if (window.ZDBurst) window.ZDBurst(b, 4);
   const sil = document.querySelector('#lgField .sil'); if (sil) sil.classList.remove('sil');
   const pk = document.querySelector('#lgField .lg-peek'); if (pk) pk.classList.add('open');
   const slot = document.querySelector('#lgField .lg-slot'); if (slot && LG.task.fill) { slot.textContent = LG.task.fill; slot.classList.add('filled'); }
@@ -3062,7 +3158,7 @@ $('#memoBoard').addEventListener('click', ev => {
   const [x, y] = MM.open;
   if (MM.faces[x.dataset.i] === MM.faces[y.dataset.i]) {
     MM.open = []; MM.done += 2;
-    setTimeout(() => { x.classList.add('got'); y.classList.add('got'); sfx.snap(); const r = y.getBoundingClientRect(); sparkleAt(r.left + r.width / 2, r.top + r.height / 2, 12); }, 250);
+    setTimeout(() => { x.classList.add('got'); y.classList.add('got'); sfx.snap(); const r = y.getBoundingClientRect(); if (window.ZDBurst) window.ZDBurst(y, 4); }, 250);
     if (MM.done === MM.faces.length) setTimeout(() => {
       if (current !== 'memo') return;
       sfx.win(); confetti(); say(`Hurá! Všechny dvojice za ${MM.moves} tahů.`);
@@ -3857,7 +3953,7 @@ function rdSnap(D, [x, y]) {
     const nw = $('#rdRoads').lastElementChild.firstElementChild, s = lay.s;
     rdTween(220, k => nw.setAttribute('transform', `scale(${s / 100 * (1.18 - .18 * rdEase(k))}) translate(-50 -50)`));
     sfx.snap(); RD.miss = 0;
-    const r = RD.svg.getBoundingClientRect(); if (!reduceMotion) sparkleAt(r.left + tx, r.top + ty, 12);
+    const r = RD.svg.getBoundingClientRect(); if (!reduceMotion && window.ZDBurst) window.ZDBurst(nw, 4);
     const path = rdTrace();
     if (path) { RD.done = true; clearTimeout(RD.idle); rdLater(() => rdFinish(path), 280); } else rdIdle();
   });
@@ -3942,7 +4038,7 @@ function rdFinish(cells) {
     if (lastX != null && Math.abs(pt.x - lastX) > .3) dir = pt.x < lastX ? -1 : 1;
     lastX = pt.x;
     rdPlaceLili(bx + pt.x, by + pt.y, dir);
-    if (k > nextSpark && !reduceMotion) { nextSpark = k + .07; sparkleAt(r.left + bx + pt.x, r.top + by + pt.y + s * .2, 3); tone(520 + k * 500, .05, 'sine', .05); }
+    if (k > nextSpark && !reduceMotion) { nextSpark = k + .14; tone(520 + k * 500, .045, 'sine', .04); }
   }, () => {
     li.classList.remove('rd-trot'); li.classList.add('rd-cheer');
     const fr = $('#rdFriend'); fr.classList.remove('rd-sad'); fr.classList.add('rd-happy');
@@ -3983,13 +4079,13 @@ document.addEventListener('gesturestart', ev => ev.preventDefault());
 document.addEventListener('dblclick', ev => ev.preventDefault(), { passive: false });
 $('#glitterDefs').innerHTML = glitterDefs();
 fx.cv = $('#fx'); fx.ctx = fx.cv.getContext('2d'); fxResize(); window.addEventListener('resize', fxResize);
-document.addEventListener('pointerdown', ev => { if (!reduceMotion) sparkleAt(ev.clientX, ev.clientY, 8); }, { passive: true });
+// v2: no global click particles; ordinary taps use tactile scale + sound only.
 (function makeTwinkles() {
   const cols = ['#FFC94D', '#FF7FC4', '#B98CFF', '#7FCBFF', '#FFFFFF']; let h = '';
   for (let i = 0; i < 28; i++) h += `<i style="left:${(Math.random() * 100).toFixed(1)}%;top:${(Math.random() * 100).toFixed(1)}%;font-size:${Math.round(10 + Math.random() * 18)}px;color:${cols[i % cols.length]};animation-delay:${(Math.random() * 2.4).toFixed(2)}s;animation-duration:${(1.8 + Math.random() * 1.8).toFixed(2)}s">✦</i>`;
   $('#twinkles').innerHTML = h;
 })();
-$('#mascot').addEventListener('click', ev => { bounce(ev.currentTarget); sparkleAt(ev.clientX, ev.clientY, 24); say('Ahoj! Já jsem Lili. Pojď si se mnou hrát!'); });
+$('#mascot').addEventListener('click', ev => { bounce(ev.currentTarget); if (window.ZDBurst) window.ZDBurst(ev.currentTarget, 4); say('Ahoj! Já jsem Lili. Pojď si se mnou hrát!'); });
 (function installHint() {
   const standalone = navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
   let framed = false; try { framed = window.self !== window.top; } catch (e) { framed = true; }
@@ -4004,9 +4100,14 @@ drawHomeArt();
 show('home');
 // totals for the anonymous play statistics (analytics.js)
 window.appTotals = () => ({ puzzle: ANIMALS.length, omalovanky: PAGES.length, cesta: RD_LV.length, cisla: 10, abeceda: LETTERS.length, logika: LG_ORDER.length, spojovacky: DOTS.length });
+// the redesign layer (js/redesign-v2.js) cannot see variables inside this closure, so it talks to the game only through this
+window.ZD = { say: text => say(text), isMuted: () => muted };
 })();
 </script>
 
 <script src="analytics.js?v=2" data-app="zviratkova-dilna"></script>
+<script src="js/redesign-v2.js?v=3"></script>
+<script src="js/full-world-v2.js?v=1"></script>
+<script src="js/world-art.js?v=1"></script>
 </body>
 </html>

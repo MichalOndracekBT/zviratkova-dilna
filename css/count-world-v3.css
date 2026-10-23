@@ -1,0 +1,416 @@
+/* Číselná jeskyně v3 — bespoke game scene, not a web card */
+
+#count{
+  --num-ink:#493F5A;
+  --num-paper:#FFFDFB;
+  --num-purple:#AA78E8;
+  --num-pink:#F46DB3;
+  --num-blue:#72C7ED;
+  --num-green:#7BCB8B;
+}
+
+/* Remove old emoji decorations from all number scenes. */
+#count .cnt-field::before,
+#count .cnt-field::after{
+  content:""!important;
+  display:none!important;
+}
+
+/* Rich backgrounds built from shapes and gradients, not emoji decoration. */
+#count .cnt-field[data-scene="meadow"]{
+  background:
+    radial-gradient(circle at 82% 15%,#FFE990 0 4.5%,rgba(255,233,144,.45) 4.7% 7%,transparent 7.3%),
+    radial-gradient(ellipse at 18% 104%,#82CE73 0 37%,transparent 37.3%),
+    radial-gradient(ellipse at 78% 108%,#69BC67 0 43%,transparent 43.3%),
+    linear-gradient(180deg,#A9DFFF 0%,#DFF3FF 62%,#DDF4CE 62%);
+}
+#count .cnt-field[data-scene="garden"]{
+  background:
+    repeating-linear-gradient(90deg,transparent 0 58px,rgba(255,255,255,.62) 58px 62px) 0 55%/100% 17% no-repeat,
+    linear-gradient(0deg,transparent 0 54%,rgba(255,255,255,.76) 54% 57%,transparent 57%),
+    radial-gradient(ellipse at 18% 108%,#7CCB75 0 40%,transparent 40.4%),
+    radial-gradient(ellipse at 82% 108%,#67B966 0 44%,transparent 44.4%),
+    linear-gradient(180deg,#B5E4FF 0%,#E8F6FF 59%,#DDF3D2 59%);
+}
+#count .cnt-field[data-scene="farm"]{
+  background:
+    repeating-linear-gradient(165deg,rgba(255,225,139,.65) 0 18px,rgba(225,185,92,.52) 18px 34px) 0 66%/100% 34% no-repeat,
+    radial-gradient(ellipse at 13% 105%,#8CCB72 0 32%,transparent 32.3%),
+    linear-gradient(180deg,#B5E4FF 0 59%,#DDF0C7 59% 66%,#E9C66D 66%);
+}
+#count .cnt-field[data-scene="sea"]{
+  background:
+    radial-gradient(circle at 12% 22%,rgba(255,255,255,.44) 0 5px,transparent 6px),
+    radial-gradient(circle at 84% 32%,rgba(255,255,255,.33) 0 8px,transparent 9px),
+    radial-gradient(circle at 68% 17%,rgba(255,255,255,.36) 0 4px,transparent 5px),
+    radial-gradient(ellipse at 48% 112%,#EACB8A 0 28%,transparent 28.3%),
+    linear-gradient(180deg,#82D9F6 0%,#42A8DD 48%,#237EB5 100%);
+}
+#count .cnt-field[data-scene="sky"]{
+  background:
+    radial-gradient(ellipse at 15% 28%,rgba(255,255,255,.9) 0 8%,transparent 8.5%),
+    radial-gradient(ellipse at 23% 27%,rgba(255,255,255,.9) 0 6%,transparent 6.5%),
+    radial-gradient(ellipse at 78% 24%,rgba(255,255,255,.78) 0 7%,transparent 7.5%),
+    linear-gradient(180deg,#89D5FF,#DDF4FF);
+}
+#count .cnt-field[data-scene="night"]{
+  background:
+    radial-gradient(circle at 15% 18%,rgba(255,255,255,.9) 0 2px,transparent 3px),
+    radial-gradient(circle at 77% 24%,rgba(255,233,143,.95) 0 3px,transparent 4px),
+    radial-gradient(circle at 63% 10%,rgba(255,255,255,.8) 0 2px,transparent 3px),
+    radial-gradient(circle at 35% 34%,rgba(255,255,255,.7) 0 1.5px,transparent 2.5px),
+    linear-gradient(180deg,#30255E,#6654A0 62%,#9280C6);
+}
+#count .cnt-field[data-scene="city"]{
+  background:
+    repeating-linear-gradient(90deg,rgba(255,255,255,.22) 0 3%,transparent 3% 7%) 0 61%/100% 25% no-repeat,
+    linear-gradient(90deg,#7F8DAD 0 13%,transparent 13% 16%,#9E86AF 16% 29%,transparent 29% 34%,#738AA9 34% 49%,transparent 49% 53%,#A27FA3 53% 68%,transparent 68% 73%,#718FA8 73% 88%,transparent 88%) 0 67%/100% 33% no-repeat,
+    linear-gradient(180deg,#9DDCFF 0%,#E7F5FF 65%,#D3D9E2 65%);
+}
+#count .cnt-field[data-scene="fairy"]{
+  background:
+    radial-gradient(circle at 82% 14%,rgba(255,245,182,.82) 0 5%,rgba(255,245,182,.25) 5.5% 10%,transparent 11%),
+    radial-gradient(circle at 18% 18%,rgba(255,255,255,.74) 0 2px,transparent 3px),
+    radial-gradient(circle at 72% 31%,rgba(255,255,255,.66) 0 2px,transparent 3px),
+    radial-gradient(ellipse at 20% 107%,#A7DA91 0 39%,transparent 39.3%),
+    radial-gradient(ellipse at 79% 109%,#8FCA87 0 44%,transparent 44.3%),
+    linear-gradient(160deg,#D9C4FF 0%,#F6D9F0 49%,#DDF3D2 72%);
+}
+
+/* Intro becomes an actual composition. */
+#count .num-story-field{
+  position:relative;
+  overflow:hidden;
+  padding:0!important;
+  container-type:size;
+}
+#count .num-story-v3{
+  position:absolute;
+  inset:0;
+  display:grid;
+  grid-template-columns:minmax(210px,36%) 1fr;
+  align-items:stretch;
+  gap:0;
+  z-index:1;
+}
+#count .num-story-sky{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+#count .v3-glow{
+  position:absolute;
+  width:210px;height:210px;
+  right:7%;top:6%;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(255,245,180,.42),rgba(255,245,180,0) 69%);
+}
+#count .v3-cloud{
+  position:absolute;
+  width:82px;height:26px;
+  border-radius:999px;
+  background:rgba(255,255,255,.63);
+  box-shadow:
+    20px -9px 0 -1px rgba(255,255,255,.68),
+    43px -3px 0 -5px rgba(255,255,255,.58);
+  filter:blur(.1px);
+}
+#count .v3-cloud.c1{left:42%;top:12%;transform:scale(.82)}
+#count .v3-cloud.c2{right:8%;top:27%;transform:scale(.57);opacity:.7}
+#count .v3-hill{
+  position:absolute;
+  bottom:-18%;
+  width:66%;height:46%;
+  border-radius:50% 50% 0 0;
+  opacity:.5;
+}
+#count .v3-hill.h1{left:27%;background:#8DCE77;transform:rotate(3deg)}
+#count .v3-hill.h2{right:-17%;bottom:-21%;background:#72BA68;transform:rotate(-5deg)}
+
+#count .num-lesson-v3{
+  position:relative;
+  z-index:2;
+  align-self:center;
+  justify-self:center;
+  width:min(86%,310px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:7px;
+  padding:17px 14px 18px;
+  border-radius:34px;
+  background:linear-gradient(160deg,rgba(255,255,255,.92),rgba(255,255,255,.72));
+  border:2px solid rgba(255,255,255,.94);
+  box-shadow:0 20px 45px rgba(72,60,92,.17),0 4px 0 rgba(255,255,255,.86) inset;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+#count .num-kicker-v3{
+  padding:5px 10px;
+  border-radius:999px;
+  background:#F1E9FB;
+  color:#7A698D;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+#count .num-crystal-v3{
+  position:relative;
+  width:min(25cqw,155px);
+  aspect-ratio:1;
+  display:grid;
+  place-items:center;
+  margin:3px 0 0;
+  border-radius:38% 62% 54% 46% / 52% 42% 58% 48%;
+  background:
+    radial-gradient(circle at 32% 24%,rgba(255,255,255,.95) 0 7%,transparent 8%),
+    linear-gradient(145deg,#FF75BA 4%,#C474EC 48%,#7199F5 100%);
+  border:3px solid rgba(255,255,255,.86);
+  box-shadow:
+    0 15px 29px rgba(103,69,150,.25),
+    inset 0 5px 8px rgba(255,255,255,.43),
+    inset 0 -9px 18px rgba(70,75,180,.16);
+  color:#fff;
+  transform:rotate(-2deg);
+  transition:transform 160ms cubic-bezier(.2,.8,.2,1);
+}
+#count .num-crystal-v3:active{transform:rotate(-2deg) scale(.96)}
+#count .num-crystal-v3 b{
+  position:relative;
+  z-index:2;
+  font-size:min(18cqw,112px);
+  line-height:.8;
+  font-weight:900;
+  color:#fff;
+  text-shadow:0 5px 0 rgba(88,62,151,.15);
+}
+#count .num-crystal-ring{
+  position:absolute;
+  inset:-12px;
+  border-radius:inherit;
+  border:2px solid rgba(255,255,255,.42);
+  transform:rotate(8deg);
+}
+#count .num-word-v3{
+  font-size:clamp(28px,5cqw,44px);
+  font-weight:900;
+  color:#50435E;
+  letter-spacing:-.02em;
+}
+
+#count .num-count-v3{
+  position:relative;
+  z-index:2;
+  display:grid;
+  grid-template-columns:118px 1fr;
+  grid-template-rows:auto 1fr;
+  align-content:center;
+  align-items:center;
+  gap:4px 10px;
+  min-width:0;
+  padding:8% 6% 7% 3%;
+}
+#count .num-lumi-v3{
+  grid-row:1/3;
+  align-self:end;
+  width:118px;
+  filter:drop-shadow(0 11px 8px rgba(72,58,88,.16));
+}
+#count .num-lumi-v3 svg{
+  width:100%;height:auto;display:block;
+}
+#count .num-speech-v3{
+  justify-self:start;
+  max-width:290px;
+  padding:9px 13px;
+  border-radius:19px 19px 19px 6px;
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(255,255,255,.96);
+  color:#675A72;
+  font-size:clamp(13px,2cqw,17px);
+  font-weight:850;
+  line-height:1.15;
+  box-shadow:0 8px 18px rgba(66,58,82,.10);
+}
+/* The objects to count are the main content of the lesson (STYLE_GUIDE: Ochrana výuky):
+   numIntro() sets --cols (n up to 5 in one row, more in two balanced rows, e.g. 7 = 4 + 3),
+   so small numbers get big objects. */
+#count .num-row-v3{
+  align-self:start;
+  width:100%;
+  max-width:none; /* the old .num-row capped the row at 6.5em, which kept the objects tiny */
+  display:grid;
+  grid-template-columns:repeat(var(--cols,5),minmax(54px,1fr));
+  justify-items:center;
+  gap:10px;
+  padding:4px 0;
+}
+#count .num-object-v3{
+  position:relative;
+  width:100%;
+  max-width:104px;
+  min-width:0;
+  aspect-ratio:1;
+  container-type:inline-size;
+  display:grid;
+  place-items:center;
+  border-radius:24px;
+  background:
+    radial-gradient(circle at 34% 23%,rgba(255,255,255,.98),rgba(255,255,255,.79) 48%,rgba(245,240,255,.67) 100%);
+  border:2px solid rgba(255,255,255,.94);
+  box-shadow:0 10px 20px rgba(74,63,91,.12),0 3px 0 rgba(255,255,255,.78) inset;
+  animation:v3ObjectIn 400ms cubic-bezier(.2,.9,.24,1.18) both;
+}
+#count .num-object-v3 i{
+  font-style:normal;
+  font-size:58cqw; /* relative to the object tile itself */
+  line-height:1;
+  filter:drop-shadow(0 5px 4px rgba(62,55,73,.12));
+}
+#count .num-object-v3 b{
+  position:absolute;
+  right:-4px;top:-5px;
+  min-width:25px;height:25px;
+  display:grid;place-items:center;
+  padding:0 6px;
+  border-radius:999px;
+  background:linear-gradient(145deg,#FF8DC7,#B77EEA);
+  color:#fff;
+  font-size:13px;
+  font-weight:900;
+  border:2px solid #fff;
+  box-shadow:0 4px 8px rgba(89,61,111,.14);
+}
+@keyframes v3ObjectIn{
+  from{opacity:0;transform:translateY(12px) scale(.72) rotate(-4deg)}
+  to{opacity:1;transform:none}
+}
+
+#count .v3-play{
+  min-width:210px;
+  min-height:58px;
+  height:auto;
+  padding:10px 15px 10px 20px;
+  border-radius:22px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:15px;
+  font-size:19px;
+  font-weight:900;
+  background:linear-gradient(145deg,#F66FB4,#B777E9);
+  box-shadow:0 11px 21px rgba(127,77,151,.24),0 3px 0 rgba(255,255,255,.27) inset;
+}
+#count .v3-play b{
+  width:31px;height:31px;
+  display:grid;place-items:center;
+  border-radius:50%;
+  background:rgba(255,255,255,.21);
+  font-size:21px;
+}
+#numPlay:has(.num-story-v3) #cntPrompt{
+  margin-top:8px;
+  font-size:16px;
+  padding:8px 14px;
+  background:rgba(255,255,255,.64);
+  box-shadow:none;
+}
+#numPlay:has(.num-story-v3) #cntAnswers{
+  padding-top:8px;
+}
+
+/* Active tasks: objects look placed in a world instead of raw emoji floating on canvas. */
+#count .cnt-item{
+  width:clamp(58px,10cqw,92px);
+  aspect-ratio:1;
+  display:grid;
+  place-items:center;
+  padding:5px;
+  border-radius:27px;
+  background:rgba(255,255,255,.78);
+  border:2px solid rgba(255,255,255,.88);
+  box-shadow:0 10px 18px rgba(58,61,78,.13),0 3px 0 rgba(255,255,255,.68) inset;
+  font-size:clamp(31px,7cqw,61px);
+  filter:none;
+}
+#count .cnt-item .num{
+  right:-5px;top:-5px;
+  min-width:30px;height:30px;
+  border:2px solid #fff;
+  background:linear-gradient(145deg,#F46DB3,#AD74E4);
+  box-shadow:0 4px 9px rgba(81,61,101,.16);
+}
+#count .grp{
+  background:rgba(255,255,255,.79);
+  backdrop-filter:blur(7px);
+  -webkit-backdrop-filter:blur(7px);
+}
+#count .grp-in span{
+  display:inline-block;
+  filter:drop-shadow(0 4px 3px rgba(60,50,70,.12));
+}
+
+/* Mobile: number card, then Lumi + objects. */
+@media(max-width:700px),(orientation:portrait) and (max-width:900px){
+  #count .num-story-v3{
+    grid-template-columns:1fr;
+    grid-template-rows:minmax(190px,36%) 1fr;
+  }
+  #count .num-lesson-v3{
+    width:min(72%,280px);
+    padding:10px 12px 12px;
+  }
+  #count .num-crystal-v3{width:min(29cqw,118px)}
+  #count .num-crystal-v3 b{font-size:min(21cqw,88px)}
+  #count .num-word-v3{font-size:30px}
+  /* Lili + her bubble in one row, the objects full width below and as big as possible */
+  #count .num-count-v3{
+    grid-template-columns:64px 1fr;
+    grid-template-rows:auto 1fr;
+    align-content:start;
+    padding:8px 16px 12px;
+    gap:10px 8px;
+  }
+  #count .num-lumi-v3{grid-row:1;align-self:center;width:64px}
+  #count .num-speech-v3{grid-row:1;align-self:center;font-size:16px;padding:8px 12px}
+  #count .num-row-v3{
+    grid-column:1/-1;
+    grid-row:2;
+    align-self:center;
+    grid-template-columns:repeat(var(--cols,5),minmax(0,1fr));
+    gap:10px;
+  }
+  #count .num-object-v3{border-radius:20px;max-width:96px}
+  #count .num-object-v3 b{
+    min-width:21px;height:21px;font-size:11px;border-width:1.5px;
+  }
+}
+/* short phones upright (iPhone SE): smaller number card, more room for the objects */
+@media(orientation:portrait) and (max-height:700px){
+  #count .num-story-v3{grid-template-rows:minmax(150px,32%) 1fr}
+  #count .num-lesson-v3{padding:8px 10px 9px;gap:4px;margin-top:8px}
+  #count .num-crystal-v3{width:min(22cqw,86px)}
+  #count .num-crystal-v3 b{font-size:min(16cqw,64px)}
+  #count .num-word-v3{font-size:24px}
+}
+
+@media(orientation:landscape) and (max-height:520px){
+  #count .num-story-v3{grid-template-columns:31% 1fr}
+  #count .num-lesson-v3{padding:9px;width:min(90%,220px);gap:3px;border-radius:25px}
+  #count .num-kicker-v3{font-size:9px;padding:3px 7px}
+  #count .num-crystal-v3{width:min(21cqh,100px)}
+  #count .num-crystal-v3 b{font-size:min(15cqh,72px)}
+  #count .num-word-v3{font-size:23px}
+  #count .num-count-v3{grid-template-columns:85px 1fr;padding:3% 4% 3% 2%}
+  #count .num-lumi-v3{width:85px}
+  #count .num-object-v3{max-width:74px}
+  #numPlay:has(.num-story-v3) #cntPrompt{display:none}
+  #numPlay:has(.num-story-v3) #cntAnswers{padding:5px 12px 6px}
+  #count .v3-play{min-height:48px;min-width:175px;font-size:16px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  #count .num-object-v3{animation:none}
+}

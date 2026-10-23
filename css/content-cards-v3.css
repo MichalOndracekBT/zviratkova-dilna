@@ -1,0 +1,247 @@
+/* Content cards v3 — reduce emoji-first/web-card feel */
+
+/* ---------- PUZZLE PICKER: use local sharp animal art ---------- */
+#animalGrid .tile-v3{
+  --sky:var(--tile-sky,#DDF3FF);
+  --ground:var(--tile-ground,#B9E6A6);
+  background:
+    radial-gradient(circle at 77% 16%,rgba(255,246,181,.75) 0 4%,transparent 12%),
+    radial-gradient(ellipse at 28% 108%,var(--ground) 0 43%,transparent 43.4%),
+    radial-gradient(ellipse at 82% 111%,color-mix(in srgb,var(--ground),#527C57 11%) 0 47%,transparent 47.4%),
+    linear-gradient(180deg,var(--sky),color-mix(in srgb,var(--sky),white 40%));
+  min-height:126px;
+}
+#animalGrid .tile-art-v3{
+  position:relative;
+  width:78%;
+  height:67%;
+  display:grid;
+  place-items:center;
+  z-index:1;
+}
+#animalGrid .tile-art-v3 img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  filter:drop-shadow(0 8px 6px rgba(58,58,77,.15));
+}
+#animalGrid .tile-fallback-v3{
+  font-size:54px;
+  line-height:1;
+  filter:drop-shadow(0 7px 5px rgba(58,58,77,.13));
+}
+#animalGrid .tile-v3 .nm{
+  position:relative;
+  z-index:2;
+  max-width:92%;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#animalGrid .tile-v3 .sub{
+  position:absolute;
+  left:8px;top:7px;
+  z-index:3;
+  min-width:28px;height:28px;
+  display:grid;place-items:center;
+  border-radius:999px;
+  background:rgba(255,255,255,.78);
+  border:1px solid rgba(255,255,255,.94);
+  font-size:16px;
+  box-shadow:0 5px 10px rgba(61,53,76,.11);
+}
+
+/* ---------- ALPHABET: storybook composition ---------- */
+#abc #abcCard{
+  position:relative;
+  overflow:hidden;
+  padding:0;
+  min-height:min(45vh,410px);
+  background:
+    radial-gradient(circle at 82% 15%,rgba(255,239,166,.68) 0 5%,transparent 15%),
+    radial-gradient(ellipse at 16% 110%,#A4D798 0 40%,transparent 40.4%),
+    radial-gradient(ellipse at 82% 111%,#89C98A 0 45%,transparent 45.4%),
+    linear-gradient(180deg,#CBEAFF 0%,#EDF8FF 60%,#E3F4DA 60%);
+}
+#abc .abc-scene-v3{
+  position:absolute;
+  inset:0;
+  display:grid;
+  grid-template-columns:minmax(150px,34%) 1fr;
+  gap:4%;
+  align-items:center;
+  padding:5% 6% 6%;
+}
+#abc .abc-letter-v3{
+  align-self:center;
+  justify-self:center;
+  width:min(100%,220px);
+  aspect-ratio:.86;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  border-radius:42% 58% 48% 52% / 48% 42% 58% 52%;
+  background:
+    radial-gradient(circle at 31% 20%,rgba(255,255,255,.92) 0 6%,transparent 7%),
+    linear-gradient(145deg,#FFE18A 0%,#FFB77D 46%,#F492B8 100%);
+  border:3px solid rgba(255,255,255,.82);
+  box-shadow:0 16px 31px rgba(110,78,87,.20),inset 0 4px 7px rgba(255,255,255,.42);
+  transform:rotate(-2deg);
+}
+#abc .abc-letter-v3 small{
+  padding:4px 8px;
+  margin-bottom:3px;
+  border-radius:999px;
+  background:rgba(255,255,255,.50);
+  color:#7D596B;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+#abc .abc-letter-v3 b{
+  font-size:clamp(72px,15vw,132px);
+  line-height:.78;
+  color:#fff;
+  text-shadow:0 5px 0 rgba(125,75,95,.13);
+}
+#abc .abc-letter-v3 i{
+  font-style:normal;
+  margin-top:8px;
+  font-size:clamp(25px,5vw,40px);
+  line-height:1;
+  font-weight:900;
+  color:rgba(100,65,83,.70);
+}
+#abc .abc-object-v3{
+  position:relative;
+  min-width:0;
+  min-height:72%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:18px 18px 20px;
+  border-radius:34px;
+  background:rgba(255,255,255,.85);
+  border:2px solid rgba(255,255,255,.96);
+  box-shadow:0 17px 35px rgba(68,77,69,.13),0 3px 0 rgba(255,255,255,.88) inset;
+}
+#abc .abc-emoji-v3{
+  font-size:clamp(76px,16vw,145px);
+  line-height:1;
+  filter:drop-shadow(0 9px 7px rgba(65,65,76,.13));
+}
+#abc .abc-word-v3{
+  margin-top:8px;
+  max-width:100%;
+  font-size:clamp(25px,5vw,42px);
+  line-height:1;
+  font-weight:900;
+  letter-spacing:.045em;
+  color:#554A5E;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#abc .abc-word-v3 b{color:#D45896}
+#abc .abc-object-v3 small{
+  margin-top:9px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#F5EFF6;
+  color:#827486;
+  font-size:12px;
+  font-weight:800;
+}
+/* "tap to hear" as an icon, not a sentence: the child does not read yet */
+#abc .abc-object-v3 .abc-hear-v3{
+  padding:4px 12px;
+  font-size:20px;
+  line-height:1.2;
+}
+#abc .abc-lumi-v3{
+  position:absolute;
+  right:2%;
+  bottom:-2%;
+  width:min(14vw,94px);
+  filter:drop-shadow(0 8px 6px rgba(63,62,72,.13));
+}
+#abc .abc-lumi-v3 svg{width:100%;height:auto;display:block}
+
+/* Quiz uses the same storybook surface. */
+#abc #abcQCard{
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 84% 13%,rgba(255,239,166,.63) 0 5%,transparent 15%),
+    radial-gradient(ellipse at 18% 110%,#A5D79A 0 39%,transparent 39.4%),
+    radial-gradient(ellipse at 80% 111%,#8BCB8B 0 44%,transparent 44.4%),
+    linear-gradient(180deg,#CCEAFE 0%,#EDF8FF 61%,#E5F4DD 61%);
+}
+#abc #abcQCard .abc-emoji{
+  padding:12px 24px;
+  border-radius:30px;
+  background:rgba(255,255,255,.84);
+  border:2px solid rgba(255,255,255,.96);
+  box-shadow:0 15px 31px rgba(66,76,68,.12);
+  filter:drop-shadow(0 7px 5px rgba(65,65,76,.10));
+}
+#abc #abcQCard .abc-word{
+  margin-top:8px;
+  padding:8px 14px;
+  border-radius:999px;
+  background:rgba(255,255,255,.80);
+  color:#5C5263;
+  box-shadow:0 7px 16px rgba(66,76,68,.08);
+}
+#abc #abcQCard .blank{
+  border-bottom-color:#D45896;
+}
+#abcQuiz .answers .ans{
+  background:rgba(255,255,255,.92);
+  color:#5A4D66;
+  border:1px solid rgba(255,255,255,.98);
+  box-shadow:0 10px 20px rgba(67,75,65,.10);
+}
+#abcQuiz .answers .ans.ok{
+  background:linear-gradient(145deg,#9EE3B5,#74CF96);
+  color:#285A3A;
+}
+
+/* ---------- LOWER THE LAST OF THE LEGACY SPARKLE LOOK ---------- */
+#twinkles{opacity:.22!important}
+#fx{opacity:.72}
+
+@media(max-width:700px),(orientation:portrait) and (max-width:900px){
+  /* the letter and the picture are the biggest things on the card (STYLE_GUIDE: Ochrana výuky) */
+  #abc #abcCard{min-height:370px}
+  #abc .abc-scene-v3{
+    grid-template-columns:38% 1fr;
+    gap:3%;
+    padding:5% 4% 7%;
+  }
+  #abc .abc-letter-v3{border-radius:34px}
+  #abc .abc-letter-v3 b{font-size:clamp(72px,24vw,118px)}
+  #abc .abc-letter-v3 i{font-size:28px}
+  #abc .abc-object-v3{min-height:72%;padding:12px 10px 15px;border-radius:27px}
+  #abc .abc-emoji-v3{font-size:clamp(84px,31vw,150px)}
+  #abc .abc-word-v3{font-size:clamp(23px,7.8vw,34px)}
+  #abc .abc-object-v3 small{font-size:10px;text-align:center}
+  #abc .abc-lumi-v3{width:73px;right:1%;bottom:-1%}
+}
+@media(orientation:landscape) and (max-height:520px){
+  #abc #abcCard{min-height:0;height:calc(100vh - 178px);margin-bottom:3px}
+  #abc .abc-scene-v3{padding:2% 6% 3%}
+  #abc .abc-letter-v3{width:min(74%,150px);border-radius:30px}
+  #abc .abc-letter-v3 b{font-size:72px}
+  #abc .abc-letter-v3 i{font-size:22px;margin-top:4px}
+  #abc .abc-object-v3{min-height:78%;padding:8px}
+  #abc .abc-emoji-v3{font-size:75px}
+  #abc .abc-word-v3{font-size:24px}
+  #abc .abc-object-v3 small{display:none}
+  #abc .abc-lumi-v3{width:60px}
+}
