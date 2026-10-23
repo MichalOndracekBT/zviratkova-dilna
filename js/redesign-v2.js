@@ -88,6 +88,12 @@
     };
   } catch (_) {}
 
+  /* v2 softer game sounds: tactile, short and less toy-like */
+  try {
+    sfx.snap = () => { tone(560,.06,'sine',.075); tone(760,.09,'sine',.055,.035); };
+    sfx.win = () => { [523,659,784].forEach((f,i) => tone(f,.18,'sine',.095,i*.085)); };
+  } catch (_) {}
+
   /* ---------- VOICE FALLBACK ---------- */
   let cachedVoice = null;
   let currentUtterance = null;
