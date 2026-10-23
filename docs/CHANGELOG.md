@@ -1,5 +1,11 @@
 # Changelog redesignu
 
+## 23. 10. 2026 — barevná Malířská dílna
+- Výběr omalovánek ukazuje u nevybarvených obrázků jemný náhled barev (poloprůhledně), takže polička vypadá jako barevná knížka, ne jako hromada prázdných obrysů. Co dítě samo vybarvilo, je vidět v plné síle; hotové obrázky „Podle čísel“ mají ⭐.
+- Barvy náhledu počítá stejná funkce jako vybarvování podle čísel (`planColours`), jen bez náročného měření ploch. Rychlé (zlomek ms na obrázek), náhledy se dobarvují postupně. Plány „Podle čísel“ zůstaly beze změny (ověřeno na všech 50 obrázcích).
+- Noční nebe má tmavou oblohu, Moře modrou vodu.
+- Pokyn „Vyber číslo dole a ťukej na políčka se stejným číslem.“ teď i zazní při otevření obrázku podle čísel; u scén „Vyber nálepku a polep obrázek.“
+
 ## 23. 10. 2026 — hlas, design pass, příprava na ilustrace
 - Hlas: tempo a výška podle typu hlášky. Pokyny klidně, pochvaly („…!“) živěji, otázky zvídavě, jednotlivá slova (čísla, písmena, zvířátka) pomaleji a zřetelně. Emoji se nikdy nečtou nahlas. Na iPhonu web smí jen základní hlas Zuzana, výrazně lepší hlas by znamenal předgenerované nahrávky (AUDIO_MOTION_GUIDE → Produkce hlasu).
 - Čísla: předměty k počítání jsou hlavní obsah obrazovky. Do pěti v jedné řadě až 96 px, víc ve dvou vyvážených řadách (7 = 4 + 3). Původní třída `.num-row` je omezovala na 6,5em, proto byly drobné. Lili s bublinou stojí nad nimi.
