@@ -1515,9 +1515,11 @@ function renderPuzzlePicker() {
   }).join('');
   $('#catChips').innerHTML = CATS.map(([id, nm]) => `<button class="chip" data-c="${id}" aria-pressed="${id === cat}">${nm}</button>`).join('');
   $('#animalGrid').innerHTML = filtered().map(a => {
-    const i = ANIMALS.indexOf(a), h = sceneOf(a);
-    return `<button class="tile" data-i="${i}" style="background:linear-gradient(${h.sky[0]},${h.ground || h.sky[1]});${h.night ? 'color:#fff' : ''}">
-      ${a.icon ? `<span class="sub">${a.icon}</span>` : ''}${solved.has(akey(a)) ? '<span class="badge">⭐</span>' : ''}<span class="em">${a.e}</span><span class="nm">${a.short || a.name}</span></button>`;
+    const i = ANIMALS.indexOf(a), h = sceneOf(a), src = `img/${imgCode(a.e)}.svg`;
+    return `<button class="tile tile-v3" data-i="${i}" style="--tile-sky:${h.sky[0]};--tile-ground:${h.ground || h.sky[1]};${h.night ? 'color:#fff' : ''}">
+      ${a.icon ? `<span class="sub">${a.icon}</span>` : ''}${solved.has(akey(a)) ? '<span class="badge">⭐</span>' : ''}
+      <span class="tile-art-v3"><span class="tile-fallback-v3">${a.e}</span><img src="${src}" alt="" onerror="this.remove()"></span>
+      <span class="nm">${a.short || a.name}</span></button>`;
   }).join('');
 }
 $('#pzMode').addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; pzMode = b.dataset.m; store.set('zd-pzmode', pzMode); sfx.pick(); renderPuzzlePicker(); });
@@ -2220,7 +2222,7 @@ function numTap(ev) {
   const i = C.regions.indexOf(el); if (i < 0) return;
   ev.preventDefault();
   const P = C.plan;
-  if (P.auto[i] || C.ndone[i]) { sparkleAt(ev.clientX, ev.clientY, 5); return; }
+  if (P.auto[i] || C.ndone[i]) { if (window.ZDBurst) window.ZDBurst(ev.target.closest('.r') || $('#clSvg'), 2); return; }
   const lab = C.num.querySelector(`.nlab[data-i="${i}"]`);
   if (P.num[i] !== C.curN) {
     if (lab) { lab.classList.remove('nope'); void lab.getBBox(); lab.classList.add('nope'); }
@@ -2230,7 +2232,7 @@ function numTap(ev) {
     return;
   }
   C.ndone[i] = true; el.style.fill = P.col[i]; if (lab) lab.remove();
-  syncAuto(); C.undo.push({ t: 'nfill', i }); saveNum(); sfx.paint(); sparkleAt(ev.clientX, ev.clientY, 12);
+  syncAuto(); C.undo.push({ t: 'nfill', i }); saveNum(); sfx.paint(); if (window.ZDBurst) window.ZDBurst(ev.target.closest('.r') || $('#clSvg'), 3);
   if (!numLeft(C.curN)) { const nx = firstOpenNum(C.curN + 1); if (nx) { C.curN = nx; tone(990, .12, 'triangle', .1, .08); } }
   renderNumPalette();
   if (!totalLeft()) {
@@ -2293,14 +2295,14 @@ $('#clSvg').addEventListener('pointerdown', ev => {
     const prev = el.style.fill || '';
     el.style.fill = curColor;
     if (el.style.fill === prev) return;
-    C.undo.push({ t: 'sfill', el, prev }); sfx.paint(); saveStk(); sparkleAt(ev.clientX, ev.clientY, 12);
+    C.undo.push({ t: 'sfill', el, prev }); sfx.paint(); saveStk(); if (window.ZDBurst) window.ZDBurst(ev.target.closest('.r') || $('#clSvg'), 3);
     return;
   }
   const i = C.regions.indexOf(el); if (i < 0) return;
   const prev = el.style.fill || '';
   el.style.fill = curColor;
   if (el.style.fill === prev) return;
-  C.undo.push({ t: 'fill', list: [[i, prev]] }); sfx.paint(); saveColor(); sparkleAt(ev.clientX, ev.clientY, 12);
+  C.undo.push({ t: 'fill', list: [[i, prev]] }); sfx.paint(); saveColor(); if (window.ZDBurst) window.ZDBurst(ev.target.closest('.r') || $('#clSvg'), 3);
 });
 $('#clSvg').addEventListener('pointermove', ev => {
   const g = C && C.drag;
@@ -2540,7 +2542,7 @@ function makeTracer(host, text, onDone, opts = {}) {
     if (bd > R * 2.3) { drag = null; tone(220, .12, 'sine', .08); render(); return; } // left the road: the marker waits
     if (bd < R * 1.15 && best > pi) {
       pi = best; lastMove = Date.now();
-      if (Math.random() < .15) sparkleAt(ev.clientX, ev.clientY, 1);
+      
       if (pi >= pts.length - 3) nextStroke();
       render();
     }
@@ -2831,8 +2833,16 @@ function renderLearn() {
 }
 function renderAbcCard() {
   const [L, words] = LETTERS[abcSel], [em, w] = words[abcWord % words.length];
-  $('#abcCard').innerHTML = `<span class="abc-big">${capL(L)} <small>${L.toLowerCase()}</small></span><span class="abc-emoji">${em}</span>
-    <span class="abc-word"><span class="first">${w.slice(0, L.length)}</span>${w.slice(L.length)}</span>`;
+  $('#abcCard').innerHTML = `
+    <span class="abc-scene-v3">
+      <span class="abc-letter-v3"><small>Písmeno</small><b>${capL(L)}</b><i>${L.toLowerCase()}</i></span>
+      <span class="abc-object-v3">
+        <span class="abc-emoji-v3">${em}</span>
+        <span class="abc-word-v3"><b>${w.slice(0,L.length)}</b>${w.slice(L.length)}</span>
+        <small>Ťukni a poslechni si další slovo</small>
+      </span>
+      <span class="abc-lumi-v3" aria-hidden="true"><svg viewBox="0 0 100 100">${liliSvg()}</svg></span>
+    </span>`;
 }
 function sayLearn() { const [L, words] = LETTERS[abcSel]; say(`${spoken(L)}. ${words[abcWord % words.length][1].toLowerCase()}`); }
 $('#abcGrid').addEventListener('click', ev => {
@@ -2854,7 +2864,7 @@ function startTrace(speak) {
   const build = () => {
     if (current !== 'abc' || abcMode !== 'trace' || abcSel !== sel) return;
     TR = makeTracer(host, capL(L), () => {
-      sfx.win(); sparkleAt(innerWidth / 2, innerHeight / 2, 40);
+      sfx.win(); if (window.ZDBurst) window.ZDBurst($('#trHost'), 7);
       say(`Výborně! ${spoken(L)} jako ${w.toLowerCase()}.`);
       const traced = new Set(store.get('zd-traced', [])); traced.add(L); store.set('zd-traced', [...traced]);
       setTimeout(() => { if (current === 'abc' && abcMode === 'trace' && abcSel === sel) { abcSel = (abcSel + 1) % LETTERS.length; startTrace(true); } }, 2200);
@@ -3076,7 +3086,7 @@ $('#lgField').addEventListener('click', ev => {
     return;
   }
   LG.locked = true; b.classList.add('ok');
-  const r = b.getBoundingClientRect(); sparkleAt(r.left + r.width / 2, r.top + r.height / 2, 16);
+  const r = b.getBoundingClientRect(); if (window.ZDBurst) window.ZDBurst(b, 4);
   const sil = document.querySelector('#lgField .sil'); if (sil) sil.classList.remove('sil');
   const pk = document.querySelector('#lgField .lg-peek'); if (pk) pk.classList.add('open');
   const slot = document.querySelector('#lgField .lg-slot'); if (slot && LG.task.fill) { slot.textContent = LG.task.fill; slot.classList.add('filled'); }
@@ -3117,7 +3127,7 @@ $('#memoBoard').addEventListener('click', ev => {
   const [x, y] = MM.open;
   if (MM.faces[x.dataset.i] === MM.faces[y.dataset.i]) {
     MM.open = []; MM.done += 2;
-    setTimeout(() => { x.classList.add('got'); y.classList.add('got'); sfx.snap(); const r = y.getBoundingClientRect(); sparkleAt(r.left + r.width / 2, r.top + r.height / 2, 12); }, 250);
+    setTimeout(() => { x.classList.add('got'); y.classList.add('got'); sfx.snap(); const r = y.getBoundingClientRect(); if (window.ZDBurst) window.ZDBurst(y, 4); }, 250);
     if (MM.done === MM.faces.length) setTimeout(() => {
       if (current !== 'memo') return;
       sfx.win(); confetti(); say(`Hurá! Všechny dvojice za ${MM.moves} tahů.`);
@@ -3912,7 +3922,7 @@ function rdSnap(D, [x, y]) {
     const nw = $('#rdRoads').lastElementChild.firstElementChild, s = lay.s;
     rdTween(220, k => nw.setAttribute('transform', `scale(${s / 100 * (1.18 - .18 * rdEase(k))}) translate(-50 -50)`));
     sfx.snap(); RD.miss = 0;
-    const r = RD.svg.getBoundingClientRect(); if (!reduceMotion) sparkleAt(r.left + tx, r.top + ty, 12);
+    const r = RD.svg.getBoundingClientRect(); if (!reduceMotion && window.ZDBurst) window.ZDBurst(nw, 4);
     const path = rdTrace();
     if (path) { RD.done = true; clearTimeout(RD.idle); rdLater(() => rdFinish(path), 280); } else rdIdle();
   });
@@ -3997,7 +4007,7 @@ function rdFinish(cells) {
     if (lastX != null && Math.abs(pt.x - lastX) > .3) dir = pt.x < lastX ? -1 : 1;
     lastX = pt.x;
     rdPlaceLili(bx + pt.x, by + pt.y, dir);
-    if (k > nextSpark && !reduceMotion) { nextSpark = k + .07; sparkleAt(r.left + bx + pt.x, r.top + by + pt.y + s * .2, 3); tone(520 + k * 500, .05, 'sine', .05); }
+    if (k > nextSpark && !reduceMotion) { nextSpark = k + .14; tone(520 + k * 500, .045, 'sine', .04); }
   }, () => {
     li.classList.remove('rd-trot'); li.classList.add('rd-cheer');
     const fr = $('#rdFriend'); fr.classList.remove('rd-sad'); fr.classList.add('rd-happy');
@@ -4038,13 +4048,13 @@ document.addEventListener('gesturestart', ev => ev.preventDefault());
 document.addEventListener('dblclick', ev => ev.preventDefault(), { passive: false });
 $('#glitterDefs').innerHTML = glitterDefs();
 fx.cv = $('#fx'); fx.ctx = fx.cv.getContext('2d'); fxResize(); window.addEventListener('resize', fxResize);
-document.addEventListener('pointerdown', ev => { if (!reduceMotion) sparkleAt(ev.clientX, ev.clientY, 8); }, { passive: true });
+// v2: no global click particles; ordinary taps use tactile scale + sound only.
 (function makeTwinkles() {
   const cols = ['#FFC94D', '#FF7FC4', '#B98CFF', '#7FCBFF', '#FFFFFF']; let h = '';
   for (let i = 0; i < 28; i++) h += `<i style="left:${(Math.random() * 100).toFixed(1)}%;top:${(Math.random() * 100).toFixed(1)}%;font-size:${Math.round(10 + Math.random() * 18)}px;color:${cols[i % cols.length]};animation-delay:${(Math.random() * 2.4).toFixed(2)}s;animation-duration:${(1.8 + Math.random() * 1.8).toFixed(2)}s">✦</i>`;
   $('#twinkles').innerHTML = h;
 })();
-$('#mascot').addEventListener('click', ev => { bounce(ev.currentTarget); sparkleAt(ev.clientX, ev.clientY, 24); say('Ahoj! Já jsem Lili. Pojď si se mnou hrát!'); });
+$('#mascot').addEventListener('click', ev => { bounce(ev.currentTarget); if (window.ZDBurst) window.ZDBurst(ev.currentTarget, 4); say('Ahoj! Já jsem Lili. Pojď si se mnou hrát!'); });
 (function installHint() {
   const standalone = navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
   let framed = false; try { framed = window.self !== window.top; } catch (e) { framed = true; }
