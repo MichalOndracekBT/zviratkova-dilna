@@ -97,3 +97,23 @@ Další:
 - [ ] reward/collection systém
 - [ ] nový visual pass omalovánek
 - [ ] nový visual pass čísel a abecedy
+
+
+## Full-app visual pass
+
+Druhá implementační iterace sjednocuje všechny hlavní části hry do stejného vizuálního světa:
+
+- [x] Puzzle picker — nové herní karty a louka
+- [x] Puzzle — hlubší herní plocha, čistší dílky a hinty
+- [x] Extra puzzle hra — sjednocený stage
+- [x] Omalovánky picker — nové ilustrativní karty
+- [x] Omalovánky — papírový stage + floating nástroje a paleta
+- [x] Čísla — Číselná jeskyně, nové karty i herní stage
+- [x] Abeceda — Abecední les, nové písmenkové karty a tracing
+- [x] Hádanky — Hádanková stezka, nové volby a odpovědi
+- [x] Pexeso — Pexesový háj, nové karty a flip vzhled
+- [x] Duhová cesta — nové world cards, level tiles a herní frame
+- [x] Win/reward modal — kompletní redesign
+- [x] Jednotný topbar, filtry, segmenty, progress a tap feedback
+- [x] Screen transitions
+- [x] Landscape a small-phone polish
