@@ -1799,14 +1799,13 @@ function sparkleAt(x, y, n = 9) {
   }
   fxRun();
 }
-// celebration: a shower of glitter and unicorns
+// celebration: short local burst around the reward instead of a full-screen particle shower
 function confetti() {
-  if (reduceMotion || !fx.ctx) return;
-  for (let i = 0; i < 170; i++) fx.parts.push({ x: Math.random() * fx.w, y: -20 - Math.random() * fx.h * .6, vx: (Math.random() - .5) * 1.5, vy: 1.5 + Math.random() * 2.5,
-    g: .03, drag: .995, size: 3 + Math.random() * 7, rot: Math.random() * 3, vr: (Math.random() - .5) * .2, life: 150 + Math.random() * 60, c: FX_COLS[Math.floor(Math.random() * FX_COLS.length)], tw: true });
-  ['🦄', '🦄', '🦄', '✨', '💖', '🌈', '⭐', '🦄', '💎', '🦄', '✨', '💖', '🦄'].forEach(em => fx.parts.push({ emoji: em, x: Math.random() * fx.w, y: -40 - Math.random() * fx.h * .5,
-    vx: (Math.random() - .5) * 1.2, vy: 1.6 + Math.random() * 2, g: .025, drag: .995, size: 26 + Math.random() * 18, rot: (Math.random() - .5) * .5, vr: (Math.random() - .5) * .02, life: 170 + Math.random() * 50 }));
-  fxRun();
+  if (reduceMotion) return;
+  const origin = document.querySelector('#win:not([hidden]) #winArt') || document.querySelector('.screen:not([hidden]) .board.done');
+  if (window.ZDBurst) { window.ZDBurst(origin, 7); return; }
+  const r = origin && origin.getBoundingClientRect ? origin.getBoundingClientRect() : null;
+  sparkleAt(r ? r.left + r.width / 2 : innerWidth / 2, r ? r.top + r.height / 2 : innerHeight * .44, 7);
 }
 
 /* ---------- COLORING EXTRAS: stickers, scenes, numbers, coming alive ---------- */
