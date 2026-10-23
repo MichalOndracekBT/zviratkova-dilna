@@ -12,6 +12,23 @@ Cílový pocit:
 - kvalitní game feel,
 - konzistentní styl napříč aktivitami.
 
+## Kdo hraje
+Předškoláci (zhruba 3–6 let), kteří většinou ještě nečtou. Hrají na iPhonu, často krátce a s rodičem poblíž. Z toho plynou pevná pravidla:
+- **Každá instrukce pro dítě musí zaznít hlasem.** Text na obrazovce je jen doplněk pro rodiče, nikdy jediný nosič informace.
+- Místo vět ikony a obrázky (např. 🔊 místo „Ťukni a poslechni si…“).
+- Co je v bublině maskota, je přesně to, co maskot říká.
+- Nový text do UI přidávat jen tehdy, když ho dítě nepotřebuje ke hraní.
+
+## Ochrana výuky
+Redesign mění vzhled, ne způsob, jak se dítě učí. Změna výukové mechaniky potřebuje výslovné rozhodnutí a zápis do `CHANGELOG.md` s důvodem.
+
+Chráněné mechaniky:
+- **Čísla:** každý předmět se objeví a nahlas se napočítá („jedna, dva, tři…“), tempo cca 0,8 s na předmět, na konci „Číslo X!“. Předměty k počítání jsou hlavní obsah obrazovky, ne dekorace v rohu.
+- **Abeceda:** ťuknutí přehraje písmeno i slovo. Písmeno a obrázek jsou největší prvky karty.
+- **Obtahování:** pořadí a směr tahů zůstávají.
+- **Puzzle:** silueta a nápověda pomáhají, ale nikdy nevyřeší úkol za dítě.
+- **Hlas se nepřekrývá:** každá nová hláška ukončí předchozí, proto počítání ani zadání úkolu nesmí přerušit jiná hláška. U sekvencí nechat hlasu čas doznít.
+
 ## Design principy
 ### Méně UI, více světa
 Domovská obrazovka není seznam tlačítek. Aktivity mají působit jako místa v jednom světě.
@@ -41,6 +58,8 @@ Pastel fantasy + soft 2.5D game UI. Kvalitou se inspirovat nejlepšími dětský
 
 Na jedné obrazovce držet maximálně dvě dominantní a dvě akcentní barvy. Nepoužívat čistou černou ani neonové odstíny.
 
+Pastel nesmí sníst kontrast: vybraný stav a akční tlačítka (✓ Hotovo, Další) musí být barevně výrazné, ikona na nich vždy vidět.
+
 ## Typografie
 Maximálně dvě font family. Nadpisy kulaté a výrazné, běžný text velmi čitelný. Dětské UI nesmí vyžadovat čtení dlouhých vět.
 
@@ -58,13 +77,15 @@ Domovská obrazovka je mapa světa. Lokace:
 - Pexesový háj
 - později Pokladnice a Můj jednorožec
 
-Každá lokace je ilustrovaný objekt, má maximálně jednu jemnou ambient animaci a vizuální progres.
+Každá lokace je ilustrovaný objekt, má maximálně jednu jemnou ambient animaci a vizuální progres. Název lokace musí nést i obraz: Číselná jeskyně má vypadat jako jeskyně. Dokud ilustrace nejsou, jsou názvy pracovní.
 
-## Maskot Lumi
-Pracovní jméno průvodce: Lumi. Je laskavý, hravý, klidný a chytrý. Nikdy pisklavý, komický nebo přehnaně afektovaný. Stavy: neutral, happy, excited, thinking, encouraging, celebrating, sleepy.
+## Maskot Lili
+Průvodkyní je jednorožčice **Lili**, kterou hra už má (úvodní obrazovka, Duhová cesta, lekce čísel a abecedy, v kódu `liliSvg()`). Děti ji znají, proto se nepřejmenovává. Pracovní jméno „Lumi“ z první verze dokumentů se nepoužívá.
+
+Je laskavá, hravá, klidná a chytrá. Nikdy pisklavá, komická nebo přehnaně afektovaná. Stavy: neutral, happy, excited, thinking, encouraging, celebrating, sleepy.
 
 ## Voice
-Zakázaný je komický vysoký pitch, robotický TTS jako finální řešení, dlouhé proslovy a stále stejná pochvala. Preferovaný je teplý přirozený hlas, střední pitch, klidnější tempo a krátké věty.
+Zakázaný je komický vysoký pitch, robotický TTS jako finální řešení, dlouhé proslovy a stále stejná pochvala. Preferovaný je teplý přirozený hlas, střední pitch, klidnější tempo a krátké věty. Detaily a produkce hlasu: `AUDIO_MOTION_GUIDE.md`.
 
 ## Motion
 Hierarchie:
@@ -93,13 +114,23 @@ Nikdy nepoužívat:
 Hvězdičky, krystaly, jednorožci, samolepky, korunky, dekorace a části světa. Žádné FOMO, countdowny ani trestání.
 
 ## Dětské UX
-- minimum textu,
+- minimum textu, každá instrukce zazní hlasem,
 - velké tap zóny,
 - jasný Home/Back,
+- vybraný stav (nástroj, obtížnost, režim) je vidět na první pohled,
 - chyba dítě netrestá,
 - hint až po prodlevě,
-- zvuk/voice lze vypnout,
+- zvuk/voice lze vypnout a ztlumení platí pro všechny zvuky i hlas,
 - respektovat prefers-reduced-motion.
 
 ## Definition of Done
-Nový screen je hotový jen pokud dítě chápe hlavní akci bez vysvětlování, UI odpovídá tomuto guide, tap má okamžitý feedback, animace mají smysl, screen nevypadá jako webový formulář a běží plynule na cílovém iPhonu.
+Nový screen je hotový, jen když:
+- dítě chápe hlavní akci bez vysvětlování a bez čtení,
+- všechny instrukce zazní hlasem a nic důležitého se neusekne,
+- výuková mechanika odpovídá sekci Ochrana výuky,
+- UI odpovídá tomuto guide a nevypadá jako webový formulář,
+- tap má okamžitý feedback a animace mají smysl,
+- vybraný stav je jasně vidět a akční tlačítka mají kontrast,
+- se ztlumeným zvukem nic nemluví a s reduced motion se nic zbytečně nehýbe,
+- vejde se na výšku i na šířku na cílovém iPhonu i na menším (iPhone SE) a běží plynule,
+- je vyzkoušený na skutečném iPhonu, ideálně s dítětem, ne jen v prohlížeči na počítači.
