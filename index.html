@@ -551,9 +551,10 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 }
 </style>
 <link rel="stylesheet" href="css/redesign-v2.css?v=3">
-<link rel="stylesheet" href="css/full-world-v2.css?v=2">
-<link rel="stylesheet" href="css/count-world-v3.css?v=1">
-<link rel="stylesheet" href="css/content-cards-v3.css?v=2">
+<link rel="stylesheet" href="css/full-world-v2.css?v=3">
+<link rel="stylesheet" href="css/count-world-v3.css?v=2">
+<link rel="stylesheet" href="css/content-cards-v3.css?v=3">
+<link rel="stylesheet" href="css/world-art.css?v=1">
 </head>
 <body>
 
@@ -902,11 +903,25 @@ function czechVoice() {
   return czVoice;
 }
 try { speechSynthesis.addEventListener('voiceschanged', () => { czVoice = null; }); } catch (e) {}
+// Lili's prosody (AUDIO_MOTION_GUIDE): calm, clear instructions; brighter praise; curious questions;
+// single words (numbers, letters, animal names) slower, so a small child hears every sound.
+function prosody(text) {
+  if (/^[a-záčďéěíňóřšťúůýž]+$/i.test(text) && text.length <= 12) return { rate: .88, pitch: 1.02 }; // still fits the 0.85 s counting pace
+  if (/!$/.test(text)) return { rate: .96, pitch: 1.1 };
+  if (/\?$/.test(text)) return { rate: .9, pitch: 1.06 };
+  return { rate: .9, pitch: 1.03 };
+}
+let EMOJI_RE = null;
+try { EMOJI_RE = new RegExp('[\\p{Extended_Pictographic}\\uFE0F\\u200D]', 'gu'); } catch (e) {} // older engines: skip the clean-up
 function say(text) {
   if (muted || !('speechSynthesis' in window)) return;
+  text = String(text == null ? '' : text);
+  if (EMOJI_RE) text = text.replace(EMOJI_RE, ''); // never read emoji aloud ("unicorn face")
+  text = text.replace(/\s+/g, ' ').trim();
+  if (!text) return;
   try {
-    const synth = window.speechSynthesis;
-    const u = new SpeechSynthesisUtterance(text); u.lang = 'cs-CZ'; u.rate = .95; u.pitch = 1;
+    const synth = window.speechSynthesis, p = prosody(text);
+    const u = new SpeechSynthesisUtterance(text); u.lang = 'cs-CZ'; u.rate = p.rate; u.pitch = p.pitch;
     const v = czechVoice(); if (v) u.voice = v;
     lastUtterance = u; // keep a reference: Chrome can garbage-collect a playing utterance and cut it off
     const go = () => { try { synth.resume(); synth.speak(u); } catch (e) {} };
@@ -2702,7 +2717,7 @@ function numIntro() {
           <svg viewBox="0 0 100 100">${liliSvg()}</svg>
         </div>
         <div class="num-speech-v3">Tohle je číslo ${NUM_WORDS[n]}.</div>
-        <div class="num-row-v3 num-row" id="numRow"></div>
+        <div class="num-row-v3 num-row" id="numRow" style="--cols:${n <= 5 ? n : Math.ceil(n / 2)}"></div>
       </div>
     </div>`;
   $('#cntAnswers').innerHTML = '<button class="btn primary play-btn v3-play" id="playBtn"><span>Jdeme hrát</span><b>→</b></button>';
@@ -4093,5 +4108,6 @@ window.ZD = { say: text => say(text), isMuted: () => muted };
 <script src="analytics.js?v=2" data-app="zviratkova-dilna"></script>
 <script src="js/redesign-v2.js?v=3"></script>
 <script src="js/full-world-v2.js?v=1"></script>
+<script src="js/world-art.js?v=1"></script>
 </body>
 </html>
