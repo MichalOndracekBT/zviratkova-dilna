@@ -1,4 +1,7 @@
-/* Zvířátková dílna — redesign v2 behavior */
+/* Zvířátková dílna — redesign v2 behavior
+   The game script in index.html runs inside a closure, so this layer cannot replace its
+   functions (say, sfx, confetti). Changes to game logic, voice and sounds live in index.html;
+   this file only adds UI behaviour and talks to the game through window.ZD. */
 (() => {
   'use strict';
 
@@ -27,8 +30,7 @@
 
   const lead = $v('#home .lead');
   if (lead) lead.textContent = 'Vyber si místo a začni dobrodružství.';
-  const mascot = document.getElementById('mascot');
-  if (mascot) mascot.setAttribute('aria-label','Jednorožec Lumi');
+  const mascot = document.getElementById('mascot'); // jednorožčice Lili (STYLE_GUIDE: Maskot Lili)
 
   /* ---------- CONSISTENT TAP FEEL ---------- */
   const tappable = '.mode,.btn,.tile,.ctile,.num-tile,.ans,.tool,.chip,.abc-key';
@@ -36,14 +38,14 @@
     const el = e.target.closest && e.target.closest(tappable);
     if (el) el.classList.add('v2-pressed');
   }, {passive:true});
-  ['pointerup','pointercancel','pointerleave'].forEach(type => {
-    document.addEventListener(type, e => {
-      const el = e.target.closest && e.target.closest(tappable);
-      if (el) el.classList.remove('v2-pressed');
+  // release anywhere (also outside the pressed element) clears the pressed state
+  ['pointerup','pointercancel'].forEach(type => {
+    document.addEventListener(type, () => {
+      document.querySelectorAll('.v2-pressed').forEach(el => el.classList.remove('v2-pressed'));
     }, {passive:true});
   });
 
-  /* ---------- PROFESSIONAL LOCAL SUCCESS BURST ---------- */
+  /* ---------- LOCAL SUCCESS BURST (3–8 stars at the source) ---------- */
   const burstColors = ['#FFD86B','#FF9FD1','#C9A7FF','#89E4D9','#FFFFFF'];
   function burst(origin, count=7) {
     if (reduce) return;
@@ -80,106 +82,38 @@
   }
   window.ZDBurst = burst;
 
-  // Replace the old 170-particle full-screen shower. Keep the same function name
-  // so existing game completion flows automatically use the new effect.
-  try {
-    confetti = function() {
-      burst($v('#win:not([hidden]) #winArt') || $v('.screen:not([hidden]) .board.done') || null, 7);
-    };
-  } catch (_) {}
-
-  /* v2 softer game sounds: tactile, short and less toy-like */
-  try {
-    sfx.snap = () => { tone(560,.06,'sine',.075); tone(760,.09,'sine',.055,.035); };
-    sfx.win = () => { [523,659,784].forEach((f,i) => tone(f,.18,'sine',.095,i*.085)); };
-  } catch (_) {}
-
-  /* ---------- VOICE FALLBACK ---------- */
-  let cachedVoice = null;
-  let currentUtterance = null;
-  let lastPraise = '';
-  let lastPraiseAt = 0;
-
-  function scoreVoice(v) {
-    let score = 0;
-    const lang = String(v.lang || '').toLowerCase();
-    const name = String(v.name || '').toLowerCase();
-    if (lang === 'cs-cz') score += 100;
-    else if (lang.startsWith('cs')) score += 80;
-    if (/zuzana|vlasta/.test(name)) score += 35;
-    if (/google|microsoft|apple/.test(name)) score += 20;
-    if (/enhanced|premium|natural|neural/.test(name)) score += 25;
-    if (/espeak|compact/.test(name)) score -= 35;
-    if (v.default) score += 5;
-    return score;
-  }
-
-  function bestCzechVoice() {
-    if (!('speechSynthesis' in window)) return null;
-    const voices = speechSynthesis.getVoices().filter(v => /^cs([-_]|$)/i.test(v.lang || ''));
-    if (!voices.length) return null;
-    voices.sort((a,b) => scoreVoice(b)-scoreVoice(a));
-    cachedVoice = voices[0];
-    return cachedVoice;
-  }
-  if ('speechSynthesis' in window) {
-    speechSynthesis.addEventListener?.('voiceschanged', () => { cachedVoice = null; bestCzechVoice(); });
-    bestCzechVoice();
-  }
-
-  function polishedSay(text) {
-    try {
-      if (typeof muted !== 'undefined' && muted) return;
-    } catch (_) {}
-    if (!text || !('speechSynthesis' in window)) return;
-
-    const synth = speechSynthesis;
-    const u = new SpeechSynthesisUtterance(String(text));
-    u.lang = 'cs-CZ';
-    u.rate = .91;
-    u.pitch = .96;
-    u.volume = .94;
-    const voice = cachedVoice || bestCzechVoice();
-    if (voice) u.voice = voice;
-    currentUtterance = u;
-    window.__zvLumiUtterance = u;
-
-    const play = () => {
-      try { synth.resume(); synth.speak(u); } catch (_) {}
-    };
-    if (synth.speaking || synth.pending) {
-      synth.cancel();
-      setTimeout(play, 65);
-    } else play();
-  }
-
-  try { say = polishedSay; } catch (_) {}
-
+  /* ---------- LILI VOICE BANK ----------
+     Prepared for AUDIO_MOTION_GUIDE (short phrases, praise cooldown, no immediate repeats).
+     Not wired into the games yet. It speaks through the game's own say(), so mute is respected. */
   const voiceBank = {
     welcome: ['Ahoj! Co si dnes zahrajeme?','Vyber si dobrodružství.','Tak kam se dnes podíváme?'],
     praise: ['Skvěle.','To se povedlo.','Výborně.','Přesně tak.','Paráda.'],
     retry: ['Zkus to ještě jednou.','Skoro.','Ještě kousek.'],
     complete: ['Hotovo! Paráda.','To se ti povedlo.','Máš to!']
   };
-  function pick(list, previous) {
-    const choices = list.filter(x => x !== previous);
-    return choices[Math.floor(Math.random()*choices.length)] || list[0];
+  const speak = text => { if (window.ZD && text) window.ZD.say(text); };
+  const last = {};
+  function pick(kind) {
+    const list = voiceBank[kind];
+    const choices = list.filter(x => x !== last[kind]);
+    return (last[kind] = choices[Math.floor(Math.random()*choices.length)] || list[0]);
   }
-  window.LumiVoice = {
-    say: polishedSay,
-    welcome() { polishedSay(pick(voiceBank.welcome,'')); },
-    retry() { polishedSay(pick(voiceBank.retry,'')); },
-    complete() { polishedSay(pick(voiceBank.complete,'')); },
+  let lastPraiseAt = 0;
+  window.LiliVoice = {
+    welcome() { speak(pick('welcome')); },
+    retry() { speak(pick('retry')); },
+    complete() { speak(pick('complete')); },
     praise() {
       const now = Date.now();
-      if (now-lastPraiseAt < 3200) return;
+      if (now - lastPraiseAt < 3200) return;
       lastPraiseAt = now;
-      lastPraise = pick(voiceBank.praise,lastPraise);
-      polishedSay(lastPraise);
+      speak(pick('praise'));
     }
   };
 
-  /* ---------- LUMI: ONE QUIET INTERACTION ---------- */
+  /* ---------- LILI: ONE QUIET INTERACTION ----------
+     The game already greets on tap ("Ahoj! Já jsem Lili. Pojď si se mnou hrát!").
+     The bubble only shows the same words; it does not speak a second line. */
   let bubbleTimer = 0;
   if (mascot) mascot.addEventListener('click', () => {
     const hero = mascot.closest('.hero-row') || mascot.parentElement;
@@ -188,19 +122,11 @@
     hero.querySelector('.v2-lumi-bubble')?.remove();
     const bubble = document.createElement('div');
     bubble.className = 'v2-lumi-bubble';
-    bubble.textContent = 'Co si dnes zahrajeme?';
+    bubble.textContent = 'Ahoj! Já jsem Lili. Pojď si se mnou hrát!';
     bubble.style.right = '8px';
     bubble.style.bottom = '2px';
     hero.appendChild(bubble);
     clearTimeout(bubbleTimer);
-    bubbleTimer = setTimeout(() => bubble.remove(), 2300);
-    window.LumiVoice?.welcome();
-  });
-
-  /* ---------- REMOVE OVERACTIVE HOME EFFECTS ---------- */
-  document.querySelectorAll('#home .mode').forEach(el => {
-    el.addEventListener('animationend', () => {
-      // Entrance animation runs once. No repeating card animation is added here.
-    }, {once:true});
+    bubbleTimer = setTimeout(() => bubble.remove(), 3200);
   });
 })();
