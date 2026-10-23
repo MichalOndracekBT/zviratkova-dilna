@@ -1,5 +1,13 @@
 # Changelog redesignu
 
+## 23. 10. 2026 — hlas, design pass, příprava na ilustrace
+- Hlas: tempo a výška podle typu hlášky. Pokyny klidně, pochvaly („…!“) živěji, otázky zvídavě, jednotlivá slova (čísla, písmena, zvířátka) pomaleji a zřetelně. Emoji se nikdy nečtou nahlas. Na iPhonu web smí jen základní hlas Zuzana, výrazně lepší hlas by znamenal předgenerované nahrávky (AUDIO_MOTION_GUIDE → Produkce hlasu).
+- Čísla: předměty k počítání jsou hlavní obsah obrazovky. Do pěti v jedné řadě až 96 px, víc ve dvou vyvážených řadách (7 = 4 + 3). Původní třída `.num-row` je omezovala na 6,5em, proto byly drobné. Lili s bublinou stojí nad nimi.
+- Abeceda: větší písmeno i obrázek.
+- Puzzle: volné dílky mají zase bílý okraj, takže jsou vidět i na pozadí stejné barvy.
+- Výběrové obrazovky: zmizela prázdná bílá bublina vpravo nahoře.
+- Ilustrace: napojení `js/world-art.js` + `css/world-art.css` a prázdný `img/world/manifest.json`. Prompty pro Midjourney/Flux jsou v `ILLUSTRACE.md`.
+
 ## 23. 10. 2026 — opravy po review
 - Pryč je doslovný text `\n` v `index.html`. Byl vidět nahoře na každé obrazovce a posouval obsah dolů.
 - Omalovánky: zelené ✓ Hotovo je zase vidět. Bílý styl tlačítek v horní liště už nepřebíjí barevná tlačítka.

@@ -19,6 +19,8 @@ Nechceme vysoký cartoon voice, robotický zvuk, šišlání ani přehnanou rozt
 - každá nová hláška ukončí tu předchozí: počítání a zadání úkolu nepřerušovat, u sekvencí držet rozestup (počítání cca 0,8 s)
 - ztlumení zvuku vypíná i hlas, všude včetně maskota
 - co Lili říká, to je v její bublině (a naopak)
+- tempo a výška podle typu hlášky (`prosody()` v `index.html`): pokyny 0.9 / 1.03, pochvaly s „!“ 0.96 / 1.1, otázky 0.9 / 1.06, jednotlivá slova (čísla, písmena, zvířátka) 0.88 / 1.02 (pomaleji, ale stihne doznít v tempu počítání 0,85 s)
+- emoji a symboly se nikdy nečtou nahlas
 
 ## Voice bank
 Připravená v `js/redesign-v2.js` jako `window.LiliVoice` (cooldown pochval, bez opakování stejné hlášky). Hry ji zatím nepoužívají, mluví vlastními hláškami přes `say()`.

@@ -51,7 +51,7 @@ Rewards: hvězdy, krystaly, sbírka.
 
 ## Assety
 Bez obrázků a zvuku zůstane redesign u přebarvení. Potřeba:
-- **Ilustrace lokací** pro mapu světa a pozadí herních obrazovek, v jednom stylu (pastel, soft 2.5D). Formát SVG nebo WebP, složka `img/world/`. Lokaci přejmenovat až s ilustrací, která název nese.
+- **Ilustrace lokací** pro mapu světa a pozadí herních obrazovek, v jednom stylu (pastel, soft 2.5D). Vznikají v Midjourney/Flux podle `ILLUSTRACE.md`, ve hře jako WebP v `img/world/`. Napojení je hotové (`js/world-art.js`, `css/world-art.css`): co je v `img/world/manifest.json`, to se ukáže, jinak zůstane dnešní vzhled.
 - **Hlas Lili** jako předgenerované audio soubory (viz `AUDIO_MOTION_GUIDE.md`).
 - Doporučení: nejdřív dotáhnout jednu část naplno (Home + puzzle) včetně assetů, vyzkoušet s dětmi a pak teprve další.
 
@@ -70,7 +70,9 @@ Bez obrázků a zvuku zůstane redesign u přebarvení. Potřeba:
 - docs/UX_REDESIGN.md
 - docs/IMPLEMENTATION_PLAN.md
 - docs/AUDIO_MOTION_GUIDE.md
+- docs/ILLUSTRACE.md (prompty a pravidla pro ilustrace)
 - docs/CHANGELOG.md (co se kdy změnilo a proč)
+- css/world-art.css, js/world-art.js, img/world/ (ilustrace světa)
 
 ## Performance
 Animovat hlavně transform a opacity. Omezit filter, blur a layout properties. Respektovat prefers-reduced-motion.
@@ -108,6 +110,11 @@ Hotovo:
 - [x] měkčí zvuky docvaknutí a výhry, lepší výběr českého hlasu (funguje od oprav 23. 10.)
 - [x] reduced-motion v redesign vrstvě
 - [x] opravy po review 23. 10. (viz CHANGELOG)
+- [x] hlas: tempo a výška podle typu hlášky, bez čtení emoji
+- [x] čísla: předměty k počítání jsou hlavní obsah (až 96 px, dvě vyvážené řady)
+- [x] abeceda: větší písmeno a obrázek
+- [x] puzzle: volné dílky s bílým okrajem
+- [x] napojení AI ilustrací s fallbackem (čeká na obrázky)
 
 Částečně:
 - [ ] Home jako mapa světa: zatím natočené karty, chybí ilustrace lokací (vejde se bez scrollování na všech iPhonech od SE po Pro Max, na výšku i na šířku)
@@ -116,7 +123,7 @@ Hotovo:
 - [ ] completion sekvence podle UX_REDESIGN (zvířátko ožije, pochvala Lili): zatím jen zkrácené časování
 
 Další:
-- [ ] ilustrace lokací (Assety)
+- [ ] ilustrace lokací: vygenerovat podle `ILLUSTRACE.md` a zapojit
 - [ ] skutečné audio hlasu Lili (Produkce hlasu)
 - [ ] samostatný audio manager a music ducking
 - [ ] reward/collection systém (Můj jednorožec)
