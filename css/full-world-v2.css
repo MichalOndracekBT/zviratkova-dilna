@@ -278,6 +278,8 @@
     repeating-linear-gradient(45deg,#F7EFFA 0 8px,#FFF 8px 16px) border-box;
   border:1px solid rgba(116,93,133,.09);
 }
+/* untouched pages: a light wash of their colours (the child's own colouring stays at full strength) */
+#colorGrid .ctile svg.cl-wash .r{fill-opacity:.5}
 #colorGrid .ctile .nm{
   font-size:16px;
   font-weight:900;
