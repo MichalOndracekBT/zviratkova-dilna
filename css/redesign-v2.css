@@ -343,3 +343,6 @@ body{
   #home .mode:nth-child(even):not(.wide),
   #home .mode:nth-child(odd):not(.wide){transform:none}
 }
+
+/* Keep ambient sparkle subtle; it should never compete with the activities. */
+.twinkles{opacity:.42}
