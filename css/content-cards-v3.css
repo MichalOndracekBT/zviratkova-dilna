@@ -157,6 +157,12 @@
   font-size:12px;
   font-weight:800;
 }
+/* "tap to hear" as an icon, not a sentence: the child does not read yet */
+#abc .abc-object-v3 .abc-hear-v3{
+  padding:4px 12px;
+  font-size:20px;
+  line-height:1.2;
+}
 #abc .abc-lumi-v3{
   position:absolute;
   right:2%;

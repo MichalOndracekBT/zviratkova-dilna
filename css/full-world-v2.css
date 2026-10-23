@@ -92,7 +92,9 @@
   color:#4A4358;
   text-shadow:0 2px 0 rgba(255,255,255,.75);
 }
-.screen:not(#home) .topbar .btn{
+/* :not(#home) carries ID specificity, so coloured action buttons (green ✓ Hotovo, primary)
+   must be excluded or they turn white and their white icon disappears */
+.screen:not(#home) .topbar .btn:not(.green):not(.primary){
   background:rgba(255,255,255,.91);
   border:1px solid rgba(255,255,255,.98);
   box-shadow:0 8px 18px rgba(74,67,88,.13),0 2px 0 rgba(255,255,255,.9) inset;
@@ -139,16 +141,18 @@
   color:#665B77;
   transition:transform 160ms ease,background 180ms ease,box-shadow 180ms ease;
 }
+/* The selected option must be obvious at a glance (STYLE_GUIDE: jasně označený vybraný stav).
+   Icons inside selected buttons are white (e.g. pexeso grid), so the background must stay coloured. */
 .seg button[aria-pressed="true"]{
-  background:rgba(255,255,255,.96);
-  color:#5B4D73;
-  box-shadow:0 5px 13px rgba(80,60,110,.14),0 1px 0 #fff inset;
+  background:linear-gradient(145deg,#6A5B9E,#463A72);
+  color:#fff;
+  box-shadow:0 6px 14px rgba(65,50,104,.26),0 1px 0 rgba(255,255,255,.22) inset;
   transform:none;
 }
 .seg.icons button[aria-pressed="true"]{
-  background:linear-gradient(145deg,#FFF,#FFF6FB);
-  color:#704E86;
-  box-shadow:0 6px 16px rgba(91,66,123,.16);
+  background:linear-gradient(145deg,#FF7FC4,#B36BFF);
+  color:#fff;
+  box-shadow:0 7px 16px rgba(142,79,207,.30),0 1px 0 rgba(255,255,255,.3) inset;
 }
 .chips{
   padding:0 14px 12px;
@@ -241,6 +245,8 @@
 #puzzle .pz-piece.lift{
   filter:drop-shadow(0 16px 13px rgba(36,48,62,.25));
 }
+/* placed pieces merge into one picture: no shadow, no visible seams */
+#puzzle .pz-piece.placed{filter:none}
 #extra .ex-stage{
   margin:2px 12px 14px;
   border-radius:34px;

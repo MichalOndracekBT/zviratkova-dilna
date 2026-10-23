@@ -323,18 +323,53 @@ body{
 }
 @keyframes v2BubbleIn{to{opacity:1;transform:translateY(0) scale(1)}}
 
+/* Phone on its side: everything must fit without scrolling and the title must not touch the cards. */
 @media (orientation:landscape) and (max-height:520px){
   #home .home-body{
-    grid-template-columns:minmax(190px,31%) 1fr;
-    padding-bottom:8px;
+    grid-template-columns:minmax(180px,30%) 1fr;
+    column-gap:16px;
+    padding-bottom:6px;
+    overflow:hidden;
   }
-  #home .modes{grid-template-columns:repeat(2,1fr);gap:10px}
-  #home .mode{min-height:66px;padding:7px 10px}
-  #home .mode.wide{min-height:76px}
-  #home .mode-art{width:48px;height:48px}
-  #home .mode.wide .mode-art{width:68px}
+  #home .hero-row{min-height:0}
+  #home .home-body h1{font-size:clamp(28px,4.9vw,42px)}
+  #home .mascot{width:clamp(80px,21vh,112px)}
+  #home .modes{grid-template-columns:repeat(2,1fr);gap:8px 10px;padding:4px 2px 8px;overflow-y:auto}
+  #home .modes::before{display:none}
+  #home .mode{min-height:0;padding:6px 10px;border-radius:22px}
+  #home .mode.wide{min-height:0;padding:6px 12px 6px 8px;border-radius:24px}
+  #home .mode-art{width:44px;height:44px;border-radius:14px}
+  #home .mode.wide .mode-art{width:66px;height:50px}
+  #home .mode-name{font-size:clamp(15px,2.5vw,18px)}
+  #home .mode.wide .mode-name{font-size:clamp(20px,3.2vw,23px)}
+  #home .mode-sub{margin-top:1px;font-size:12px;line-height:1.1}
+  #home .mode-new{right:10px;bottom:8px;padding:4px 8px}
   #home .mode:nth-child(even):not(.wide),
   #home .mode:nth-child(odd):not(.wide){transform:none}
+  #home .mode:nth-child(even):not(.wide):active,
+  #home .mode:nth-child(even):not(.wide).v2-pressed,
+  #home .mode:nth-child(odd):not(.wide):active,
+  #home .mode:nth-child(odd):not(.wide).v2-pressed{transform:scale(.965)}
+}
+
+/* Shorter phones upright (iPhone mini, SE): all seven places must fit without scrolling.
+   Subtitles are for parents only, so they go first. */
+@media (orientation:portrait) and (max-height:830px){
+  #home .mode-sub{display:none}
+  #home .mode{min-height:92px}
+  #home .mode.wide{min-height:100px}
+}
+@media (orientation:portrait) and (max-height:700px){
+  #home .hero-row{min-height:80px}
+  #home .home-body h1{font-size:clamp(30px,9vw,38px)}
+  #home .mascot{width:clamp(76px,22vw,92px)}
+  #home .modes{gap:10px;padding:8px 2px 12px}
+  #home .mode{min-height:80px;padding:9px}
+  #home .mode.wide{min-height:88px}
+  #home .mode-art{width:50px;height:50px;border-radius:16px}
+  #home .mode.wide .mode-art{width:80px;height:58px}
+  #home .mode-name{font-size:17px}
+  #home .mode.wide .mode-name{font-size:24px}
 }
 
 @media (prefers-reduced-motion:reduce){
