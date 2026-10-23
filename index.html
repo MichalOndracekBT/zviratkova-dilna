@@ -551,7 +551,7 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 }
 </style>
 <link rel="stylesheet" href="css/redesign-v2.css?v=3">
-<link rel="stylesheet" href="css/full-world-v2.css?v=3">
+<link rel="stylesheet" href="css/full-world-v2.css?v=4">
 <link rel="stylesheet" href="css/count-world-v3.css?v=2">
 <link rel="stylesheet" href="css/content-cards-v3.css?v=3">
 <link rel="stylesheet" href="css/world-art.css?v=1">
@@ -1929,7 +1929,7 @@ const CL_MAIN = {
 };
 const CL_CFG = {
   stickers: CL_STICKERS, scenes: CL_SCENES,
-  sky: pg => pg.id === 'bat' ? '#1A237E' : '#B2EBF2', ground: pg => '#9CCC65', cloud: '#F8BBD0',
+  sky: pg => pg.id === 'bat' || pg.id === 'scn-night' ? '#1A237E' : '#B2EBF2', ground: pg => pg.id === 'scn-sea' ? '#4FC3F7' : '#9CCC65', cloud: '#F8BBD0',
   mapColor: c => c,
   kit(pg) {
     if (pg.e === '🦄') return { main: 'url(#g-pink)', second: 'url(#g-lilac)', accent: 'url(#g-gold)' };
@@ -1976,11 +1976,19 @@ function renderColorPicker() {
   const hint = { free: '', num: '<p class="cl-hint">Vyber číslo dole a ťukej na políčka se stejným číslem.</p>', scene: '<p class="cl-hint">Vyber pozadí a polep ho nálepkami. Nálepky jdou posouvat i vybarvit.</p>' }[clMode];
   const g = $('#colorGrid');
   g.innerHTML = hint + list.map((pg, i) => `<button class="ctile${CL_CFG.isLocked && CL_CFG.isLocked(pg) ? ' locked' : ''}" data-i="${i}">${CL_CFG.isLocked && CL_CFG.isLocked(pg) ? '<span class="lock">🔒</span>' : ''}${clMode === 'num' && nd.has(pg.id) ? '<span class="badge">⭐</span>' : ''}${pageSvg(pg)}<span class="nm">${pg.name}</span></button>`).join('');
+  const wash = [];
   g.querySelectorAll('.ctile').forEach((b, i) => {
     const pg = list[i], sv = b.querySelector('svg');
-    if (clMode === 'num') applyFills(sv, store.get(nKey(pg), null));
-    else { applyFills(sv, store.get(cKey(pg), null)); applyStickers(sv, pg); applyInk(sv, pg); }
+    let saved, extras = 0;
+    if (clMode === 'num') { saved = store.get(nKey(pg), null); applyFills(sv, saved); }
+    else {
+      saved = store.get(cKey(pg), null); applyFills(sv, saved); applyStickers(sv, pg); applyInk(sv, pg);
+      extras = store.get(stkKey(pg), []).length + store.get(inkKey(pg), []).length;
+    }
+    // the child's own work is shown as it is; untouched pages get the colour preview
+    if (!(saved && saved.some(Boolean)) && !extras && !b.classList.contains('locked')) wash.push([sv, pg]);
   });
+  washPreviews(wash);
 }
 $('#colorGrid').addEventListener('click', ev => { const b = ev.target.closest('.ctile'); if (!b) return; const pg = pickList()[+b.dataset.i]; if (CL_CFG.isLocked && CL_CFG.isLocked(pg)) { CL_CFG.onLocked(pg); return; } openColor(pg, clMode); });
 $('#clMode').addEventListener('click', ev => {
@@ -2104,8 +2112,8 @@ function removeStk(g, x0, y0) {
 
 /* colour by number: every region gets a number, placed at its roomiest visible spot */
 const NUM_CACHE = {};
-function numPlan(pg) {
-  if (NUM_CACHE[pg.id]) return NUM_CACHE[pg.id];
+// an off-screen 400×400 svg for measuring pages (works even while the picker is hidden)
+function measureHost() {
   let host = document.getElementById('clMeasure');
   if (!host) {
     host = document.createElementNS(CL_NS, 'svg'); host.id = 'clMeasure';
@@ -2113,6 +2121,11 @@ function numPlan(pg) {
     host.style.cssText = 'position:fixed;left:-2000px;top:0;visibility:hidden;pointer-events:none';
     document.body.appendChild(host);
   }
+  return host;
+}
+function numPlan(pg) {
+  if (NUM_CACHE[pg.id]) return NUM_CACHE[pg.id];
+  const host = measureHost();
   host.innerHTML = pg.svg;
   const regs = [...host.querySelectorAll('.r')];
   const all = [...host.querySelectorAll('.r, .k, .l')];
@@ -2168,7 +2181,16 @@ function numPlan(pg) {
     return r;
   });
   host.innerHTML = '';
-  // target colours
+  const col = planColours(pg, regs, pts);
+  const auto = pts.map(q => q.clr < (CL_CFG.minClr || 4.2) || q.area < 60);
+  const colors = [];
+  col.forEach((c, i) => { if (!auto[i] && !colors.includes(c)) colors.push(c); });
+  const num = col.map(c => colors.indexOf(c) + 1);
+  return (NUM_CACHE[pg.id] = { pts, col, auto, colors, num });
+}
+// Target colours of a page's regions, shared by colour-by-number and the picker preview.
+// pts[i].box = region bounds in the 400×400 page, pts[i].area = its size.
+function planColours(pg, regs, pts) {
   const kit = CL_CFG.kit(pg), col = new Array(regs.length), subj = [];
   regs.forEach((el, i) => {
     const b = pts[i].box, w = b.x2 - b.x1, h = b.y2 - b.y1, tag = el.tagName.toLowerCase(), dc = el.getAttribute('data-nc') || el.getAttribute('data-c');
@@ -2198,11 +2220,48 @@ function numPlan(pg) {
     const cnt = v => col.filter(c => c === v).length + (keepCol.has(v) ? 1e6 : 0), [keep, drop] = cnt(pair[0]) >= cnt(pair[1]) ? pair : [pair[1], pair[0]];
     col.forEach((c, i) => { if (c === drop) col[i] = keep; });
   }
-  const auto = pts.map(q => q.clr < (CL_CFG.minClr || 4.2) || q.area < 60);
-  const colors = [];
-  col.forEach((c, i) => { if (!auto[i] && !colors.includes(c)) colors.push(c); });
-  const num = col.map(c => colors.indexOf(c) + 1);
-  return (NUM_CACHE[pg.id] = { pts, col, auto, colors, num });
+  return col;
+}
+/* Picker preview: a page the child has not touched yet shows a light wash of its colours,
+   so the shelf looks like a colourful picture book instead of a stack of empty outlines.
+   Cheap version of the plan: region bounds only, no sampling (exact plan once the page was opened). */
+const PREVIEW_CACHE = {};
+function previewColours(pg) {
+  if (NUM_CACHE[pg.id]) return NUM_CACHE[pg.id].col;
+  if (PREVIEW_CACHE[pg.id]) return PREVIEW_CACHE[pg.id];
+  const host = measureHost();
+  host.innerHTML = pg.svg;
+  const regs = [...host.querySelectorAll('.r')];
+  let rootInv = null; try { rootInv = host.getScreenCTM().inverse(); } catch (e) {}
+  const pts = regs.map(el => {
+    let M = null;
+    try { M = rootInv && el.getScreenCTM() ? rootInv.multiply(el.getScreenCTM()) : null; } catch (e) {}
+    if (!M) M = host.createSVGMatrix();
+    let bb; try { bb = el.getBBox(); } catch (e) { bb = { x: 0, y: 0, width: 0, height: 0 }; }
+    const c = [[bb.x, bb.y], [bb.x + bb.width, bb.y], [bb.x, bb.y + bb.height], [bb.x + bb.width, bb.y + bb.height]].map(([x, y]) => [M.a * x + M.c * y + M.e, M.b * x + M.d * y + M.f]);
+    const xs = c.map(q => q[0]), ys = c.map(q => q[1]);
+    const box = { x1: Math.min(...xs), x2: Math.max(...xs), y1: Math.min(...ys), y2: Math.max(...ys) };
+    return { box, area: Math.max(0, Math.min(400, box.x2) - Math.max(0, box.x1)) * Math.max(0, Math.min(400, box.y2) - Math.max(0, box.y1)) };
+  });
+  host.innerHTML = '';
+  return (PREVIEW_CACHE[pg.id] = planColours(pg, regs, pts));
+}
+// colour the previews a few at a time, so the picker opens at once and the colours flow in
+let washJob = 0;
+function washPreviews(items) {
+  const job = ++washJob;
+  const step = () => {
+    if (job !== washJob) return; // the picker was rendered again
+    const t0 = performance.now();
+    while (items.length && performance.now() - t0 < 12) {
+      const [sv, pg] = items.shift();
+      const col = previewColours(pg);
+      sv.querySelectorAll('.r').forEach((el, i) => { if (col[i] && !el.style.fill) el.style.fill = col[i]; });
+      sv.classList.add('cl-wash');
+    }
+    if (items.length) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
 }
 function numLabel(i) {
   const P = C.plan, q = P.pts[i], txt = CL_CFG.numText ? CL_CFG.numText(C.pg, i, P.num[i]) : String(P.num[i]);
@@ -2221,6 +2280,8 @@ function setupNumbers() {
   P.pts.forEach((q, i) => { if (!P.auto[i] && !C.ndone[i]) C.num.appendChild(numLabel(i)); });
   C.curN = firstOpenNum() || 1;
   syncAuto(); renderNumPalette();
+  // the child does not read: the instruction from the picker is also spoken (STYLE_GUIDE: Kdo hraje)
+  if (totalLeft()) say('Vyber číslo dole a ťukej na políčka se stejným číslem.');
 }
 // tiny parts without a number colour themselves once their colour's number is finished (or the whole picture is)
 function syncAuto() {
@@ -2287,7 +2348,7 @@ function openColor(pg, mode) {
     applyFills(svg, store.get(cKey(pg), null));
     store.get(stkKey(pg), []).forEach(st => { const g = stkEl(st); if (g) C.stk.appendChild(g); });
     store.get(inkKey(pg), []).forEach(st => C.ink.appendChild(inkPath(st)));
-    if (SCENES.includes(pg) && !C.stk.children.length) tool = 'sticker';
+    if (SCENES.includes(pg) && !C.stk.children.length) { tool = 'sticker'; say('Vyber nálepku a polep obrázek.'); }
     renderTools();
   }
   show('color');
