@@ -1545,7 +1545,8 @@ function animalImg(e) {
 }
 function openPuzzle(a) {
   ac();
-  P = { animal: a, diff, seed: Math.random(), zTop: 10, drag: null, done: false };
+  if (P && P.idleTimer) clearTimeout(P.idleTimer);
+  P = { animal: a, diff, seed: Math.random(), zTop: 10, drag: null, done: false, idleTimer: null };
   $('#pzTitle').textContent = a.name; $('#pzArea').innerHTML = '';
   show('puzzle');
   const mine = P;
@@ -1626,6 +1627,7 @@ function buildPuzzle() {
   });
   scatterPieces();
   $('#pzProgress').textContent = `0/${P.pieces.length}`;
+  schedulePuzzleIdleHint();
 }
 function setPiece(p) { p.el.style.transform = `translate3d(${p.x}px,${p.y}px,0) rotate(${p.rot}deg)${p.lift ? ' scale(1.06)' : ''}`; }
 function scatterPieces(animate) {
@@ -1657,8 +1659,32 @@ function hitPiece(p, x, y) {
   return false;
 }
 function localXY(ev) { const r = $('#pzArea').getBoundingClientRect(); return [ev.clientX - r.left, ev.clientY - r.top]; }
+function clearPuzzleIdleHint() {
+  if (P && P.idleTimer) { clearTimeout(P.idleTimer); P.idleTimer = null; }
+}
+function showPuzzleHint(p, manual = false) {
+  if (!P || P.done || !p || p.placed) return;
+  const g = document.createElement('canvas'); g.width = p.cw; g.height = p.ch; g.getContext('2d').drawImage(p.el, 0, 0);
+  g.className = 'pz-hint';
+  Object.assign(g.style, { width: p.w + 'px', height: p.h + 'px', transform: `translate3d(${p.tx}px,${p.ty}px,0)` });
+  $('#pzArea').appendChild(g);
+  setTimeout(() => g.remove(), manual ? 1500 : 1100);
+  p.el.classList.remove('wiggle'); void p.el.offsetWidth; p.el.classList.add('wiggle');
+  if (manual) tone(700, .07, 'sine', .055);
+}
+function schedulePuzzleIdleHint(delay = 7000) {
+  clearPuzzleIdleHint();
+  if (!P || P.done || current !== 'puzzle') return;
+  P.idleTimer = setTimeout(() => {
+    if (!P || P.done || P.drag || current !== 'puzzle') return;
+    const p = P.pieces && P.pieces.find(q => !q.placed);
+    if (p) showPuzzleHint(p, false);
+    schedulePuzzleIdleHint(11000);
+  }, delay);
+}
 $('#pzArea').addEventListener('pointerdown', ev => {
   if (!P || P.done || !P.pieces || P.drag) return;
+  clearPuzzleIdleHint();
   const [x, y] = localXY(ev);
   const p = P.pieces.filter(q => !q.placed).sort((a, b) => b.z - a.z).find(q => hitPiece(q, x, y));
   if (!p) return;
@@ -1676,7 +1702,6 @@ $('#pzArea').addEventListener('pointermove', ev => {
   p.x = Math.max(-p.w * .5, Math.min(P.W - p.w * .5, x - d.ox));
   p.y = Math.max(-p.h * .5, Math.min(P.H - p.h * .5, y - d.oy));
   setPiece(p);
-  if (Math.random() < .25) sparkleAt(ev.clientX, ev.clientY, 1);
 });
 function endDrag(ev) {
   const d = P && P.drag; if (!d || ev.pointerId !== d.id) return;
@@ -1686,26 +1711,31 @@ function endDrag(ev) {
     p.x = p.tx; p.y = p.ty; p.rot = 0; p.placed = true;
     p.el.classList.add('anim', 'placed'); p.el.style.zIndex = 2;
     setTimeout(() => p.el.classList.remove('anim'), 240);
-    P.placed++; sfx.snap(); sparkleAt(ev.clientX, ev.clientY, 18);
+    P.placed++; sfx.snap();
+    if (window.ZDBurst) window.ZDBurst(p.el, 4); else sparkleAt(ev.clientX, ev.clientY, 4);
     $('#pzProgress').textContent = `${P.placed}/${P.pieces.length}`;
     if (P.placed === P.pieces.length) finishPuzzle();
   }
   setPiece(p);
+  if (P && !P.done) schedulePuzzleIdleHint();
 }
 $('#pzArea').addEventListener('pointerup', endDrag);
 $('#pzArea').addEventListener('pointercancel', endDrag);
-// hint: the next piece briefly shows where it belongs
+// hint: after idle time the next target breathes once; the button gives the same hint immediately
 $('#hintBtn').addEventListener('click', () => {
   if (!P || P.done || !P.pieces) return;
+  clearPuzzleIdleHint();
   const p = P.pieces.find(q => !q.placed); if (!p) return;
-  const g = document.createElement('canvas'); g.width = p.cw; g.height = p.ch; g.getContext('2d').drawImage(p.el, 0, 0);
-  g.className = 'pz-hint'; Object.assign(g.style, { width: p.w + 'px', height: p.h + 'px', transform: `translate3d(${p.tx}px,${p.ty}px,0)` });
-  $('#pzArea').appendChild(g); setTimeout(() => g.remove(), 1600);
-  p.el.classList.remove('wiggle'); void p.el.offsetWidth; p.el.classList.add('wiggle');
-  tone(700, .08, 'sine', .08);
+  showPuzzleHint(p, true);
+  schedulePuzzleIdleHint(10000);
 });
-$('#shuffleBtn').addEventListener('click', () => { if (P && !P.done && P.pieces) { scatterPieces(true); sfx.pick(); } });
+$('#shuffleBtn').addEventListener('click', () => {
+  if (P && !P.done && P.pieces) {
+    clearPuzzleIdleHint(); scatterPieces(true); sfx.pick(); schedulePuzzleIdleHint();
+  }
+});
 function finishPuzzle() {
+  clearPuzzleIdleHint();
   P.done = true;
   const solved = solvedSet(); solved.add(akey(P.animal)); store.set('zd-solved', [...solved]);
   setTimeout(() => {
@@ -1720,8 +1750,8 @@ function finishPuzzle() {
         page ? { label: `🎨 Vybarvit: ${page.name}`, cls: '', fn: () => openColor(page) } : null,
         { label: 'Vybrat jiné zvířátko', cls: '', fn: () => { renderPuzzlePicker(); show('pickPuzzle'); } }
       ].filter(Boolean), () => say(a.name));
-    }, 1300);
-  }, 250);
+    }, 900);
+  }, 220);
 }
 let rsT;
 window.addEventListener('resize', () => {
