@@ -2663,17 +2663,43 @@ function numIntro() {
   const { n } = N, t = pickThing();
   renderDots($('#cntDots'), N.tasks.length, 0);
   N.type = 'intro'; N.thing = t;
-  const f = $('#cntField'); f.className = 'cnt-field'; f.dataset.scene = SCENE_OF[t[0]] || 'meadow';
-  f.innerHTML = `<div class="num-intro"><div class="num-hero">${n}</div><div class="num-word">${NUM_WORDS[n]}</div><div class="num-row" id="numRow"></div></div>`;
-  $('#cntAnswers').innerHTML = '<button class="btn primary play-btn" id="playBtn">Hrajeme!</button>';
+  const scene = SCENE_OF[t[0]] || 'meadow';
+  const f = $('#cntField'); f.className = 'cnt-field num-story-field'; f.dataset.scene = scene;
+  f.innerHTML = `
+    <div class="num-story-v3">
+      <div class="num-story-sky" aria-hidden="true">
+        <i class="v3-cloud c1"></i><i class="v3-cloud c2"></i>
+        <i class="v3-glow"></i><i class="v3-hill h1"></i><i class="v3-hill h2"></i>
+      </div>
+      <div class="num-lesson-v3">
+        <span class="num-kicker-v3">Dnešní číslo</span>
+        <button class="num-crystal-v3 num-hero" aria-label="Číslo ${n}">
+          <span class="num-crystal-ring"></span><b>${n}</b>
+        </button>
+        <div class="num-word-v3">${NUM_WORDS[n]}</div>
+      </div>
+      <div class="num-count-v3">
+        <div class="num-lumi-v3" aria-hidden="true">
+          <svg viewBox="0 0 100 100">${liliSvg()}</svg>
+        </div>
+        <div class="num-speech-v3">Podívej, kolik jich přiletí!</div>
+        <div class="num-row-v3 num-row" id="numRow"></div>
+      </div>
+    </div>`;
+  $('#cntAnswers').innerHTML = '<button class="btn primary play-btn v3-play" id="playBtn"><span>Jdeme hrát</span><b>→</b></button>';
   setPrompt(`Tohle je číslo <b>${n}</b>`, `Tohle je číslo ${NUM_WORDS[n]}.`);
   for (let i = 1; i <= n; i++) {
     later(() => {
       const row = $('#numRow'); if (!row) return;
-      row.insertAdjacentHTML('beforeend', `<span>${t[0]}</span>`);
-      tone(380 + i * 60, .12); say(NUM_WORDS[i]);
-      if (i === n) later(() => say(`Číslo ${NUM_WORDS[n]}!`), 900);
-    }, 1500 + (i - 1) * 850);
+      row.insertAdjacentHTML('beforeend', `<span class="num-object-v3" style="--i:${i}"><i>${t[0]}</i><b>${i}</b></span>`);
+      tone(380 + i * 46, .10, 'sine', .065);
+      if (i === n || n <= 3) say(NUM_WORDS[i]);
+      if (i === n) {
+        const speech = f.querySelector('.num-speech-v3');
+        if (speech) speech.textContent = `${NUM_WORDS[n]}! Zkus si to se mnou.`;
+        later(() => say(`Číslo ${NUM_WORDS[n]}!`), 650);
+      }
+    }, 650 + (i - 1) * 420);
   }
 }
 function nextTask() {
