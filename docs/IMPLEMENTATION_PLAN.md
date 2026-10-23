@@ -117,3 +117,21 @@ Druhá implementační iterace sjednocuje všechny hlavní části hry do stejn�
 - [x] Jednotný topbar, filtry, segmenty, progress a tap feedback
 - [x] Screen transitions
 - [x] Landscape a small-phone polish
+
+
+## V3 art-direction correction
+
+Po vizuální kontrole bylo zjištěno, že samotný CSS polish stále působil příliš jako webová aplikace. V3 proto mění i kompozici obsahu.
+
+- [x] Čísla: nová story-scene kompozice místo velké prázdné plochy
+- [x] Čísla: vlastní vektorový Lumi přímo v lekci
+- [x] Čísla: magický number crystal + samostatná counting zóna
+- [x] Čísla: odstraněné emoji dekorace slunce/květin z pozadí
+- [x] Čísla: nové prostředí pro meadow/garden/farm/sea/sky/night/city/fairy
+- [x] Abeceda: nový storybook layout místo stacku písmeno + emoji + text
+- [x] Abeceda: Lumi jako součást kompozice
+- [x] Puzzle picker: používá lokální SVG zvířat před raw emoji fallbackem
+- [x] odstraněn globální particle efekt po každém pointerdown
+- [x] snížené legacy sparkles v omalovánkách, hádankách, pexesu, Duhové cestě a tracingu
+
+Hlavní pravidlo V3: **nepřebarvovat starý layout, ale měnit kompozici obrazovky tam, kde stále působí webově.**
