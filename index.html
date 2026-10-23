@@ -550,7 +550,11 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
   .li-tail,.li-head,.li-eye,.rd-eye,.rd-bubble,.rd-sad .rd-fr-a,.rd-tear,.rd-parade-in,.rd-parade-in .rd-pf,.rd-lv.next{animation:none}
 }
 </style>
-<link rel="stylesheet" href="css/redesign-v2.css?v=2">\n<link rel="stylesheet" href="css/full-world-v2.css?v=1">\n<link rel="stylesheet" href="css/count-world-v3.css?v=1">\n<link rel="stylesheet" href="css/content-cards-v3.css?v=1">\n</head>
+<link rel="stylesheet" href="css/redesign-v2.css?v=3">
+<link rel="stylesheet" href="css/full-world-v2.css?v=2">
+<link rel="stylesheet" href="css/count-world-v3.css?v=1">
+<link rel="stylesheet" href="css/content-cards-v3.css?v=2">
+</head>
 <body>
 
 <div class="scene-bg" id="sceneBg" aria-hidden="true"></div>
@@ -875,16 +879,29 @@ function tone(f, dur, type = 'triangle', vol = .16, when = 0) {
 }
 const sfx = {
   pick() { tone(480, .07, 'sine', .12); },
-  snap() { tone(660, .09); tone(990, .14, 'triangle', .14, .06); },
+  // redesign v2: softer, shorter snap and win (AUDIO_MOTION_GUIDE: no aggressive transients)
+  snap() { tone(560, .06, 'sine', .075); tone(760, .09, 'sine', .055, .035); },
   paint() { tone(380 + Math.random() * 320, .08, 'sine', .1); },
-  win() { [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, .3, 'triangle', .16, i * .11)); }
+  win() { [523, 659, 784].forEach((f, i) => tone(f, .18, 'sine', .095, i * .085)); }
 };
 let czVoice = null, lastUtterance = null;
+// prefer a natural Czech voice (Zuzana, enhanced/premium) over compact or eSpeak ones
+function voiceScore(v) {
+  const name = String(v.name || '').toLowerCase();
+  let s = String(v.lang || '').toLowerCase() === 'cs-cz' ? 100 : 80;
+  if (/zuzana|vlasta/.test(name)) s += 35;
+  if (/enhanced|premium|natural|neural/.test(name)) s += 25;
+  if (/google|microsoft|apple/.test(name)) s += 20;
+  if (/espeak|compact/.test(name)) s -= 35;
+  if (v.default) s += 5;
+  return s;
+}
 function czechVoice() {
   if (czVoice) return czVoice;
-  try { czVoice = speechSynthesis.getVoices().find(v => /^cs([-_]|$)/i.test(v.lang)) || null; } catch (e) {}
+  try { czVoice = speechSynthesis.getVoices().filter(v => /^cs([-_]|$)/i.test(v.lang)).sort((a, b) => voiceScore(b) - voiceScore(a))[0] || null; } catch (e) {}
   return czVoice;
 }
+try { speechSynthesis.addEventListener('voiceschanged', () => { czVoice = null; }); } catch (e) {}
 function say(text) {
   if (muted || !('speechSynthesis' in window)) return;
   try {
@@ -2684,24 +2701,23 @@ function numIntro() {
         <div class="num-lumi-v3" aria-hidden="true">
           <svg viewBox="0 0 100 100">${liliSvg()}</svg>
         </div>
-        <div class="num-speech-v3">Podívej, kolik jich přiletí!</div>
+        <div class="num-speech-v3">Tohle je číslo ${NUM_WORDS[n]}.</div>
         <div class="num-row-v3 num-row" id="numRow"></div>
       </div>
     </div>`;
   $('#cntAnswers').innerHTML = '<button class="btn primary play-btn v3-play" id="playBtn"><span>Jdeme hrát</span><b>→</b></button>';
   setPrompt(`Tohle je číslo <b>${n}</b>`, `Tohle je číslo ${NUM_WORDS[n]}.`);
+  // Count every object aloud, one by one ("jedna, dva, tři…"): one-to-one counting is the point of the lesson.
+  // The bubble shows exactly what Lili says and the pace lets each word finish (STYLE_GUIDE: Ochrana výuky).
+  const bubble = text => { const s = f.querySelector('.num-speech-v3'); if (s) s.textContent = text; };
   for (let i = 1; i <= n; i++) {
     later(() => {
       const row = $('#numRow'); if (!row) return;
       row.insertAdjacentHTML('beforeend', `<span class="num-object-v3" style="--i:${i}"><i>${t[0]}</i><b>${i}</b></span>`);
       tone(380 + i * 46, .10, 'sine', .065);
-      if (i === n || n <= 3) say(NUM_WORDS[i]);
-      if (i === n) {
-        const speech = f.querySelector('.num-speech-v3');
-        if (speech) speech.textContent = `${NUM_WORDS[n]}! Zkus si to se mnou.`;
-        later(() => say(`Číslo ${NUM_WORDS[n]}!`), 650);
-      }
-    }, 650 + (i - 1) * 420);
+      say(NUM_WORDS[i]); bubble(NUM_WORDS[i][0].toUpperCase() + NUM_WORDS[i].slice(1) + '…');
+      if (i === n) later(() => { bubble(`Číslo ${NUM_WORDS[n]}!`); say(`Číslo ${NUM_WORDS[n]}!`); }, 900);
+    }, 1500 + (i - 1) * 850);
   }
 }
 function nextTask() {
@@ -2839,7 +2855,7 @@ function renderAbcCard() {
       <span class="abc-object-v3">
         <span class="abc-emoji-v3">${em}</span>
         <span class="abc-word-v3"><b>${w.slice(0,L.length)}</b>${w.slice(L.length)}</span>
-        <small>Ťukni a poslechni si další slovo</small>
+        <small class="abc-hear-v3" aria-hidden="true">🔊</small>
       </span>
       <span class="abc-lumi-v3" aria-hidden="true"><svg viewBox="0 0 100 100">${liliSvg()}</svg></span>
     </span>`;
@@ -4069,9 +4085,13 @@ drawHomeArt();
 show('home');
 // totals for the anonymous play statistics (analytics.js)
 window.appTotals = () => ({ puzzle: ANIMALS.length, omalovanky: PAGES.length, cesta: RD_LV.length, cisla: 10, abeceda: LETTERS.length, logika: LG_ORDER.length, spojovacky: DOTS.length });
+// the redesign layer (js/redesign-v2.js) cannot see variables inside this closure, so it talks to the game only through this
+window.ZD = { say: text => say(text), isMuted: () => muted };
 })();
 </script>
 
 <script src="analytics.js?v=2" data-app="zviratkova-dilna"></script>
-<script src="js/redesign-v2.js?v=2"></script>\n<script src="js/full-world-v2.js?v=1"></script>\n</body>
+<script src="js/redesign-v2.js?v=3"></script>
+<script src="js/full-world-v2.js?v=1"></script>
+</body>
 </html>

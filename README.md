@@ -19,5 +19,6 @@ Redesign aplikace má vlastní source of truth:
 - [UX Redesign](docs/UX_REDESIGN.md)
 - [Implementation Plan](docs/IMPLEMENTATION_PLAN.md)
 - [Audio & Motion Guide](docs/AUDIO_MOTION_GUIDE.md)
+- [Changelog](docs/CHANGELOG.md)
 
-Při přidávání nové obrazovky nebo minihry ber `STYLE_GUIDE.md` jako hlavní pravidla produktu.
+Při přidávání nové obrazovky nebo minihry ber `STYLE_GUIDE.md` jako hlavní pravidla produktu, včetně Definition of Done (hráč nečte, výuka se nemění bez rozhodnutí, test na iPhonu).
