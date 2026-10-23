@@ -346,3 +346,21 @@ body{
 
 /* Keep ambient sparkle subtle; it should never compete with the activities. */
 .twinkles{opacity:.42}
+
+/* Puzzle hint: glow, not shake. */
+.pz-piece.wiggle{
+  animation:v2HintGlow 820ms ease-in-out!important;
+}
+@keyframes v2HintGlow{
+  0%,100%{filter:drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 5px 7px rgba(20,30,50,.26));}
+  50%{filter:drop-shadow(0 0 10px rgba(255,255,255,.96)) drop-shadow(0 0 18px rgba(201,167,255,.85)) brightness(1.08);}
+}
+.pz-hint{
+  opacity:0;
+  animation:v2TargetHint 1100ms ease-in-out!important;
+  filter:brightness(1.25) drop-shadow(0 0 8px rgba(255,255,255,.95)) drop-shadow(0 0 13px rgba(201,167,255,.7));
+}
+@keyframes v2TargetHint{
+  0%,100%{opacity:0}
+  25%,68%{opacity:.66}
+}
