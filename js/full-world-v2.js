@@ -48,13 +48,6 @@
     setTimeout(() => { el.style.willChange = ''; }, 220);
   }, {passive:true});
 
-  // Keep success feedback local in alphabet tracing too.
-  document.addEventListener('animationstart', e => {
-    if (e.animationName === 'shake' && e.target?.classList) {
-      e.target.style.animation = 'none';
-    }
-  });
-
   // Accessible world descriptions for screen readers and future voice onboarding.
   const worldLabels = {
     pickPuzzle:'Puzzle louka. Vyber zvířátko a obtížnost.',
