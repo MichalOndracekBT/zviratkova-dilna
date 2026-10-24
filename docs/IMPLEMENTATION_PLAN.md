@@ -59,6 +59,7 @@ Bez obrázků a zvuku zůstane redesign u přebarvení. Potřeba:
 - Herní skript v `index.html` běží uzavřený ve funkci `(() => { … })()`. Soubory v `js/` se k jeho proměnným a funkcím (`say`, `sfx`, `confetti`, `muted`) nedostanou a nemůžou je přepsat. Pokus o přepis navíc tiše spolkne `try/catch`.
 - Změny herní logiky, hlasu a zvuků proto patří přímo do `index.html`.
 - Vrstva v `js/` mluví se hrou jen přes `window.ZD` (`say`, `isMuted`) a hra volá efekt přes `window.ZDBurst`.
+- Výjimka: kresby omalovánek, pozadí a nálepky jsou v `js/zd-art-v4.js` (`window.ZD_ART`). Načítá se před herním skriptem, hra si je jen přečte. Pravidla kreseb: STYLE_GUIDE → Obrázky a čísla.
 - CSS: pozor na selektory s váhou ID. `.screen:not(#home)` má váhu ID a přebije třeba `.btn.green`. Barevná tlačítka a stavy (`aria-pressed`) z takových pravidel vynechat.
 - Při změně CSS/JS zvednout `?v=` v odkazu v `index.html`, aby si iPhone nenechal starou verzi z cache.
 
@@ -94,7 +95,7 @@ Animovat hlavně transform a opacity. Omezit filter, blur a layout properties. R
 - progress se neztrácí?
 - vyzkoušeno na skutečném iPhonu?
 
-## Stav k 23. 10. 2026
+## Stav k 24. 10. 2026
 Historie jednotlivých iterací je v `CHANGELOG.md`.
 
 Hotovo:
@@ -115,6 +116,7 @@ Hotovo:
 - [x] abeceda: větší písmeno a obrázek
 - [x] puzzle: volné dílky s bílým okrajem
 - [x] napojení AI ilustrací s fallbackem (čeká na obrázky)
+- [x] 24. 10.: všech 50 omalovánek, pozadí a nálepky v novém stylu, nová čísla a tlačítka barev, rozložení na šířku a na tabletu (viz CHANGELOG)
 
 Částečně:
 - [ ] Home jako mapa světa: zatím natočené karty, chybí ilustrace lokací (vejde se bez scrollování na všech iPhonech od SE po Pro Max, na výšku i na šířku)
