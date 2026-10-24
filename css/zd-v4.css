@@ -1,0 +1,84 @@
+/* ==========================================================================
+   V4 – nový vzhled zvířátek a čísel (docs/STYLE_GUIDE.md → Obrázky a čísla)
+   Loaded last: number badges, colour-by-number palette, progress, art classes.
+   ========================================================================== */
+
+/* ---------- kawaii art: thin face lines and cheeks (not colourable) ---------- */
+.l2{fill:none;stroke:var(--ink);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.ck{fill:#FF7DB8;fill-opacity:.42;stroke:none;pointer-events:none}
+.lw{fill:none;stroke:#fff;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.ctile svg .l2{stroke-width:4.4}
+.ctile svg .l{stroke-width:5.5}
+
+/* ---------- the picture card hugs the square picture (no empty white above and below it) ---------- */
+#color .cl-stage{container-type:size}
+#color .cl-stage::before{display:none}
+#color .cl-stage #clSvg{width:min(100cqw - 34px,100cqh - 18px);height:auto;aspect-ratio:1/1;flex:none;overflow:hidden;background:#fff;border-radius:28px;
+  box-shadow:0 0 0 5px rgba(255,255,255,.95),0 16px 32px rgba(93,69,112,.16)}
+
+/* ---------- number badges on the picture ---------- */
+.nbadge{pointer-events:none;transition:opacity .25s ease}
+.nb-in{transform-box:fill-box;transform-origin:center}
+.nb-s{fill:rgba(58,42,92,.26)}
+.nb-c{fill:#fff;stroke:var(--nb-ring,#3A2A5C);stroke-width:3.2}
+.nb-t{fill:#3A2A5C;font-family:"Baloo 2",ui-rounded,system-ui,sans-serif;font-weight:800;text-anchor:middle;dominant-baseline:central}
+.nbadge.on .nb-c{fill:var(--nb-on,#fff);stroke:#3A2A5C;stroke-width:3.6}
+.nbadge.on.dk .nb-t{fill:#fff}
+.nbadge.on .nb-in{animation:nbPulse 1.6s ease-in-out infinite}
+.nbadge.nope .nb-in{animation:nbNope .5s ease 1}
+#clNum.hint .nbadge:not(.on){opacity:.3}
+@keyframes nbPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
+@keyframes nbNope{0%,100%{transform:none}20%{transform:translateX(-5px) rotate(-12deg)}40%{transform:translateX(5px) rotate(12deg)}60%{transform:translateX(-3px) rotate(-6deg)}80%{transform:translateX(2px) rotate(3deg)}}
+#color.num-mode #clSvg .r{transition:fill .28s ease}
+
+/* ---------- progress ---------- */
+#color .nprog{display:none}
+#color.num-mode .nprog{display:flex;align-items:center;gap:10px;padding:2px 8px 0}
+.np-bar{flex:1;height:12px;border-radius:6px;background:#EDE3F5;overflow:hidden}
+.np-bar i{display:block;height:100%;border-radius:6px;background:#7A4FD0;transition:width .35s ease}
+.np-txt{font-weight:800;font-size:16px;line-height:1;color:#3A2A5C;white-space:nowrap;font-variant-numeric:tabular-nums}
+.np-star{width:22px;height:22px;flex:none;display:block}
+
+/* ---------- colour buttons: big, number inside, ring shows how much is done ---------- */
+#color .palette.num-grid-pal{display:grid;grid-template-columns:repeat(var(--nc,4),minmax(0,1fr));gap:12px 6px;max-height:none;overflow:visible;padding:8px 2px 12px;justify-items:center}
+#color .palette .sw.nsw{position:relative;width:62px;height:62px;margin:0;padding:0;border:0;border-radius:50%;background:transparent!important;box-shadow:none;display:grid;place-items:center;transform:none;transition:transform .2s ease;-webkit-tap-highlight-color:transparent}
+#color .palette .sw.nsw .nring{position:absolute;left:0;top:0;width:100%;height:100%;transform:rotate(-90deg);overflow:visible;pointer-events:none}
+#color .palette .sw.nsw .trk{fill:none;stroke:#EFE6F6;stroke-width:5}
+#color .palette .sw.nsw .prg{fill:none;stroke-width:5;stroke-linecap:round;transition:stroke-dasharray .35s ease}
+#color .palette .sw.nsw .disc{position:relative;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;box-shadow:inset 0 -4px 0 rgba(58,42,92,.13);color:#3A2A5C;font-weight:800;font-size:24px;line-height:1}
+#color .palette .sw.nsw.dark .disc{color:#fff}
+#color .palette .sw.nsw .disc b{font:inherit;color:inherit;-webkit-text-stroke:0;line-height:1}
+#color .palette .sw.nsw .disc svg{width:24px;height:24px;display:block}
+#color .palette .sw.nsw.done{opacity:1}
+#color .palette .sw.nsw[aria-pressed="true"]{transform:translateY(-5px);box-shadow:none}
+#color .palette .sw.nsw[aria-pressed="true"] .disc{box-shadow:0 0 0 3px #3A2A5C,inset 0 -4px 0 rgba(58,42,92,.13)}
+#color .palette .sw.nsw[aria-pressed="true"]::after{content:"";position:absolute;left:50%;bottom:-9px;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:#3A2A5C}
+#color .palette .sw.nsw.hint{animation:nswNudge .45s ease 2}
+@keyframes nswNudge{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+/* ---------- picker: pale solid previews (see washPreviews), finished pictures get a star medal ---------- */
+#colorGrid .ctile svg.cl-wash .r{fill-opacity:1}
+#colorGrid .ctile .badge{top:16px;right:16px;width:34px;height:34px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:0;filter:none;box-shadow:0 3px 0 rgba(58,42,92,.18)}
+#colorGrid .ctile .badge svg{width:22px;height:22px;display:block;aspect-ratio:auto;background:none;border:0;border-radius:0}
+
+/* ---------- wide screens (phone on its side, tablet, computer): picture on the left, colours on the right ---------- */
+@media (orientation:landscape) and (min-aspect-ratio:5/4){
+  #color{display:grid;grid-template-columns:minmax(0,1fr) minmax(250px,40%);grid-template-rows:auto minmax(0,1fr)}
+  #color>.topbar{grid-column:1/-1;grid-row:1}
+  #color .cl-stage{grid-column:1;grid-row:2;min-height:0;padding:2px 8px 8px 14px}
+  #color .cl-dock{grid-column:2;grid-row:2;min-height:0;margin:0 10px max(8px,env(safe-area-inset-bottom)) 0;display:flex;flex-direction:column;overflow:hidden}
+  #color .cl-dock .palette{flex:1;min-height:0;max-height:none;overflow-y:auto;align-content:start}
+  #color .palette.num-grid-pal{align-content:center;overflow-y:auto}
+}
+/* ---------- tablets: bigger colour buttons, kept together in the middle ---------- */
+@media (min-width:700px) and (min-height:700px){
+  #color .palette.num-grid-pal{max-width:560px;margin:0 auto;width:100%}
+  #color .palette .sw.nsw{width:76px;height:76px}
+  #color .palette .sw.nsw .disc{width:56px;height:56px;font-size:28px}
+  #color .nprog{max-width:560px;margin:0 auto;width:100%}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .nbadge .nb-in,#color .palette .sw.nsw{animation:none!important}
+  #color.num-mode #clSvg .r,.np-bar i,#color .palette .sw.nsw,#color .palette .sw.nsw .prg{transition:none}
+}

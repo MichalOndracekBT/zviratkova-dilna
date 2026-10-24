@@ -60,6 +60,35 @@ Na jedné obrazovce držet maximálně dvě dominantní a dvě akcentní barvy. 
 
 Pastel nesmí sníst kontrast: vybraný stav a akční tlačítka (✓ Hotovo, Další) musí být barevně výrazné, ikona na nich vždy vidět.
 
+## Obrázky a čísla
+Omalovánky (50 obrázků), pozadí pro „Poskládej“ a nálepky jsou vektorové kresby v `js/zd-art-v4.js`.
+
+### Styl kreseb
+- Roztomilý (kawaii) styl: kulaté tvary, velká hlava, malé tělíčko, krátké packy.
+- Oči: tmavý ovál se dvěma bílými odlesky. K tomu růžové tvářičky a malá pusinka.
+- Obrys tmavě fialový (`--ink` #3A2A5C), nikdy černý. Detaily (pusinky, vousky, proužky) tenčí čarou.
+- Každý obrázek má prostředí: nebe, tráva nebo voda, sluníčko s obličejem, mráček, kytičky.
+- Zvířátko zabírá většinu obrázku a stojí na zemi, ne ve vzduchu.
+
+### Pravidla pro „Podle čísel“
+- Každá oblast má cílovou barvu (`data-nc`). Na obrázek nejvýš 7 barev, duhové obrázky 11.
+- Bílá oblast nemá číslo. Vybarvovat bílou na bílém nic neukáže.
+- Oblast užší než kolečko s číslem nemá číslo a vybarví se sama, jakmile je hotová její barva. Detail v barvě, kterou žádné číslo nepoužívá (čumáček, vnitřek ouška), je vybarvený od začátku.
+- Oči, tvářičky a pusinky nejsou oblasti. Nevybarvují se a čísla se jim vyhýbají.
+- Číslo: bílé kolečko s okrajem v tmavším odstínu cílové barvy a tučné číslo. Na tmavé barvě je číslo bílé.
+- Velikost kolečka podle místa v oblasti, poloměr 11 až 17 jednotek obrázku (obrázek má 400). Dvě kolečka vedle sebe se zmenší, ale nikdy nepřekryjí. Střed kolečka je vždy bezpečné ťuknutí do správné oblasti.
+- Vybraná barva: její kolečka se vyplní barvou a pulzují, nevybarvená políčka se jemně podbarví.
+- Po 9 s bez ťuknutí se políčka vybrané barvy podbarví víc a ostatní čísla zbledou.
+- Ťuknutí vedle: kolečko se zatřese, správné tlačítko dole povyskočí a hlas řekne „Tohle je číslo 4.“ (nejvýš jednou za 2,5 s).
+- Tlačítka barev: 62 px (tablet 76 px), číslo uvnitř, kroužek kolem ukazuje, kolik té barvy je hotovo, hotová barva má fajfku. Do 4 barev jedna řada, do 8 dvě řady.
+- Obrázek leží na čtvercové kartě, bez prázdného místa nad a pod. Na šířku (telefon, tablet, počítač) je obrázek vlevo a barvy vpravo.
+
+### Výběr obrázků
+- Nevybarvený obrázek: bledý, ale plný náhled jeho barev (nic neprosvítá).
+- Co dítě vybarvilo, je vidět tak, jak to vybarvilo.
+- Hotový obrázek „Podle čísel“ má hvězdičku a je v plných barvách.
+- Uložené vybarvení patří ke konkrétní kresbě. Překreslený obrázek má číslo verze (`v`) a ukládá se pod novým klíčem (`zd-c4-…`). Hvězdičky (`zd-ndone`) zůstávají.
+
 ## Typografie
 Maximálně dvě font family. Nadpisy kulaté a výrazné, běžný text velmi čitelný. Dětské UI nesmí vyžadovat čtení dlouhých vět.
 

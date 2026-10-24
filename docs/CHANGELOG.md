@@ -1,5 +1,15 @@
 # Changelog redesignu
 
+## 24. 10. 2026 — nová zvířátka a čísla (V4)
+- Všech 50 obrázků k vybarvování je nakreslených znovu v jednom roztomilém stylu: kulaté tvary, velké oči s odlesky, tvářičky, fialové obrysy, sluníčko s obličejem. Stejně i 5 pozadí pro „Poskládej“ a 16 nálepek (srdíčko, hvězdička, sluníčko, mráček, kytička a muchomůrka mají obličej). Kresby jsou v `js/zd-art-v4.js`.
+- Čísla jsou vidět: bílé kolečko s barevným okrajem a tučným číslem místo šedého čísílka. Velikost podle místa, kolečka se nepřekrývají a jejich střed je vždy ťuknutí do správného políčka (ověřeno na všech 50 obrázcích).
+- Vybraná barva: kolečka se vyplní a pulzují, políčka té barvy se jemně podbarví. Po 9 s bez ťuknutí přijde silnější nápověda. Ťuknutí vedle: kolečko se zatřese, správná barva dole povyskočí a zazní „Tohle je číslo 4.“
+- Tlačítka barev jsou větší (62 px, na tabletu 76 px), s kroužkem postupu a fajfkou u hotové barvy. Místo „Zbývá políček“ je proužek postupu „3 z 12“ a hvězdička.
+- Bílá místa nemají číslo, drobné detaily se vybarví samy.
+- Obrázek leží na čtvercové kartě bez prázdného místa. Na šířku a na tabletu je obrázek vlevo a barvy vpravo (dřív byl na šířku obrázek maličký).
+- Výběr obrázků: náhledy jsou bledé, ale plné (dřív průhledné, prosvítaly překrývající se části). Hotové obrázky jsou v plných barvách s hvězdičkou.
+- Rozpracované vybarvení starých kreseb nejde na nové obrázky přenést, proto se jednou smaže. Hvězdičky za hotové obrázky zůstávají.
+
 ## 23. 10. 2026 — barevná Malířská dílna
 - Výběr omalovánek ukazuje u nevybarvených obrázků jemný náhled barev (poloprůhledně), takže polička vypadá jako barevná knížka, ne jako hromada prázdných obrysů. Co dítě samo vybarvilo, je vidět v plné síle; hotové obrázky „Podle čísel“ mají ⭐.
 - Barvy náhledu počítá stejná funkce jako vybarvování podle čísel (`planColours`), jen bez náročného měření ploch. Rychlé (zlomek ms na obrázek), náhledy se dobarvují postupně. Plány „Podle čísel“ zůstaly beze změny (ověřeno na všech 50 obrázcích).
