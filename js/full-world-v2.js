@@ -2,7 +2,7 @@
 (() => {
   'use strict';
 
-  const gameScreens = ['pickPuzzle','puzzle','extra','pickColor','color','count','abc','logic','memo','road'];
+  const gameScreens = ['pickPuzzle','puzzle','extra','pickColor','color','count','abc','logic','memo','road','english'];
   const titles = {
     pickPuzzle:'Puzzle louka',
     pickColor:'Malířská dílna',
@@ -56,7 +56,8 @@
     abc:'Abecední les. Poznávej písmena a slova.',
     logic:'Hádanková stezka. Vyber si hádanku.',
     memo:'Pexesový háj. Najdi stejné dvojice.',
-    road:'Duhová cesta. Zachraň zvířecí kamarády.'
+    road:'Duhová cesta. Zachraň zvířecí kamarády.',
+    english:'Anglický ostrov. Vyber si, co se naučíme.'
   };
   Object.entries(worldLabels).forEach(([id,label]) => {
     document.getElementById(id)?.setAttribute('aria-label',label);

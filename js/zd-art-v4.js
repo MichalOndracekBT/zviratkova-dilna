@@ -629,7 +629,7 @@ window.ZD_ART = (() => {
     { k: 'glasses', name: 'Brýle', svg: c(-22, 0, 18) + c(22, 0, 18) + p('M-5 -3 Q0 -8 5 -3 M-40 -4 L-48 -12 M40 -4 L48 -12', 'l') },
     { k: 'heart', name: 'Srdíčko', svg: p('M0 39.6 C-55 6.6 -39.6 -41.8 0 -15.4 C39.6 -41.8 55 6.6 0 39.6 Z') + eyes(-11, 11, 0, .5) + cheeks(-21, 21, 9, .5) + smile(0, 8, 4) },
     { k: 'star', name: 'Hvězdička', svg: star(0, 2, 44, 19) + eyes(-8, 8, 4, .42) + smile(0, 12, 3.5) },
-    { k: 'balloon', name: 'Balonek', svg: p('M0 22 Q-8 34 0 42 Q6 48 0 52', 'l') + e(0, -14, 28, 34) + p('M-6 22 L6 22 L0 16 Z') + e(-10, -26, 5, 9, 'hl', -20) },
+    { k: 'balloon', name: 'Balónek', svg: p('M0 22 Q-8 34 0 42 Q6 48 0 52', 'l') + e(0, -14, 28, 34) + p('M-6 22 L6 22 L0 16 Z') + e(-10, -26, 5, 9, 'hl', -20) },
     { k: 'flower', name: 'Kytička', svg: [0, 1, 2, 3, 4, 5].map(i => c(f1(Math.cos(i * 1.047) * 20), f1(Math.sin(i * 1.047) * 20), 14)).join('') + c(0, 0, 13) + eyes(-5, 5, -1, .36) + smile(0, 5, 3) },
     { k: 'sun', name: 'Sluníčko', svg: p(Array.from({ length: 8 }, (_, i) => { const a = i / 8 * Math.PI * 2; return `M${f1(Math.cos(a) * 32)} ${f1(Math.sin(a) * 32)} L${f1(Math.cos(a) * 46)} ${f1(Math.sin(a) * 46)}`; }).join(' '), 'l') + c(0, 0, 26) + eyes(-9, 9, -2, .5) + cheeks(-17, 17, 8, .45) + smile(0, 7, 4.5) },
     { k: 'cloud', name: 'Mráček', svg: cloud(-33, 25, .85) + eyes(-8, 14, 4, .42) + smile(3, 11, 3.5) },
