@@ -89,6 +89,12 @@ Omalovánky (50 obrázků), pozadí pro „Poskládej“ a nálepky jsou vektoro
 - Hotový obrázek „Podle čísel“ má hvězdičku a je v plných barvách.
 - Uložené vybarvení patří ke konkrétní kresbě. Překreslený obrázek má číslo verze (`v`) a ukládá se pod novým klíčem (`zd-c4-…`). Hvězdičky (`zd-ndone`) zůstávají.
 
+## Hádanky
+- Karty s odpověďmi jsou co největší, čtvercové (na telefonu na výšku až o 15 % vyšší), nejvýš 280 px, na tabletu 340 px. Rozložení a velikost počítá `lgFit()` v `index.html`, styl je v `css/zd-v5.css`.
+- Obrázek zabírá asi 60 % šířky karty. Je to SVG z `img/` (Fluent Emoji, název = kód emoji, např. `1f9f8.svg` pro 🧸), emoji jen jako záloha. Nový obrázek v Hádankách = přidat jeho SVG do `img/`.
+- Barva karty podle pozice: růžová, nebeská, mátová, vanilková. Hádanka s barvami má karty neutrální.
+- Pohyb: karty naskočí postupně (70 ms po sobě), obrázek se pomalu vznáší (5,2 s). Správně = zelená karta, poskočení a 4 hvězdičky, ostatní karty ustoupí. Špatně = zavrtění a zblednutí. Po dvou chybách správná karta zazáří zlatě.
+
 ## Typografie
 Maximálně dvě font family. Nadpisy kulaté a výrazné, běžný text velmi čitelný. Dětské UI nesmí vyžadovat čtení dlouhých vět.
 

@@ -1,5 +1,14 @@
 # Changelog redesignu
 
+## 24. 10. 2026 — živější Hádanky (V5)
+- Karty s odpověďmi jsou velké a vyplní volné místo (dřív nízké široké pruhy s malým obrázkem). Velikost počítá `lgFit()` v `index.html` podle displeje: 4 karty jdou 2 × 2 nebo do řady, 3 karty do řady nebo 2 + 1, podle toho, kde vyjdou větší. Na telefonu na výšku jsou karty o kousek vyšší než široké, na šířku je obrázek otázky vlevo a karty vpravo. Ověřeno na iPhonu, iPhonu SE, na šířku, na tabletu i na počítači, všech 11 druhů hádanek.
+- Každá karta má jemnou pastelovou barvu podle pozice (růžová, nebeská, mátová, vanilková) a bílý okraj. U hádanky „Barvy“ jsou karty neutrální, aby barva pozadí nenapovídala.
+- Obrázky v Hádankách jsou ostré kresby z `img/` jako v puzzle (Fluent Emoji, MIT), ne rozmazané zvětšené emoji. Přibylo 83 obrázků (jídlo, hračky, doprava, místa, obličeje…). Emoji zůstává jen jako záloha, než se obrázek načte.
+- Pohyb: karty naskočí postupně, obrázky se pomalu vznášejí a mají pod sebou stín. Správně: karta zezelená, obrázek radostně poskočí, ostatní karty ustoupí. Špatně: obrázek zavrtí „ne-ne“ a karta zbledne, bez trestání. Po dvou chybách správná karta zazáří zlatě (dřív nápověda nebyla vidět, animace `nHint` nebyla definovaná).
+- „Velký a malý“: obrázky stojí na stejné zemi, velikosti jdou líp porovnat. „Kde je víc?“: obrázky jsou v obou kartách stejně velké, při malém počtu větší.
+- Se zapnutým omezením pohybu (reduced motion) se nic nevznáší ani neskáče, zůstává barva a zblednutí.
+- Výuka se nemění: stejné úkoly, pravidla, hlášky i pořadí.
+
 ## 24. 10. 2026 — nová zvířátka a čísla (V4)
 - Všech 50 obrázků k vybarvování je nakreslených znovu v jednom roztomilém stylu: kulaté tvary, velké oči s odlesky, tvářičky, fialové obrysy, sluníčko s obličejem. Stejně i 5 pozadí pro „Poskládej“ a 16 nálepek (srdíčko, hvězdička, sluníčko, mráček, kytička a muchomůrka mají obličej). Kresby jsou v `js/zd-art-v4.js`.
 - Čísla jsou vidět: bílé kolečko s barevným okrajem a tučným číslem místo šedého čísílka. Velikost podle místa, kolečka se nepřekrývají a jejich střed je vždy ťuknutí do správného políčka (ověřeno na všech 50 obrázcích).

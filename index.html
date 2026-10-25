@@ -547,6 +547,7 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 <link rel="stylesheet" href="css/content-cards-v3.css?v=3">
 <link rel="stylesheet" href="css/world-art.css?v=1">
 <link rel="stylesheet" href="css/zd-v4.css?v=1">
+<link rel="stylesheet" href="css/zd-v5.css?v=1">
 </head>
 <body>
 
@@ -2720,7 +2721,8 @@ const lgShuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) {
 const lgPick = (a, n, not = []) => lgShuffle(a.filter(x => !not.includes(x))).slice(0, n);
 const lgAll = () => [...new Set(LG_CFG.cats.flatMap(c => c.items))];
 const lgCatOf = e => LG_CFG.cats.find(c => c.items.includes(e));
-const lgEm = (e, cls = '', style = '') => `<span class="lg-em ${cls}"${style ? ` style="${style}"` : ''}>${e}</span>`;
+// V5: sharp vector picture from img/ (Fluent Emoji, like the puzzle); the emoji shows until it loads and stays if it is missing
+const lgEm = (e, cls = '', style = '') => `<span class="lg-em ${cls}"${style ? ` style="${style}"` : ''}><img src="img/${imgCode(e)}.svg" alt="" draggable="false" onload="this.parentNode.classList.add('im')" onerror="this.remove()"><span class="lg-fb">${e}</span></span>`;
 // distractors from the same category first (harder), topped up from anywhere
 function lgSimilar(t, n) {
   const cat = lgCatOf(t), same = cat ? lgPick(cat.items, n, [t]) : [];
@@ -2748,7 +2750,7 @@ const LG_TYPES = {
     const t = lgAll()[rand(lgAll().length)], biggest = Math.random() < .5, sizes = lgShuffle([.5, .78, 1.12]);
     const want = biggest ? Math.max(...sizes) : Math.min(...sizes);
     return { key: t, say: biggest ? 'Ťukni na ten největší.' : 'Ťukni na ten nejmenší.', prompt: `Ťukni na <b>${biggest ? 'největší' : 'nejmenší'}</b>`, cols: 3, tall: true,
-      choices: sizes.map(s => ({ html: lgEm(t, '', `font-size:${(s * 64).toFixed(0)}px`), ok: s === want })) };
+      choices: sizes.map(s => ({ html: lgEm(t, '', `--k:${s}`), ok: s === want })) };
   } },
   more: { name: 'Kde je víc?', ico: '⚖️', make() {
     const [a, b] = lgPick(lgAll(), 2), less = Math.random() < .3;
@@ -2784,7 +2786,7 @@ const LG_TYPES = {
   } },
   color: { name: 'Barvy', ico: '🎨', make() {
     const C = LG_CFG.colors, opts = lgPick(C, 3), t = opts[0];
-    return { key: t[0], say: `Najdi něco ${t[1]}.`, prompt: `Najdi něco <b style="color:${t[2]}">${t[1]}</b>`, cols: 3,
+    return { key: t[0], say: `Najdi něco ${t[1]}.`, prompt: `Najdi něco <b style="color:${t[2]}">${t[1]}</b>`, cols: 3, plain: true,
       choices: lgShuffle(opts.map(c => ({ html: lgEm(c[3][rand(c[3].length)]), ok: c === t }))) };
   } }
 };
@@ -2831,11 +2833,41 @@ function lgRound() {
   LG.seen.add(T.key); LG.task = T;
   $('#lgPrompt').innerHTML = T.prompt;
   const f = $('#lgField');
+  f.classList.toggle('has-q', !!T.q); f.classList.toggle('q-row', !!T.q && T.q.includes('lg-row'));
+  // V5: every card has its own pastel colour (by position, "plain" for the colour task) and the picture sits in .lg-pic
   f.innerHTML = (T.q ? `<div class="lg-q">${T.q}</div>` : '') +
-    `<div class="lg-choices cols-${T.cols}${T.tall ? ' tall' : ''}">${T.choices.map((c, i) => `<button class="lg-card" data-i="${i}">${c.html}</button>`).join('')}</div>`;
+    `<div class="lg-choices cols-${T.cols} t-${id}${T.tall ? ' tall' : ''}${T.plain ? ' plain' : ''}" data-cols="${T.cols}">${T.choices.map((c, i) => `<button class="lg-card" data-i="${i}" style="--i:${i}"><span class="lg-pic">${c.html}</span></button>`).join('')}</div>`;
+  lgFit();
   f.classList.remove('in'); void f.offsetWidth; f.classList.add('in');
   say(T.say);
 }
+// V5: square answer cards as big as the free space allows (STYLE_GUIDE → Hádanky); 4 cards go 2×2 or in one row, whichever gives bigger cards
+function lgFit() {
+  const f = $('#lgField'), ch = f && f.querySelector('.lg-choices');
+  if (!ch || !f.clientHeight) return;
+  const tablet = Math.min(innerWidth, innerHeight) >= 900, LG_SIDE_MAX = tablet ? 340 : 280, LG_ROW_MAX = tablet ? 780 : 660;
+  const fs = getComputedStyle(f), g = parseFloat(getComputedStyle(ch).columnGap) || 12, fg = parseFloat(fs.rowGap) || 0;
+  let W = f.clientWidth - parseFloat(fs.paddingLeft) - parseFloat(fs.paddingRight);
+  let H = f.clientHeight - parseFloat(fs.paddingTop) - parseFloat(fs.paddingBottom);
+  const q = f.querySelector('.lg-q');
+  if (q) { if (fs.flexDirection === 'row') W -= q.offsetWidth + fg; else H -= q.offsetHeight + fg; }
+  W = Math.min(W, LG_ROW_MAX);
+  const n = ch.children.length, pref = Math.min(+ch.dataset.cols || n, n);
+  // 3 cards may also go 2 + 1 (not "big & small": those are compared side by side)
+  const opts = n === 4 ? [pref, 6 - pref] : n === 3 && !ch.classList.contains('t-big') ? [pref, 2] : [pref];
+  let best = null;
+  opts.forEach(c => {
+    const r = Math.ceil(n / c), sw = (W - (c - 1) * g) / c, sh = (H - (r - 1) * g) / r, s = Math.min(sw, sh, LG_SIDE_MAX);
+    // narrow screen with room to spare (phone upright): the cards may grow a little taller than wide
+    const h = sw < Math.min(sh, LG_SIDE_MAX) ? Math.max(s, Math.min(s * 1.15, sh * .94)) : s;
+    if (!best || s > best.s + 2) best = { c, s, h };
+  });
+  ch.style.setProperty('--c', best.c);
+  ch.classList.toggle('odd-last', n % best.c !== 0);
+  ch.style.setProperty('--side', Math.max(60, Math.floor(best.s)) + 'px');
+  ch.style.setProperty('--sideh', Math.max(60, Math.floor(best.h)) + 'px');
+}
+if (window.ResizeObserver) new ResizeObserver(() => lgFit()).observe($('#lgField')); else addEventListener('resize', lgFit);
 $('#lgField').addEventListener('click', ev => {
   if (!LG || LG.locked) return;
   const b = ev.target.closest('.lg-card'); if (!b) return;
@@ -2846,11 +2878,11 @@ $('#lgField').addEventListener('click', ev => {
     if (LG.misses === 2) { const okb = [...document.querySelectorAll('#lgField .lg-card')].find((x, i) => LG.task.choices[i].ok); if (okb) okb.classList.add('hint'); }
     return;
   }
-  LG.locked = true; b.classList.add('ok');
+  LG.locked = true; b.classList.add('ok'); b.parentElement.classList.add('solved');
   const r = b.getBoundingClientRect(); if (window.ZDBurst) window.ZDBurst(b, 4);
   const sil = document.querySelector('#lgField .sil'); if (sil) sil.classList.remove('sil');
   const pk = document.querySelector('#lgField .lg-peek'); if (pk) pk.classList.add('open');
-  const slot = document.querySelector('#lgField .lg-slot'); if (slot && LG.task.fill) { slot.textContent = LG.task.fill; slot.classList.add('filled'); }
+  const slot = document.querySelector('#lgField .lg-slot'); if (slot && LG.task.fill) { slot.innerHTML = lgEm(LG.task.fill); slot.classList.add('filled'); }
   sfx.snap(); say(PRAISE[rand(PRAISE.length)]);
   LG.step++; renderDots($('#lgDots'), LG_ROUNDS, LG.step);
   lgLater(lgRound, 1300);
