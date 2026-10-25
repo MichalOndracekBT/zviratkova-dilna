@@ -2,7 +2,7 @@
 
 Hra je na ilustrace připravená: co v `img/world/` existuje a je zapsané v `img/world/manifest.json`, to se ukáže. Co chybí, zůstává jako dnes. Dá se tedy začít jedním obrázkem.
 
-## Co vyrobit (14 obrázků)
+## Co vyrobit (16 obrázků)
 
 | Soubor | Kde se ukáže | Poměr stran |
 |---|---|---|
@@ -13,7 +13,8 @@ Hra je na ilustrace připravená: co v `img/world/` existuje a je zapsané v `im
 | `tile-abc` | karta Abecední les | 3:2 |
 | `tile-logic` | karta Hádanková stezka | 3:2 |
 | `tile-memo` | karta Pexesový háj | 3:2 |
-| `bg-road` … `bg-memo` | pozadí herních obrazovek dané lokace (7×) | 9:16 |
+| `tile-english` | karta Anglický ostrov na úvodu (široká) | 2:1 |
+| `bg-road` … `bg-memo`, `bg-english` | pozadí herních obrazovek dané lokace (8×) | 9:16 |
 
 Karta: hlavní motiv uprostřed, kolem volné místo. Na šířku se z karty ukáže jen pruh přes střed a ve spodní části leží název.
 Pozadí: střed klidný a skoro prázdný (tam je hra), detaily jen dole a trochu v horních rozích. Na šířku se ukazuje spodní část.
@@ -71,6 +72,11 @@ a playful winding path of round stepping stones through a garden, wooden signpos
 a small magical grove of round trees with pairs of identical fruits hanging from the branches (two apples, two pears, two cherries), a few rounded picture cards lying face down on soft moss, dappled light, subject centered with breathing room around --ar 3:2 --s 150 --no text, letters, numbers, people, logo, watermark, dark
 ```
 
+**tile-english — Anglický ostrov**
+```
+a tiny round sandy island in a calm turquoise sea, one leaning palm tree, a colorful friendly parrot sitting on a small wooden signpost, a little sailboat and soft waves around, bright and cheerful, wide panoramic view --ar 2:1 --s 150 --no text, letters, numbers, people, logo, watermark, dark
+```
+
 ## Pozadí herních obrazovek
 Ke každému řádku přidej stylový základ a tenhle dovětek:
 
@@ -111,6 +117,11 @@ a winding stepping-stone path and small wooden signposts along the bottom, flowe
 **bg-memo**
 ```
 a grove of round pastel trees along the bottom with pairs of identical fruits, pale pink and lavender sky --ar 9:16 --s 100 --no text, letters, numbers, people, animals, logo, watermark, dark
+```
+
+**bg-english**
+```
+a calm turquoise sea with soft waves and a sandy beach along the bottom, a palm leaf in a top corner, pale sky --ar 9:16 --s 100 --no text, letters, numbers, people, animals, logo, watermark, dark
 ```
 
 ## Kontrola před odesláním

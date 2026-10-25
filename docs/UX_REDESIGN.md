@@ -16,6 +16,7 @@ Hlavní lokace:
 - Abecední les
 - Hádanková stezka
 - Pexesový háj
+- Anglický ostrov — první anglická slovíčka s papouškem Polly (`ANGLICTINA.md`)
 
 Lili je průvodkyně, ne tlačítko nebo dekorace blokující obsah.
 

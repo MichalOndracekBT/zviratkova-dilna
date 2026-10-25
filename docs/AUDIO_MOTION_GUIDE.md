@@ -8,6 +8,9 @@ Hlas: mladá dospělá, jemný ženský hlas (Lili je jednorožčice), střední
 
 Nechceme vysoký cartoon voice, robotický zvuk, šišlání ani přehnanou roztomilost.
 
+## Voice persona — Polly (angličtina)
+Papoušek Polly mluví jen anglicky, britsky, jednotlivá slova pomaleji (rate 0.8), věty 0.86, přirozená výška. Hlas vybírá `englishVoice()`: britský před ostatními, přirozené hlasy před robotickými, nikdy Apple „vtipné“ hlasy (Bubbles, Bad News…). Opička v Angličtině stejný hlas o kousek výš. Detaily v `ANGLICTINA.md`.
+
 ## Voice pravidla
 - jedna krátká věta
 - typicky 0.5–2 s
@@ -21,6 +24,9 @@ Nechceme vysoký cartoon voice, robotický zvuk, šišlání ani přehnanou rozt
 - co Lili říká, to je v její bublině (a naopak)
 - tempo a výška podle typu hlášky (`prosody()` v `index.html`): pokyny 0.9 / 1.03, pochvaly s „!“ 0.96 / 1.1, otázky 0.9 / 1.06, jednotlivá slova (čísla, písmena, zvířátka) 0.88 / 1.02 (pomaleji, ale stihne doznít v tempu počítání 0,85 s)
 - emoji a symboly se nikdy nečtou nahlas
+- skládané věty musí sedět gramaticky: rod a pád (jednoho pejska, jednu jahodu) a čísla 1 / 2–4 / 5+ (je tu jedna, jsou tu tři, je jich pět)
+- zvuk zvířátka Lili neříká sama za sebe ani ho nelepí za pochvalu: „Koník dělá íhahá.“, ne „Krása! Íhahá!“
+- slova velkými písmeny do hlášek nepatří, hlas je může hláskovat
 
 ## Voice bank
 Připravená v `js/redesign-v2.js` jako `window.LiliVoice` (cooldown pochval, bez opakování stejné hlášky). Hry ji zatím nepoužívají, mluví vlastními hláškami přes `say()`.
@@ -52,7 +58,7 @@ Complete:
 
 ## Produkce hlasu
 Browser TTS (`speechSynthesis`) je jen fallback: na každém zařízení zní jinak a na iPhonu záleží na tom, jaké české hlasy jsou stažené. Cílový stav:
-1. Všechny pevné hlášky (zadání úkolů, pochvaly, čísla 1–10, písmena a slova z abecedy, jména zvířátek) předgenerovat kvalitním českým neurálním hlasem do souborů `audio/cs/<id>.mp3` jedním skriptem.
+1. Všechny pevné hlášky (zadání úkolů, pochvaly, čísla 1–10, písmena a slova z abecedy, jména zvířátek, anglická slovíčka a věty Polly do `audio/en/<id>.mp3` britským hlasem) předgenerovat kvalitním českým neurálním hlasem do souborů `audio/cs/<id>.mp3` jedním skriptem.
 2. Ve hře přehrávat soubor podle id; když chybí, použít `say()`.
 3. Dynamické věty skládat z hotových dílků (např. „Výborně!“ + jméno zvířátka), aby nebyl potřeba TTS.
 

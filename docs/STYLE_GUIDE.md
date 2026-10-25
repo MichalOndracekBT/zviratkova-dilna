@@ -95,6 +95,13 @@ Omalovánky (50 obrázků), pozadí pro „Poskládej“ a nálepky jsou vektoro
 - Barva karty podle pozice: růžová, nebeská, mátová, vanilková. Hádanka s barvami má karty neutrální.
 - Pohyb: karty naskočí postupně (70 ms po sobě), obrázek se pomalu vznáší (5,2 s). Správně = zelená karta, poskočení a 4 hvězdičky, ostatní karty ustoupí. Špatně = zavrtění a zblednutí. Po dvou chybách správná karta zazáří zlatě.
 
+## Angličtina
+Anglický ostrov má vlastní source of truth: `ANGLICTINA.md`. Pevná pravidla:
+- Anglicky mluví jen **papoušek Polly** (britský hlas), Lili dává česky pokyny. Dítě pozná jazyk podle postavy, ne podle textu.
+- Každé anglické slovo zazní, význam nese obrázek, dítě nic nečte ani nepíše.
+- Lili a Polly se nepřekřikují: další věta začne, až ta předchozí dozní (`talk()` v `index.html`).
+- Karty a pohyb jako v Hádankách V5, chyba netrestá, po dvou chybách správná karta zazáří.
+
 ## Typografie
 Maximálně dvě font family. Nadpisy kulaté a výrazné, běžný text velmi čitelný. Dětské UI nesmí vyžadovat čtení dlouhých vět.
 
@@ -110,6 +117,7 @@ Domovská obrazovka je mapa světa. Lokace:
 - Abecední les
 - Hádanková stezka
 - Pexesový háj
+- Anglický ostrov (angličtina, `ANGLICTINA.md`)
 - později Pokladnice a Můj jednorožec
 
 Každá lokace je ilustrovaný objekt, má maximálně jednu jemnou ambient animaci a vizuální progres. Název lokace musí nést i obraz: Číselná jeskyně má vypadat jako jeskyně. Dokud ilustrace nejsou, jsou názvy pracovní.
