@@ -129,6 +129,7 @@ Další:
 - [ ] skutečné audio hlasu Lili (Produkce hlasu)
 - [ ] samostatný audio manager a music ducking
 - [ ] reward/collection systém (Můj jednorožec)
+- [ ] Angličtina: další témata, Opakování, Hřiště a nahrávky `audio/en/` (`ANGLICTINA.md` → Další kolo)
 
 ## Před merge do main
 - projít Definition of Done ze STYLE_GUIDE na iPhonu, na výšku i na šířku

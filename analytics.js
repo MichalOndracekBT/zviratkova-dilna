@@ -19,6 +19,7 @@
     'zviratkova-dilna': (T) => ({
       puzzle: [cnt('zd-solved'), T.puzzle], omalovanky: [cnt('zd-ndone'), T.omalovanky], cesta: [cnt('zd-road'), T.cesta],
       cisla: [cnt('zd-num'), T.cisla], abeceda: [cnt('zd-traced'), T.abeceda], logika: [cnt('zd-lg'), T.logika], spojovacky: [cnt('zd-dots'), T.spojovacky],
+      anglictina: [cnt('zd-en'), T.anglictina],
     }),
     'marusky-apka': (T) => {
       const stars = safe(() => JSON.parse(ls.get('mm-stars') || '{}')) || {};

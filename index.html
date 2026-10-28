@@ -548,6 +548,7 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 <link rel="stylesheet" href="css/world-art.css?v=1">
 <link rel="stylesheet" href="css/zd-v4.css?v=1">
 <link rel="stylesheet" href="css/zd-v5.css?v=1">
+<link rel="stylesheet" href="css/english.css?v=1">
 </head>
 <body>
 
@@ -599,6 +600,11 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
         <button class="mode mode-memo" id="goMemo">
           <span class="mode-art" id="artMemo"></span>
           <span class="mode-txt"><span class="mode-name">Pexeso</span><span class="mode-sub">najdi dvojice</span></span>
+        </button>
+        <button class="mode mode-english wide" id="goEnglish">
+          <span class="mode-art" id="artEnglish"></span>
+          <span class="mode-txt"><span class="mode-name">Anglický ostrov</span><span class="mode-sub">První anglická slovíčka</span></span>
+          <span class="mode-new">Nové!</span>
         </button>
       </div>
     </div>
@@ -764,6 +770,29 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
     </div>
     <div class="rd-stage" id="rdStage" hidden></div>
   </section>
+
+  <!-- ANGLIČTINA (Anglický ostrov, docs/ANGLICTINA.md) -->
+  <section id="english" class="screen" hidden>
+    <div class="topbar">
+      <button class="btn" id="enBack" aria-label="Zpět"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <h2 id="enTitle">Anglický ostrov</h2>
+      <div class="dots" id="enDots" hidden></div>
+      <div class="stars" id="enStars">⭐ 0 / 4</div>
+    </div>
+    <div class="scroll en-pick" id="enPick">
+      <div class="en-hero">
+        <button class="en-polly" id="enPolly" aria-label="Papoušek Polly"><img src="img/1f99c.svg" alt="" draggable="false"></button>
+        <div class="en-bubble" id="enBubble">Hello!</div>
+      </div>
+      <div class="en-grid" id="enGrid"></div>
+    </div>
+    <div class="en-sea" aria-hidden="true"></div>
+    <div class="en-play" id="enPlay" hidden>
+      <button class="en-prompt" id="enPrompt" aria-label="Zopakovat"></button>
+      <div class="en-field" id="enField"></div>
+      <div class="en-answers" id="enAnswers"></div>
+    </div>
+  </section>
   <div class="overlay" id="win" hidden>
     <div class="win-card">
       <div class="win-art" id="winArt"></div>
@@ -775,7 +804,7 @@ button:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 </div>
 <canvas id="fx"></canvas>
 
-<script src="js/zd-art-v4.js?v=1"></script>
+<script src="js/zd-art-v4.js?v=2"></script>
 <script>
 (() => {
 const $ = s => document.querySelector(s);
@@ -1087,6 +1116,9 @@ function renderHome() {
   const rn = rdDone().size;
   document.querySelector('#goRoad .mode-new').hidden = rn > 0;
   document.querySelector('#goRoad .mode-sub').textContent = rn ? `Zachráněno ${rn} z ${RD_LV.length}` : 'Zachraň zvířátka!';
+  const en = enDone().size;
+  document.querySelector('#goEnglish .mode-new').hidden = store.get('zd-en-met', false);
+  document.querySelector('#goEnglish .mode-sub').textContent = en ? `Umíš ${en} z ${EN_TOPICS.length} témat` : 'První anglická slovíčka';
 }
 function drawHomeArt() {
   // new look: drawn scenery, Lili as the mascot, drawn pictures on the cards, a parade of friends
@@ -1094,6 +1126,7 @@ function drawHomeArt() {
   $('#homeHills').innerHTML = homeHillsSvg();
   $('#mascot').innerHTML = homeMascotSvg();
   ['road', 'puzzle', 'count', 'abc', 'logic', 'memo'].forEach(k => { $('#art' + k[0].toUpperCase() + k.slice(1)).innerHTML = homeArtSvg(k); });
+  $('#artEnglish').innerHTML = enHomeArt();
   const holder = $('#artColor');
   holder.innerHTML = pageSvg(PAGES.find(pg => pg.id === 'uni-baby'));
   const svg = holder.querySelector('svg');
@@ -1461,14 +1494,32 @@ function confetti() {
 const CL_STICKERS = ART.stickers;
 const CL_SCENES = ART.scenes;
 const CL_SAY = {
-  cat: 'Mňau!', dog: 'Haf haf!', pig: 'Chro chro!', fish: 'Blub blub!', owl: 'Hú hú!', turtle: 'Ťap ťap!', butterfly: 'Třepy třepy!',
-  elephant: 'Tútúúú!', ladybug: 'Bzzz!', bear: 'Mňam, med!', bunny: 'Hop hop!', penguin: 'Ťap ťap!', snail: 'Pomaloučku!', lion: 'Vrrr!',
-  duck: 'Kvá kvá!', frog: 'Kvák kvák!', cow: 'Bůůů!', mouse: 'Píp píp!', fox: 'Ahoj!', hedgehog: 'Fuň fuň!', giraffe: 'Ahoj shora!',
-  whale: 'Pššš!', octopus: 'Blub!', chick: 'Píp píp!', bee: 'Bzzz!', crab: 'Cvak cvak!', hippo: 'Ham!', dino: 'Ráááá!',
+  cat: 'Mňau!', dog: 'Haf haf!', pig: 'Chro chro!', fish: 'Blub blub!', owl: 'Hú hú!', turtle: 'Ťap ťap!', butterfly: 'Třepetám se!',
+  elephant: 'Tú tú!', ladybug: 'Bzzz!', bear: 'Mňam, med!', bunny: 'Hop hop!', penguin: 'Ťap ťap!', snail: 'Pomaloučku!', lion: 'Vrrr!',
+  duck: 'Kvá kvá!', frog: 'Kvák kvák!', cow: 'Bú bú!', mouse: 'Píp píp!', fox: 'Ahoj!', hedgehog: 'Fuň fuň!', giraffe: 'Ahoj shora!',
+  whale: 'Pššš!', octopus: 'Blub!', chick: 'Píp píp!', bee: 'Bzzz!', crab: 'Cvak cvak!', hippo: 'Ham!', dino: 'Ráá!',
   sheep: 'Bééé!', panda: 'Mňam, bambus!', monkey: 'U u a a!',
   horse: 'Íhahá!', zebra: 'Mám proužky!', hen: 'Kokodák!', dolphin: 'Ííí ííí!', parrot: 'Ahoj, ahoj!', koala: 'Mňam, lístky!',
   squirrel: 'Mám oříšek!', bat: 'Píí píí!', pumpkin: 'Bú!', snowman: 'Brrr, zima!', dragon: 'Fíí, ohníček!', croc: 'Klap klap!'
 };
+// what Lili says when the child taps a finished picture: a whole sentence, so the sound is the animal's, not Lili's
+const CL_VOICE = {
+  cat: 'Kočička dělá mňau.', dog: 'Pejsek dělá haf haf.', pig: 'Prasátko dělá chro chro.', fish: 'Rybička dělá blub blub.',
+  owl: 'Sovička dělá hú hú.', turtle: 'Želvička jde ťap ťap.', butterfly: 'Motýlek mává křídly.', elephant: 'Slon troubí tú tú.',
+  ladybug: 'Beruška letí bzzz.', bear: 'Medvídek má rád med.', bunny: 'Zajíček skáče hop hop.', penguin: 'Tučňák cupitá ťap ťap.',
+  snail: 'Šnek leze pomaloučku.', lion: 'Lev dělá vrrr.', duck: 'Kachnička dělá kvá kvá.', frog: 'Žabka dělá kvák kvák.',
+  cow: 'Kravička dělá bú.', mouse: 'Myška dělá píp píp.', fox: 'Lištička tě zdraví.', hedgehog: 'Ježek funí fuň fuň.',
+  giraffe: 'Žirafa tě zdraví až shora.', whale: 'Velryba stříká vodu.', octopus: 'Chobotnice dělá blub.', chick: 'Kuřátko dělá píp píp.',
+  bee: 'Včelka bzučí bzzz.', crab: 'Krab cvaká klepety.', hippo: 'Hroch dělá ham.', dino: 'Dinosaurus dělá ráá.',
+  sheep: 'Ovečka dělá bé.', panda: 'Panda má ráda bambus.', monkey: 'Opička dělá u u a a.', horse: 'Koník dělá íhahá.',
+  zebra: 'Zebra má proužky.', hen: 'Slepička dělá kokodák.', dolphin: 'Delfín vesele píská.', parrot: 'Papoušek umí říct ahoj.',
+  koala: 'Koala má ráda lístky.', squirrel: 'Veverka má oříšek.', bat: 'Netopýr dělá píí píí.', pumpkin: 'Dýně dělá bú.',
+  snowman: 'Sněhulákovi je zima.', dragon: 'Dráček fouká ohníček.', croc: 'Krokodýl klape zuby.'
+};
+// one short praise when a picture is finished, never the same one twice in a row
+const CL_PRAISE = ['To je krásný obrázek!', 'Moc hezky vybarvené!', 'Ten obrázek se ti povedl!'];
+let clLastPraise = '';
+function clPraise() { const o = CL_PRAISE.filter(p => p !== clLastPraise); return (clLastPraise = o[Math.floor(Math.random() * o.length)]); }
 const CL_MAIN = {
   cat: '#FB8C00', dog: '#A1887F', pig: '#F48FB1', fish: '#FF7A45', owl: '#8D6E63', turtle: '#43A047', butterfly: '#B39DDB', elephant: '#BDBDBD',
   ladybug: '#E53935', bear: '#8D6E63', bunny: '#FFCCBC', penguin: '#37474F', snail: '#FFB300', lion: '#FFB300', duck: '#FDD835', frog: '#9CCC65',
@@ -1497,12 +1548,15 @@ const CL_CFG = {
       let b; try { b = el.getBBox(); } catch (e) { return; }
       if (b.width < 22 && b.height < 22) restartAnim(el, 'blink');
     });
+    if (SCENES.includes(pg)) return ''; // a sticker scene has no animal to speak
     return pg.e === '🦄' ? 'Íhahá!' : (CL_SAY[pg.id] || 'Ahoj!');
   },
+  // finished: one praise only; tapped: Lili tells what the animal says ("Koník dělá íhahá.")
   sound(pg, first) {
     [660, 880, 1100].forEach((f, i) => tone(f, .12, 'sine', .08, i * .09));
-    const w = pg.e === '🦄' ? 'Íhahá!' : (CL_SAY[pg.id] || 'Ahoj!');
-    say(first ? `Krása! ${w}` : w);
+    if (first) { say(clPraise()); return; }
+    if (SCENES.includes(pg)) return;
+    say(pg.e === '🦄' ? 'Jednorožec dělá íhahá.' : (CL_VOICE[pg.id] || `${pg.name} tě zdraví.`));
   }
 };
 
@@ -2137,7 +2191,7 @@ $('#doneBtn').addEventListener('click', () => {
   if (C.mode === 'num' && totalLeft()) {
     const n = firstOpenNum(C.curN) || C.curN; C.curN = n; renderNumPalette();
     C.num.querySelectorAll(`.nbadge[data-n="${n}"]`).forEach(nudgeBadge);
-    say(`Ještě chybí ${totalLeft() === 1 ? 'jedno políčko' : 'pár políček'}. Číslo ${n}.`);
+    say(`Ještě chybí ${totalLeft() === 1 ? 'jedno políčko' : 'pár políček'}. Zkus číslo ${n}.`);
     return;
   }
   celebrate();
@@ -2147,7 +2201,7 @@ function celebrate() {
   const pg = C.pg, num = C.mode === 'num';
   sfx.win(); confetti();
   const list = SCENES.includes(pg) ? SCENES : PAGES, next = list[(list.indexOf(pg) + 1) % list.length];
-  showWin(pageSvg(pg), 'Krása!', 'Ťukni na obrázek, ožije!', [
+  showWin(pageSvg(pg), 'Krása!', 'Ťukni na obrázek a ožije!', [
     { label: `Další: ${next.name}`, cls: 'primary', fn: () => openColor(next, num ? 'num' : 'free') },
     { label: num ? 'Prohlédnout' : 'Ještě vybarvovat', cls: '', fn: () => { $('#win').hidden = true; } },
     { label: 'Všechny obrázky', cls: '', fn: () => { renderColorPicker(); show('pickColor'); } }
@@ -2512,9 +2566,19 @@ function itemHtml(t, cell, cols, rows) {
   const y = (Math.floor(cell / cols) + .5) / rows * 100 + (Math.random() - .5) * 6;
   return `<button class="cnt-item" style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%">${t[0]}</button>`;
 }
+// praise from PRAISE, never the same one twice in a row (AUDIO_MOTION_GUIDE → Voice pravidla)
+let lastPraise = '';
+function praise() { const o = PRAISE.filter(p => p !== lastPraise); return (lastPraise = o[rand(o.length)]); }
+// the answer to "Kolik je tu …?" in correct Czech: 1 → "Je tu jedna.", 2–4 → "Jsou tu dvě.", 5+ → "Je jich pět."
+function howMany(n, t) {
+  const g = t[1];
+  if (n === 1) return `Je tu ${g === 'f' ? 'jedna' : g === 'n' ? 'jedno' : 'jeden'}.`;
+  if (n <= 4) return `Jsou tu ${n === 2 ? (g === 'f' || g === 'n' ? 'dvě' : 'dva') : NUM_WORDS[n]}.`;
+  return `Je jich ${NUM_WORDS[n]}.`;
+}
 function taskSuccess(text) {
   N.locked = true; sfx.snap();
-  const pr = PRAISE[rand(PRAISE.length)];
+  const pr = praise();
   $('#cntPrompt').innerHTML = `${pr} ${text || ''}`; N.sayText = pr;
   say(pr + (text ? ' ' + text : ''));
   N.step++; renderDots($('#cntDots'), N.tasks.length, N.step);
@@ -2548,7 +2612,7 @@ $('#cntAnswers').addEventListener('click', ev => {
     b.classList.add('ok');
     let k = N.sel;
     $('#cntField').querySelectorAll('.cnt-item').forEach(it => { if (!it.querySelector('.num')) it.insertAdjacentHTML('beforeend', `<span class="num">${++k}</span>`); bounce(it); });
-    taskSuccess(`Je jich ${NUM_WORDS[N.n]}.`);
+    taskSuccess(howMany(N.n, N.thing));
   } else taskWrong(b);
 });
 function finishNumber() {
@@ -2556,7 +2620,7 @@ function finishNumber() {
   const done = new Set(store.get('zd-num', [])); done.add(n); store.set('zd-num', [...done]);
   sfx.win(); confetti(); say(`Hurá! Umíš číslo ${NUM_WORDS[n]}!`);
   const again = fnN => () => { show('count'); learnNumber(fnN); };
-  showWin(`<span class="num-hero" style="font-size:120px">${n}</span>`, `Umíš číslo ${n}!`, 'Za to je hvězdička ⭐', [
+  showWin(`<span class="num-hero" style="font-size:120px">${n}</span>`, `Umíš číslo ${n}!`, 'Za to máš hvězdičku ⭐', [
     n < 10 ? { label: `Další číslo: ${n + 1}`, cls: 'primary', fn: again(n + 1) } : { label: 'Začít zase od 1', cls: 'primary', fn: again(1) },
     { label: 'Ještě jednou', cls: '', fn: again(n) },
     { label: 'Vybrat číslo', cls: '', fn: () => { show('count'); showNumPick(); } }
@@ -2673,7 +2737,7 @@ $('#abcAnswers').addEventListener('click', ev => {
 });
 function finishQuiz() {
   sfx.win(); confetti(); say('Výborně! Znáš písmenka!');
-  showWin('<span role="img" aria-label="Pohár">🏆</span>', 'Výborně!', `Všech ${Q.total} slov je uhodnuto.`, [
+  showWin('<span role="img" aria-label="Pohár">🏆</span>', 'Výborně!', `Všech ${Q.total} slov máš správně.`, [
     { label: 'Hrát znovu', cls: 'primary', fn: () => { show('abc'); startQuiz(); } },
     { label: 'Poznávat písmenka', cls: '', fn: () => { show('abc'); setAbcMode('learn'); } },
     { label: 'Domů', cls: '', fn: goHome }
@@ -2749,7 +2813,7 @@ const LG_TYPES = {
   big: { name: 'Velký a malý', ico: '🐘', make() {
     const t = lgAll()[rand(lgAll().length)], biggest = Math.random() < .5, sizes = lgShuffle([.5, .78, 1.12]);
     const want = biggest ? Math.max(...sizes) : Math.min(...sizes);
-    return { key: t, say: biggest ? 'Ťukni na ten největší.' : 'Ťukni na ten nejmenší.', prompt: `Ťukni na <b>${biggest ? 'největší' : 'nejmenší'}</b>`, cols: 3, tall: true,
+    return { key: t, say: biggest ? 'Ťukni na největší obrázek.' : 'Ťukni na nejmenší obrázek.', prompt: `Ťukni na <b>${biggest ? 'největší' : 'nejmenší'}</b>`, cols: 3, tall: true,
       choices: sizes.map(s => ({ html: lgEm(t, '', `--k:${s}`), ok: s === want })) };
   } },
   more: { name: 'Kde je víc?', ico: '⚖️', make() {
@@ -2771,16 +2835,17 @@ const LG_TYPES = {
   } },
   peek: { name: 'Kdo se schovává?', ico: '🙈', make() {
     const t = lgAll()[rand(lgAll().length)], side = ['l', 'r', 't', 'b'][rand(4)];
-    return { key: t, say: 'Kdo se tu schovává?', prompt: 'Kdo se tu <b>schovává</b>?', cols: 3, reveal: t,
+    const who = (lgCatOf(t) || {}).group === 'zvířata' ? 'Kdo' : 'Co'; // a carrot is "co", a fox is "kdo"
+    return { key: t, say: `${who} se tu schovává?`, prompt: `${who} se tu <b>schovává</b>?`, cols: 3, reveal: t,
       q: `<span class="lg-peek lg-peek-${side}">${lgEm(t, 'big')}<i></i></span>`,
       choices: lgShuffle([{ html: lgEm(t), ok: true }, ...lgSimilar(t, 2).map(e => ({ html: lgEm(e) }))]) };
   } },
   emotion: { name: 'Jak se kdo cítí?', ico: '😊', make() {
     const S = [['🍦', 'Kubovi spadla zmrzlina na zem.', '😢'], ['🎁', 'Ema dostala k narozeninám dárek.', '😀'], ['🌙', 'Je pozdě večer a Tonda zívá.', '😴'],
-      ['🎈', 'Vedle Aničky najednou prasklo BUM balonek.', '😮'], ['🧱', 'Někdo Matýskovi schválně zbořil věž z kostek.', '😠'], ['🔍', 'Lucce se ztratil pejsek a nemůže ho najít.', '😢'],
-      ['🎂', 'Péťa sfoukl svíčky na dortu.', '😀'], ['⚽', 'Kamarád vzal Ondrovi míč a nechce ho vrátit.', '😠'], ['👻', 'Ze skříně vyskočil převlečený tatínek.', '😮'],
+      ['🎈', 'Aničce najednou hlasitě praskl balónek.', '😮'], ['🧱', 'Někdo Matýskovi schválně zbořil věž z kostek.', '😠'], ['🔍', 'Lucce se ztratil pejsek a nemůže ho najít.', '😢'],
+      ['🎂', 'Péťa sfoukl svíčky na dortu.', '😀'], ['⚽', 'Kamarád vzal Ondrovi míč a nechce mu ho vrátit.', '😠'], ['👻', 'Na Jirku vybafl ze skříně převlečený tatínek.', '😮'],
       ['🛏️', 'Sára celý den běhala venku a teď leží v posteli.', '😴'], ['🎠', 'Vojta jede na kolotoči.', '😀'], ['🩹', 'Adam spadl a odřel si koleno.', '😢'],
-      ['🖍️', 'Bráška Elišce počmáral obrázek.', '😠'], ['🎉', 'Do pokoje vběhli kamarádi a křičí PŘEKVAPENÍ!', '😮']];
+      ['🖍️', 'Bráška Elišce počmáral obrázek.', '😠'], ['🎉', 'Natálka otevřela dveře a kamarádi zavolali: Překvapení!', '😮']];
     const t = S[rand(S.length)], F = ['😀', '😢', '😠', '😮', '😴'], opts = lgShuffle([t[2], ...lgPick(F, 2, [t[2]])]);
     return { key: t[1], say: `${t[1]} Jak se cítí?`, prompt: `${t[1]} <b>Jak se cítí?</b>`, q: lgEm(t[0], 'big'), cols: 3, choices: opts.map(f => ({ html: lgEm(f), ok: f === t[2] })) };
   } },
@@ -2883,7 +2948,7 @@ $('#lgField').addEventListener('click', ev => {
   const sil = document.querySelector('#lgField .sil'); if (sil) sil.classList.remove('sil');
   const pk = document.querySelector('#lgField .lg-peek'); if (pk) pk.classList.add('open');
   const slot = document.querySelector('#lgField .lg-slot'); if (slot && LG.task.fill) { slot.innerHTML = lgEm(LG.task.fill); slot.classList.add('filled'); }
-  sfx.snap(); say(PRAISE[rand(PRAISE.length)]);
+  sfx.snap(); say(praise());
   LG.step++; renderDots($('#lgDots'), LG_ROUNDS, LG.step);
   lgLater(lgRound, 1300);
 });
@@ -2923,8 +2988,9 @@ $('#memoBoard').addEventListener('click', ev => {
     setTimeout(() => { x.classList.add('got'); y.classList.add('got'); sfx.snap(); const r = y.getBoundingClientRect(); if (window.ZDBurst) window.ZDBurst(y, 4); }, 250);
     if (MM.done === MM.faces.length) setTimeout(() => {
       if (current !== 'memo') return;
-      sfx.win(); confetti(); say(`Hurá! Všechny dvojice za ${MM.moves} tahů.`);
-      showWin('<span class="win-art">🃏</span>', 'Hurá!', `Všechny dvojice za ${MM.moves} tahů.`, [
+      const tahu = MM.moves === 1 ? 'tah' : MM.moves <= 4 ? 'tahy' : 'tahů';
+      sfx.win(); confetti(); say('Hurá! Máš všechny dvojice!');
+      showWin('<span class="win-art">🃏</span>', 'Hurá!', `Všechny dvojice za ${MM.moves} ${tahu}.`, [
         { label: 'Hrát znovu', cls: 'primary', fn: () => { $('#win').hidden = true; memoNew(); } },
         { label: 'Domů', cls: '', fn: () => { $('#win').hidden = true; goHome(); } }
       ]);
@@ -3492,10 +3558,13 @@ function rdShowPick() {
       }).join('') + '</div></div>';
   }).join('');
 }
+// accusative for "Nejdřív zachraň …" (zajíčka, veverku…)
+const RD_ACC = { kitten: 'koťátko', chick: 'kuřátko', bunny: 'zajíčka', puppy: 'štěňátko', hedgehog: 'ježečka', squirrel: 'veverku', owl: 'sovičku', fawn: 'kolouška',
+  duck: 'kachňátko', frog: 'žabku', turtle: 'želvičku', otter: 'vydru', lamb: 'jehňátko', panda: 'pandičku', piglet: 'prasátko', dragon: 'dráčka' };
 $('#rdWorlds').addEventListener('click', ev => {
   const b = ev.target.closest('.rd-lv'); if (!b) return;
   const i = +b.dataset.i;
-  if (!rdIsOpen(i)) { bounce(b); b.classList.remove('rd-shake'); void b.offsetWidth; b.classList.add('rd-shake'); const nx = rdNextIdx(); if (nx >= 0) say(`Nejdřív zachraň: ${RD_FRIENDS[RD_LV[nx].f].name}.`); return; }
+  if (!rdIsOpen(i)) { bounce(b); b.classList.remove('rd-shake'); void b.offsetWidth; b.classList.add('rd-shake'); const nx = rdNextIdx(); if (nx >= 0) say(`Nejdřív zachraň ${RD_ACC[RD_LV[nx].f] || RD_FRIENDS[RD_LV[nx].f].name.toLowerCase()}.`); return; }
   sfx.pick(); rdStart(i);
 });
 $('#rdBack').addEventListener('click', () => { if (!$('#rdStage').hidden) rdShowPick(); else { rdStop(); goHome(); } });
@@ -3856,20 +3925,494 @@ $('#mascot').addEventListener('click', ev => { bounce(ev.currentTarget); if (win
   $('#installHint').hidden = false;
   $('#installClose').addEventListener('click', () => { $('#installHint').hidden = true; store.set('zd-install-hidden', true); });
 })();
+/* ---------- ANGLIČTINA — Anglický ostrov (docs/ANGLICTINA.md) ---------- */
+// Papoušek Polly mluví jen anglicky (britský hlas), Lili dává česky pokyny. Každé anglické slovo zazní,
+// význam nese obrázek, dítě nic nečte (STYLE_GUIDE → Angličtina).
+let enVoiceSel = null;
+// British first, natural voices before robotic ones, never Apple's joke voices (the same choice as in Maruščina apka)
+const EN_GOOD_VOICE = /daniel|kate|serena|martha|arthur|oliver|stephanie|samantha|karen|moira|tessa|google|microsoft|enhanced|premium|natural|neural|siri/i;
+const EN_FUNNY_VOICE = /albert|bad news|bahh|bells|boing|bubbles|cellos|good news|jester|organ|superstar|trinoids|whisper|wobble|zarvox|fred|junior|ralph|kathy|eddy|flo\b|grandma|grandpa|reed|rocko|sandy|shelley/i;
+function englishVoice() {
+  if (enVoiceSel) return enVoiceSel;
+  try {
+    const score = v => (/^en[-_]GB/i.test(v.lang) ? 4 : 0) + (EN_GOOD_VOICE.test(v.name) ? 3 : 0) - (EN_FUNNY_VOICE.test(v.name) ? 8 : 0) + (v.localService ? 1 : 0);
+    enVoiceSel = speechSynthesis.getVoices().filter(v => /^en([-_]|$)/i.test(v.lang)).sort((a, b) => score(b) - score(a))[0] || null;
+  } catch (e) {}
+  return enVoiceSel;
+}
+try { speechSynthesis.addEventListener('voiceschanged', () => { enVoiceSel = null; }); } catch (e) {}
+// one line of Lili ('cs') or Polly ('en'); the end also comes from a timer, because iOS sometimes forgets onend
+function enUtter(lang, text, o, onend) {
+  let fired = false; const end = () => { if (!fired) { fired = true; if (onend) onend(); } };
+  if (muted || !('speechSynthesis' in window) || !text) { setTimeout(end, 0); return; }
+  try {
+    const u = new SpeechSynthesisUtterance(text);
+    if (lang === 'en') {
+      // single words slower, so a small child hears every sound
+      u.lang = 'en-GB'; u.rate = /\s/.test(text.trim()) ? .86 : .8; u.pitch = (o && o.pitch) || 1;
+      const v = englishVoice(); if (v) { u.voice = v; u.lang = v.lang; }
+    } else {
+      const p = prosody(text); u.lang = 'cs-CZ'; u.rate = p.rate; u.pitch = p.pitch;
+      const v = czechVoice(); if (v) u.voice = v;
+    }
+    u.onend = end; u.onerror = end;
+    lastUtterance = u;
+    setTimeout(end, 1200 + text.length * 90);
+    speechSynthesis.resume(); speechSynthesis.speak(u);
+  } catch (e) { end(); }
+}
+// Lili and Polly take turns: a line starts when the previous one has finished, a new talk ends the old one
+// (STYLE_GUIDE: hlas se nepřekrývá). A line is [lang, text, { on, pitch }]; on() runs when the line starts.
+let enTalk = 0;
+function talk(lines, done) {
+  const id = ++enTalk;
+  const step = i => {
+    if (id !== enTalk) return;
+    if (i >= lines.length) { if (done) done(); return; }
+    const [lang, text, o] = lines[i];
+    if (o && o.on) o.on();
+    enUtter(lang, text, o, () => { if (id === enTalk) setTimeout(() => step(i + 1), 140); });
+  };
+  let busy = false;
+  try { busy = speechSynthesis.speaking || speechSynthesis.pending; if (busy) speechSynthesis.cancel(); } catch (e) {}
+  // right after cancel() some browsers drop the next utterance, so give it a moment (like say())
+  if (busy) setTimeout(() => step(0), 90); else step(0);
+}
+
+const EN_STEPS = ['learn', 'listen', 'special', 'memo'];
+const EN_NUM = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven'];
+const enCap = s => s.charAt(0).toUpperCase() + s.slice(1);
+// words: [picture, English, Czech, (animal sound)]; q = Polly's question, ok = what she repeats after a right answer
+const EN_TOPICS = [
+  { id: 'animals', cz: 'Zvířátka', en: 'Animals', kind: 'pic', special: 'sounds', tile: '#FFE1F0',
+    intro: 'Naučíme se anglicky zvířátka. Poslouchej Polly!', win: 'Umíš anglicky zvířátka!',
+    q: w => `Where's the ${w}?`, ok: w => `the ${w}`,
+    words: [['🐈', 'cat', 'kočička', 'meow'], ['🐕', 'dog', 'pejsek', 'woof woof'], ['🐄', 'cow', 'kravička', 'moo'],
+      ['🐖', 'pig', 'prasátko', 'oink oink'], ['🦆', 'duck', 'kachnička', 'quack quack'], ['🐑', 'sheep', 'ovečka', 'baa']] },
+  { id: 'colours', cz: 'Barvy', en: 'Colours', kind: 'colour', special: 'paint', tile: '#DDEEFF',
+    intro: 'Naučíme se anglicky barvy. Poslouchej Polly!', win: 'Umíš anglicky barvy!',
+    q: w => `Find ${w}!`, ok: w => w,
+    words: [['#EF4444', 'red', 'červená'], ['#3B82F6', 'blue', 'modrá'], ['#FACC15', 'yellow', 'žlutá'],
+      ['#22C55E', 'green', 'zelená'], ['#F472B6', 'pink', 'růžová'], ['#A855F7', 'purple', 'fialová']] },
+  { id: 'numbers', cz: 'Čísla 1–5', en: 'Numbers', kind: 'number', special: 'count', tile: '#DCF7EC',
+    intro: 'Naučíme se anglicky počítat do pěti. Poslouchej Polly!', win: 'Umíš anglicky počítat do pěti!',
+    q: w => `Find ${w}!`, ok: w => w,
+    words: [['1', 'one', 'jedna'], ['2', 'two', 'dva'], ['3', 'three', 'tři'], ['4', 'four', 'čtyři'], ['5', 'five', 'pět']] },
+  { id: 'food', cz: 'Jídlo', en: 'Food', kind: 'pic', special: 'feed', tile: '#FFF0CC',
+    intro: 'Naučíme se anglicky, co rádi jíme. Poslouchej Polly!', win: 'Umíš anglicky, co rádi jíme!',
+    q: w => `Where's the ${w}?`, ok: w => `the ${w}`,
+    words: [['🍎', 'apple', 'jablko'], ['🍌', 'banana', 'banán'], ['🍓', 'strawberry', 'jahoda'],
+      ['🥕', 'carrot', 'mrkev'], ['🎂', 'cake', 'dort'], ['🍦', 'ice cream', 'zmrzlina']] }
+];
+// counting with Polly: [picture, one, more]
+const EN_THINGS = [['🍎', 'apple', 'apples'], ['⭐', 'star', 'stars'], ['🎈', 'balloon', 'balloons'], ['🚗', 'car', 'cars'], ['🐟', 'fish', 'fish'], ['🐤', 'chick', 'chicks']];
+const EN_PRAISE = ['Yes!', 'Great!', 'Super!'];
+let enLastPraise = '';
+function enPraise() { const o = EN_PRAISE.filter(p => p !== enLastPraise); return (enLastPraise = o[rand(o.length)]); }
+const EN_SPLASH = 'M50 6 C62 6 66 18 76 20 C88 22 96 32 92 44 C89 53 96 60 92 70 C87 82 74 82 66 88 C57 95 43 95 34 88 C26 82 12 82 8 70 C4 59 11 52 8 43 C5 32 13 22 25 20 C35 18 38 6 50 6 Z';
+// pictures: a sharp SVG from img/ (the emoji only until it loads), a splash of colour, or a number with dots
+const enEm = (e, cls = '') => `<span class="en-em ${cls}"><img src="img/${imgCode(e)}.svg" alt="" draggable="false" onload="this.parentNode.classList.add('im')" onerror="this.remove()"><span class="en-fb">${e}</span></span>`;
+function enPic(t, w) {
+  if (t.kind === 'colour') return `<span class="en-splash"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="${EN_SPLASH}" fill="${w[0]}"/><ellipse cx="34" cy="32" rx="12" ry="7" fill="#fff" opacity=".38" transform="rotate(-28 34 32)"/></svg></span>`;
+  if (t.kind === 'number') return `<span class="en-num"><b>${w[0]}</b><i>${'<s></s>'.repeat(+w[0])}</i></span>`;
+  return enEm(w[0]);
+}
+function enTopicPic(t) {
+  if (t.kind === 'colour') return `<span class="en-tile-splash">${t.words.slice(0, 3).map(w => enPic(t, w)).join('')}</span>`;
+  if (t.kind === 'number') return '<span class="en-tile-num"><b>1</b><b>2</b><b>3</b></span>';
+  return enEm(t.words[0][0]);
+}
+// paint it: kawaii shapes with a face, the colour goes into .fill
+const enFace = (x, y, k = 1) => `<g fill="#3A2A5C"><ellipse cx="${x - 9 * k}" cy="${y}" rx="${3.4 * k}" ry="${4.4 * k}"/><ellipse cx="${x + 9 * k}" cy="${y}" rx="${3.4 * k}" ry="${4.4 * k}"/></g>` +
+  `<g fill="#fff"><circle cx="${x - 10 * k}" cy="${y - 1.6 * k}" r="${1.2 * k}"/><circle cx="${x + 8 * k}" cy="${y - 1.6 * k}" r="${1.2 * k}"/></g>` +
+  `<path d="M${x - 5 * k} ${y + 7 * k} Q${x} ${y + 11 * k} ${x + 5 * k} ${y + 7 * k}" fill="none" stroke="#3A2A5C" stroke-width="${2.4 * k}" stroke-linecap="round"/>` +
+  `<g fill="#FF9FC4" opacity=".55"><ellipse cx="${x - 16 * k}" cy="${y + 6 * k}" rx="${4 * k}" ry="${2.6 * k}"/><ellipse cx="${x + 16 * k}" cy="${y + 6 * k}" rx="${4 * k}" ry="${2.6 * k}"/></g>`;
+const EN_SHAPES = {
+  balloon: '<path d="M50 88 Q43 96 52 106" fill="none" stroke="#8A7AA8" stroke-width="2.5" stroke-linecap="round"/><path class="fill" d="M50 6 C74 6 88 26 88 46 C88 66 72 80 55 83 L58 89 L42 89 L45 83 C28 80 12 66 12 46 C12 26 26 6 50 6 Z"/>' + enFace(50, 44),
+  heart: '<path class="fill" d="M50 92 C22 72 6 54 8 35 C10 18 30 9 42 18 C46 21 49 25 50 29 C51 25 54 21 58 18 C70 9 90 18 92 35 C94 54 78 72 50 92 Z"/>' + enFace(50, 46),
+  star: `<path class="fill" d="${starD(50, 56, 47, 22)}"/>` + enFace(50, 58, .8),
+  flower: '<path d="M50 74 V104" stroke="#43A047" stroke-width="5" stroke-linecap="round"/><g class="fill">' +
+    [0, 72, 144, 216, 288].map(a => `<circle cx="${(50 + 25 * Math.cos((a - 90) * Math.PI / 180)).toFixed(1)}" cy="${(46 + 25 * Math.sin((a - 90) * Math.PI / 180)).toFixed(1)}" r="18"/>`).join('') +
+    '</g><circle cx="50" cy="46" r="15" fill="#FFE07A" stroke="#3A2A5C" stroke-width="3"/>' + enFace(50, 45, .55)
+};
+const enShapeSvg = k => `<svg viewBox="0 0 100 110" aria-hidden="true"><g stroke="#3A2A5C" stroke-width="3" stroke-linejoin="round">${EN_SHAPES[k]}</g></svg>`;
+// the island card on Home: sea, a palm and Polly saying Hello
+function enHomeArt() {
+  return '<svg viewBox="0 0 100 88" aria-hidden="true">' +
+    '<path d="M0 60 Q12 54 25 60 T50 60 T75 60 T100 60 V88 H0 Z" fill="#8FE3F7"/><path d="M0 71 Q12 65 25 71 T50 71 T75 71 T100 71 V88 H0 Z" fill="#5BC0F0"/>' +
+    '<ellipse cx="44" cy="63" rx="31" ry="8" fill="#FFE2A8"/><ellipse cx="44" cy="61" rx="27" ry="5" fill="#FFEFC9"/>' +
+    '<path d="M27 61 Q24 45 31 32" fill="none" stroke="#B9824E" stroke-width="4" stroke-linecap="round"/>' +
+    '<g fill="#43C27A"><path d="M31 32 Q19 25 10 32 Q21 30 31 34 Z"/><path d="M31 32 Q37 20 48 21 Q39 25 32 34 Z"/><path d="M31 32 Q21 21 23 12 Q27 23 33 32 Z"/><path d="M31 32 Q43 29 47 39 Q39 33 31 34 Z"/></g>' +
+    '<image href="img/1f99c.svg" x="40" y="23" width="38" height="38"/>' +
+    '<g transform="translate(53 2)"><rect width="44" height="19" rx="9.5" fill="#fff"/><path d="M9 18 L6 25 L16 18 Z" fill="#fff"/>' +
+    '<text x="22" y="13.6" font-size="11.5" font-weight="800" text-anchor="middle" fill="#2F6FD6" font-family="\'Baloo 2\',ui-rounded,sans-serif">Hello!</text></g></svg>';
+}
+
+let EN = null;
+function enDone() { return new Set(store.get('zd-en', [])); }
+function enLater(fn, ms) { const s = EN; if (!s) return; const id = setTimeout(() => { if (current === 'english' && EN === s) fn(); }, ms); s.timers.push(id); }
+function enStop() { if (EN) EN.timers.forEach(clearTimeout); EN = null; enTalk++; }
+// switching between the island and a lesson: nothing stays focused or scrolled from the previous view
+function enPane(hub) {
+  const sc = $('#english'); sc.classList.toggle('en-hub', hub); sc.scrollLeft = 0; sc.scrollTop = 0;
+  $('#enPick').hidden = !hub; $('#enPlay').hidden = hub;
+  try { if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur(); } catch (e) {}
+}
+// go on when the voice has finished and at least ms have passed (with the sound off the pace stays the same)
+function afterTalk(lines, ms, fn) {
+  let spoke = false, waited = false;
+  const go = () => { if (spoke && waited) { spoke = waited = false; fn(); } };
+  talk(lines, () => { spoke = true; go(); });
+  enLater(() => { waited = true; go(); }, ms);
+  enLater(() => { spoke = true; go(); }, ms + 6000); // a tap may have cut the voice off
+}
+// Polly's bubble shows exactly what is said, the English word stands out
+function enPrompt(text, word, who = '🦜') {
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  let html = esc(text);
+  if (word) { const i = text.indexOf(word); if (i >= 0) html = esc(text.slice(0, i)) + `<b>${esc(word)}</b>` + esc(text.slice(i + word.length)); }
+  $('#enPrompt').innerHTML = `<span class="en-pp">${enEm(who)}</span><span class="en-pt">${html}</span>`;
+}
+
+/* hub: the island with Polly and the topics */
+function startEnglish() { show('english'); enShowPick(true); }
+function enShowPick(greet) {
+  enStop();
+  $('#enTitle').textContent = 'Anglický ostrov'; $('#enDots').hidden = true; $('#enStars').hidden = false;
+  enPane(true);
+  const done = enDone();
+  $('#enStars').textContent = `⭐ ${done.size} / ${EN_TOPICS.length}`;
+  $('#enBubble').textContent = 'Hello!';
+  $('#enGrid').innerHTML = EN_TOPICS.map((t, i) => `<button class="en-tile" data-t="${t.id}" style="--tc:${t.tile};--i:${i}">${done.has(t.id) ? '<span class="badge">⭐</span>' : ''}` +
+    `<span class="en-tile-pic">${enTopicPic(t)}</span><span class="nm">${t.cz}</span><span class="en-nm">${t.en}</span></button>`).join('');
+  if (!greet) return;
+  if (!store.get('zd-en-met', false)) {
+    store.set('zd-en-met', true);
+    talk([['cs', 'Tohle je můj kamarád papoušek Polly. Mluví anglicky!'], ['en', "Hello! I'm Polly!", { on: () => { $('#enBubble').textContent = "Hello! I'm Polly!"; } }],
+      ['cs', 'Vyber si, co se naučíme.']]);
+  } else talk([['en', 'Hello!']]);
+}
+const EN_HELLO = ['Hello!', "I'm Polly!", "Let's play!", 'Hello, hello!'];
+let enHelloI = 0;
+$('#enPolly').addEventListener('click', () => {
+  const s = EN_HELLO[enHelloI++ % EN_HELLO.length];
+  $('#enBubble').textContent = s; bounce($('#enPolly')); talk([['en', s]]);
+});
+$('#enGrid').addEventListener('click', ev => { const b = ev.target.closest('.en-tile'); if (!b) return; sfx.pick(); enStart(b.dataset.t); });
+$('#enBack').addEventListener('click', () => {
+  if (!$('#enPlay').hidden) { enShowPick(false); return; }
+  enStop(); talk([['en', 'Bye-bye!']]); goHome();
+});
+$('#enPrompt').addEventListener('click', () => { if (EN && EN.again) { bounce($('#enPrompt')); talk(EN.again); } });
+$('#goEnglish').addEventListener('click', () => { ac(); startEnglish(); });
+
+/* one topic = a lesson of four steps: meet the words → listen and tap → the topic's own game → pairs */
+function enStart(id) {
+  enStop();
+  const t = EN_TOPICS.find(x => x.id === id); if (!t) return;
+  EN = { t, step: 0, timers: [], type: '', task: null, again: null };
+  $('#enTitle').textContent = t.cz; $('#enStars').hidden = true; $('#enDots').hidden = false;
+  renderDots($('#enDots'), EN_STEPS.length, 0);
+  enPane(false);
+  enLearn();
+}
+function enNextStep() {
+  if (!EN) return;
+  EN.step++; EN.task = null; renderDots($('#enDots'), EN_STEPS.length, EN.step);
+  if (EN.step >= EN_STEPS.length) { enFinish(); return; }
+  const s = EN_STEPS[EN.step];
+  if (s === 'listen') enListen();
+  else if (s === 'special') ({ sounds: enSounds, paint: enPaint, count: enCount, feed: enFeed })[EN.t.special]();
+  else enMemo();
+}
+
+// 1) meet the words: picture → Lili says it in Czech → Polly says it in English
+function enLearn() {
+  const t = EN.t;
+  EN.type = 'learn'; EN.auto = true; EN.li = 0;
+  const f = $('#enField'); f.className = 'en-field learn';
+  f.innerHTML = `<button class="en-big" id="enBig" aria-label="Přehrát"></button><div class="en-strip">${t.words.map((w, i) => `<button class="en-thumb" data-i="${i}" aria-label="${w[1]}">${enPic(t, w)}</button>`).join('')}</div>`;
+  $('#enAnswers').innerHTML = '';
+  $('#enBig').innerHTML = `<span class="en-big-pic">${enTopicPic(t)}</span><span class="en-word">${t.en}</span><span class="en-cz">${t.cz}</span>`;
+  enPrompt(`${t.en}!`, t.en);
+  EN.again = [['en', `${t.en}!`]];
+  enLearnShow(0, [['en', `${t.en}!`], ['cs', t.intro]]);
+}
+function enLearnCard(i) {
+  const t = EN.t, w = t.words[i], big = $('#enBig'); if (!big) return;
+  EN.li = i;
+  big.innerHTML = `<span class="en-big-pic">${enPic(t, w)}</span><span class="en-word">${w[1]}</span><span class="en-cz">${w[2]}</span>`;
+  big.classList.remove('pop'); void big.offsetWidth; big.classList.add('pop');
+  document.querySelectorAll('#enField .en-thumb').forEach((b, k) => { b.classList.toggle('on', k === i); if (k === i) b.classList.add('seen'); });
+}
+function enLearnShow(i, before) {
+  const t = EN.t, w = t.words[i], W = enCap(w[1]);
+  if (!before) enLearnCard(i);
+  EN.again = [['en', W + '!']];
+  const lines = [...(before || []), ['cs', enCap(w[2]) + '.', { on: () => enLearnCard(i) }], ['en', W + '!', { on: () => enPrompt(W + '!', W) }]];
+  afterTalk(lines, before ? 4600 : 2300, () => {
+    if (i + 1 < t.words.length) enLater(() => enLearnShow(i + 1), 450);
+    else enLater(enLearnDone, 300);
+  });
+}
+function enLearnDone() {
+  EN.auto = false;
+  $('#enAnswers').innerHTML = '<button class="btn primary play-btn en-go" id="enGo"><span>Jdeme hrát</span><b>→</b></button>';
+  talk([['cs', 'Ťukni na šipku a jdeme hrát!']]);
+}
+
+// "choose one card" rounds (listen, who says, paint it, feed the monkey) share one engine
+function enChoice(T) {
+  EN.type = 'choice';
+  EN.task = Object.assign({ misses: 0, locked: false }, T);
+  EN.again = T.again;
+  const f = $('#enField'); f.className = 'en-field' + (T.q ? ' has-q' : '');
+  f.innerHTML = (T.q ? `<div class="en-q">${T.q}</div>` : '') +
+    `<div class="en-choices${T.plain ? ' plain' : ''}">${T.cards.map((c, i) => `<button class="en-card" data-i="${i}" style="--i:${i}">${c.html}</button>`).join('')}</div>`;
+  $('#enAnswers').innerHTML = '';
+  enFit();
+  talk(T.say);
+}
+function enCardTap(b) {
+  const T = EN.task; if (!T || T.locked) return;
+  const c = T.cards[+b.dataset.i];
+  if (!c.ok) {
+    // no punishment: a gentle "no-no", Polly says the word again, after two misses the right card glows
+    b.classList.remove('bad'); void b.offsetWidth; b.classList.add('bad');
+    tone(200, .14, 'sine', .1); tone(160, .16, 'sine', .08, .08);
+    T.misses++;
+    if (T.misses >= 2) { const okb = [...document.querySelectorAll('#enField .en-card')].find((x, i) => T.cards[i].ok); if (okb) okb.classList.add('hint'); }
+    talk(T.wrong || T.again);
+    return;
+  }
+  T.locked = true; b.classList.add('ok');
+  const ch = b.closest('.en-choices'); if (ch) ch.classList.add('solved');
+  if (window.ZDBurst) window.ZDBurst(b, 4);
+  sfx.snap(); T.ok(b);
+}
+// the other cards: 2 at first, then up to 4, all from the same topic
+function enOptions(k, n) { const W = EN.t.words; return lgShuffle([k, ...lgShuffle(W.map((_, i) => i).filter(i => i !== k)).slice(0, n - 1)]); }
+// cards as big as the free space allows (like lgFit in Hádanky)
+function enFit() {
+  const f = $('#enField'), ch = f && f.querySelector('.en-choices');
+  if (!ch || !f.clientHeight) return;
+  const fs = getComputedStyle(f), g = parseFloat(getComputedStyle(ch).columnGap) || 12, fg = parseFloat(fs.rowGap) || 14;
+  let W = f.clientWidth - parseFloat(fs.paddingLeft) - parseFloat(fs.paddingRight);
+  let H = f.clientHeight - parseFloat(fs.paddingTop) - parseFloat(fs.paddingBottom);
+  const q = f.querySelector('.en-q');
+  if (q) { if (fs.flexDirection === 'row') W -= q.offsetWidth + fg; else H -= q.offsetHeight + fg; }
+  const n = ch.children.length, max = Math.min(innerWidth, innerHeight) >= 900 ? 300 : 230;
+  const opts = n === 6 ? [3, 2] : n === 4 ? [2, 4] : n === 3 ? [3, 2] : [2, 1];
+  let best = null;
+  opts.forEach(c => {
+    const r = Math.ceil(n / c), s = Math.min((W - (c - 1) * g) / c, (H - (r - 1) * g) / r, max);
+    if (!best || s > best.s + 2) best = { c, s };
+  });
+  ch.style.setProperty('--c', best.c);
+  ch.style.setProperty('--side', Math.max(60, Math.floor(best.s)) + 'px');
+}
+if (window.ResizeObserver) new ResizeObserver(() => enFit()).observe($('#enField')); else addEventListener('resize', enFit);
+
+// 2) listen and tap: every word once, Polly asks
+function enListen() { EN.order = lgShuffle(EN.t.words.map((_, i) => i)); EN.round = 0; enListenRound(true); }
+function enListenRound(first) {
+  const t = EN.t, W = t.words;
+  if (EN.round >= EN.order.length) { enNextStep(); return; }
+  const k = EN.order[EN.round], w = W[k][1], q = t.q(w);
+  enChoice({ cards: enOptions(k, EN.round < 2 ? 2 : Math.min(4, W.length)).map(i => ({ html: enPic(t, W[i]), ok: i === k })), plain: t.kind === 'colour',
+    say: [...(first ? [['cs', 'Poslouchej Polly a ťukni na správný obrázek.']] : []), ['en', q, { on: () => enPrompt(q, w) }]],
+    again: [['en', q]], wrong: [['en', enCap(w) + '!']],
+    ok: () => {
+      EN.round++;
+      const s = `${enPraise()} ${enCap(t.ok(w))}!`;
+      afterTalk([['en', s, { on: () => enPrompt(s, t.ok(w) === w ? enCap(w) : w) }]], 1300, () => enListenRound());
+    } });
+}
+
+// 3a) animals: English animals make different sounds
+function enSounds() { EN.order = lgShuffle(EN.t.words.map((_, i) => i)).slice(0, 4); EN.round = 0; enSoundsRound(true); }
+function enSoundsRound(first) {
+  const t = EN.t, W = t.words;
+  if (EN.round >= EN.order.length) { enNextStep(); return; }
+  const k = EN.order[EN.round], s = W[k][3], q = `Who says ${s}?`;
+  enChoice({ cards: enOptions(k, 4).map(i => ({ html: enPic(t, W[i]), ok: i === k })),
+    say: [...(first ? [['cs', 'Anglická zvířátka mluví trochu jinak. Poslouchej Polly a ťukni na to správné.']] : []), ['en', q, { on: () => enPrompt(q, s) }]],
+    again: [['en', q]],
+    ok: () => {
+      EN.round++;
+      const a = `The ${W[k][1]} says ${s}!`;
+      afterTalk([['en', 'Yes! ' + a, { on: () => enPrompt(a, s) }]], 1500, () => enSoundsRound());
+    } });
+}
+// 3b) colours: tap the colour Polly says and the picture takes it
+function enPaint() { EN.order = lgShuffle(EN.t.words.map((_, i) => i)).slice(0, 4); EN.objs = lgShuffle(Object.keys(EN_SHAPES)); EN.round = 0; enPaintRound(true); }
+function enPaintRound(first) {
+  const t = EN.t, W = t.words;
+  if (EN.round >= EN.order.length) { enNextStep(); return; }
+  const k = EN.order[EN.round], w = W[k][1], obj = EN.objs[EN.round % EN.objs.length], q = `Paint it ${w}!`;
+  enChoice({ q: `<span class="en-obj" id="enObj">${enShapeSvg(obj)}</span>`, cards: enOptions(k, 4).map(i => ({ html: enPic(t, W[i]), ok: i === k })), plain: true,
+    say: [...(first ? [['cs', 'Polly řekne barvu. Ťukni na ni a obrázek se přebarví.']] : []), ['en', q, { on: () => enPrompt(q, w) }]],
+    again: [['en', q]], wrong: [['en', enCap(w) + '!']],
+    ok: () => {
+      const o = $('#enObj'); if (o) o.style.setProperty('--fill', W[k][0]);
+      EN.round++;
+      const a = `A ${w} ${obj}!`;
+      afterTalk([['en', 'Yes! ' + a, { on: () => enPrompt(a, w) }]], 1700, () => enPaintRound());
+    } });
+}
+// 3c) numbers: like Čísla, every star appears and is counted aloud (~0.85 s each), then the child counts by tapping
+function enCount() {
+  EN.type = 'countIntro'; EN.task = null;
+  const f = $('#enField'); f.className = 'en-field count';
+  f.innerHTML = '<div class="en-countrow" id="enRow"></div>'; $('#enAnswers').innerHTML = '';
+  enPrompt('One, two, three…', 'One');
+  EN.again = [['en', 'One, two, three, four, five!']];
+  talk([['cs', 'Počítej s Polly!']], () => {
+    for (let i = 1; i <= 5; i++) enLater(() => {
+      const row = $('#enRow'); if (!row) return;
+      row.insertAdjacentHTML('beforeend', `<span class="en-cobj">${enEm('⭐')}<b>${i}</b></span>`);
+      tone(380 + i * 46, .10, 'sine', .065);
+      enPrompt(enCap(EN_NUM[i]) + '…', enCap(EN_NUM[i])); talk([['en', EN_NUM[i]]]);
+    }, 300 + (i - 1) * 850);
+    enLater(() => { enPrompt('Five!', 'Five'); talk([['en', 'Five!']]); }, 300 + 5 * 850);
+    enLater(() => { EN.targets = lgShuffle([2, 3, 4, 5]).slice(0, 3); EN.cr = 0; EN.things = lgShuffle(EN_THINGS.slice()); enCountRound(); }, 300 + 5 * 850 + 1500);
+  });
+}
+function enCountRound() {
+  if (EN.cr >= EN.targets.length) { enNextStep(); return; }
+  EN.type = 'count';
+  const n = EN.targets[EN.cr], th = EN.things[EN.cr % EN.things.length], total = Math.min(n + 1 + rand(2), 7);
+  const f = $('#enField'); f.className = 'en-field count';
+  const tall = f.clientHeight > f.clientWidth * 1.1, cols = tall ? 3 : 4, rows = tall ? 3 : 2;
+  const cells = lgShuffle([...Array(cols * rows).keys()]).slice(0, total);
+  f.innerHTML = `<div class="en-count">${cells.map(c => {
+    const x = ((c % cols) + .5) / cols * 100 + (Math.random() - .5) * 6, y = (Math.floor(c / cols) + .5) / rows * 100 + (Math.random() - .5) * 6;
+    return `<button class="en-item" style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%">${enEm(th[0])}</button>`;
+  }).join('')}</div>`;
+  const q = `Tap ${EN_NUM[n]} ${n === 1 ? th[1] : th[2]}!`;
+  EN.task = { n, sel: 0, locked: false, th };
+  EN.again = [['en', q]];
+  enPrompt(q, EN_NUM[n]); talk([['en', q]]);
+}
+function enItemTap(it) {
+  const T = EN.task; if (!T) return;
+  if (T.locked || it.querySelector('.n')) { bounce(it); return; }
+  T.sel++;
+  it.insertAdjacentHTML('beforeend', `<span class="n">${T.sel}</span>`);
+  bounce(it); tone(380 + T.sel * 60, .12);
+  talk([['en', EN_NUM[T.sel]]]);
+  if (T.sel < T.n) return;
+  T.locked = true; sfx.snap(); if (window.ZDBurst) window.ZDBurst(it, 4);
+  EN.cr++;
+  const N = enCap(EN_NUM[T.n]), a = `${N} ${T.n === 1 ? T.th[1] : T.th[2]}!`;
+  enLater(() => afterTalk([['en', `${enPraise()} ${a}`, { on: () => enPrompt(a, N) }]], 1500, enCountRound), 700);
+}
+// 3d) food: the monkey asks politely, the child hands over the right food
+const EN_MONKEY = { pitch: 1.2 };
+function enFeed() { EN.order = lgShuffle(EN.t.words.map((_, i) => i)).slice(0, 4); EN.round = 0; enFeedRound(true); }
+function enFeedRound(first) {
+  const t = EN.t, W = t.words;
+  if (EN.round >= EN.order.length) { enNextStep(); return; }
+  const k = EN.order[EN.round], w = enCap(W[k][1]), q = `${w}, please!`;
+  enChoice({ q: `<span class="en-monkey" id="enMonkey">${enEm('🐒')}</span>`, cards: enOptions(k, 4).map(i => ({ html: enPic(t, W[i]), ok: i === k })),
+    say: [...(first ? [['cs', 'Opička má hlad. Podej jí, o co si řekne.']] : []), ['en', q, Object.assign({ on: () => enPrompt(q, w, '🐒') }, EN_MONKEY)]],
+    again: [['en', q, EN_MONKEY]],
+    ok: b => {
+      enFly(b, $('#enMonkey'));
+      enLater(() => { const m = $('#enMonkey'); if (m) { m.classList.remove('yum'); void m.offsetWidth; m.classList.add('yum'); } }, 520);
+      EN.round++;
+      afterTalk([['en', 'Yum! Thank you!', Object.assign({ on: () => enPrompt('Yum! Thank you!', '', '🐒') }, EN_MONKEY)]], 1800, () => enFeedRound());
+    } });
+}
+function enFly(from, to) {
+  if (!from || !to || reduceMotion) return;
+  const a = from.getBoundingClientRect(), b = to.getBoundingClientRect();
+  const el = document.createElement('div'); el.className = 'en-fly'; el.innerHTML = from.innerHTML;
+  el.style.cssText = `left:${a.left}px;top:${a.top}px;width:${a.width}px;height:${a.height}px;font-size:${a.width * .6}px`;
+  document.body.appendChild(el);
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    el.style.transform = `translate(${(b.left + b.width / 2 - a.left - a.width / 2).toFixed(0)}px,${(b.top + b.height * .6 - a.top - a.height / 2).toFixed(0)}px) scale(.3)`;
+    el.style.opacity = '0';
+  }));
+  setTimeout(() => el.remove(), 700);
+}
+
+// 4) pairs: every card that turns over says its word
+function enMemo() {
+  const t = EN.t, ks = lgShuffle(t.words.map((_, i) => i)).slice(0, 3), faces = lgShuffle([...ks, ...ks]);
+  EN.type = 'memo'; EN.mm = { faces, open: [], got: 0, lock: false };
+  const f = $('#enField'); f.className = 'en-field';
+  f.innerHTML = `<div class="en-choices en-memo">${faces.map((k, i) => `<button class="en-card en-mcard" data-i="${i}" style="--i:${i}" aria-label="Kartička"><span class="back">${enEm('🦜')}</span><span class="face">${enPic(t, t.words[k])}</span></button>`).join('')}</div>`;
+  $('#enAnswers').innerHTML = '';
+  EN.again = [['en', 'Find the pairs!']];
+  enPrompt('Find the pairs!', 'pairs');
+  enFit();
+  talk([['cs', 'Najdi dvojice. Každá kartička řekne svoje slovíčko.'], ['en', 'Find the pairs!']]);
+}
+function enMemoTap(b) {
+  const M = EN.mm; if (!M || M.lock || b.classList.contains('up')) return;
+  const t = EN.t, w = enCap(t.words[M.faces[+b.dataset.i]][1]);
+  b.classList.add('up'); M.open.push(b); tone(500 + M.open.length * 120, .07, 'sine', .1);
+  enPrompt(w + '!', w); talk([['en', w + '!']]);
+  if (M.open.length < 2) return;
+  const [x, y] = M.open; M.lock = true; M.open = [];
+  if (M.faces[+x.dataset.i] !== M.faces[+y.dataset.i]) { enLater(() => { x.classList.remove('up'); y.classList.remove('up'); M.lock = false; }, 1200); return; }
+  M.got++;
+  enLater(() => {
+    x.classList.add('got'); y.classList.add('got'); sfx.snap(); if (window.ZDBurst) window.ZDBurst(y, 4); M.lock = false;
+    if (M.got === M.faces.length / 2) enLater(enNextStep, 900); // the reward says "Well done!", not twice in a row
+  }, 450);
+}
+
+// the reward: a star on the topic, Polly and Lili praise
+function enFinish() {
+  const t = EN.t, done = enDone(); done.add(t.id); store.set('zd-en', [...done]);
+  const next = EN_TOPICS[(EN_TOPICS.indexOf(t) + 1) % EN_TOPICS.length];
+  EN.type = 'done';
+  sfx.win(); confetti();
+  talk([['en', 'Well done!'], ['cs', `Hurá! ${t.win}`]]);
+  showWin(`<span class="en-win-art">${enEm('🦜')}<span class="en-win-topic">${enTopicPic(t)}</span></span>`, 'Well done!', `${t.win} Za to máš hvězdičku ⭐`, [
+    { label: `Další téma: ${next.cz}`, cls: 'primary', fn: () => { $('#win').hidden = true; enStart(next.id); } },
+    { label: 'Ještě jednou', cls: '', fn: () => { $('#win').hidden = true; enStart(t.id); } },
+    { label: 'Vybrat téma', cls: '', fn: () => { $('#win').hidden = true; enShowPick(false); } }
+  ], () => talk([['en', 'Well done!']]));
+}
+
+$('#enField').addEventListener('click', ev => {
+  if (!EN) return;
+  if (EN.type === 'learn') {
+    const th = ev.target.closest('.en-thumb'), big = ev.target.closest('#enBig');
+    if (!th && !big) return;
+    bounce(th || big);
+    if (EN.auto) return; // Lili and Polly are still introducing the words
+    if (th) enLearnCard(+th.dataset.i);
+    const W = enCap(EN.t.words[EN.li][1]);
+    EN.again = [['en', W + '!']]; enPrompt(W + '!', W); talk([['en', W + '!']]);
+    return;
+  }
+  if (EN.type === 'memo') { const b = ev.target.closest('.en-mcard'); if (b) enMemoTap(b); return; }
+  if (EN.type === 'count') { const it = ev.target.closest('.en-item'); if (it) enItemTap(it); return; }
+  if (EN.type === 'choice') { const b = ev.target.closest('.en-card'); if (b) enCardTap(b); }
+});
+$('#enAnswers').addEventListener('click', ev => {
+  if (!EN || !ev.target.closest('#enGo')) return;
+  sfx.pick(); $('#enAnswers').innerHTML = ''; enNextStep();
+});
+
 renderMute();
 renderHome();
 drawHomeArt();
 show('home');
 // totals for the anonymous play statistics (analytics.js)
-window.appTotals = () => ({ puzzle: ANIMALS.length, omalovanky: PAGES.length, cesta: RD_LV.length, cisla: 10, abeceda: LETTERS.length, logika: LG_ORDER.length, spojovacky: DOTS.length });
+window.appTotals = () => ({ puzzle: ANIMALS.length, omalovanky: PAGES.length, cesta: RD_LV.length, cisla: 10, abeceda: LETTERS.length, logika: LG_ORDER.length, spojovacky: DOTS.length, anglictina: EN_TOPICS.length });
 // the redesign layer (js/redesign-v2.js) cannot see variables inside this closure, so it talks to the game only through this
 window.ZD = { say: text => say(text), isMuted: () => muted };
 })();
 </script>
 
-<script src="analytics.js?v=2" data-app="zviratkova-dilna"></script>
+<script src="analytics.js?v=3" data-app="zviratkova-dilna"></script>
 <script src="js/redesign-v2.js?v=3"></script>
-<script src="js/full-world-v2.js?v=1"></script>
-<script src="js/world-art.js?v=1"></script>
+<script src="js/full-world-v2.js?v=2"></script>
+<script src="js/world-art.js?v=2"></script>
 </body>
 </html>

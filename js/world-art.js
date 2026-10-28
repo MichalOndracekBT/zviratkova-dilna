@@ -5,10 +5,10 @@
   'use strict';
 
   // location key -> home card id / game screens that share the location's background
-  const HOME = { road: 'goRoad', puzzle: 'goPuzzle', color: 'goColor', count: 'goCount', abc: 'goAbc', logic: 'goLogic', memo: 'goMemo' };
+  const HOME = { road: 'goRoad', puzzle: 'goPuzzle', color: 'goColor', count: 'goCount', abc: 'goAbc', logic: 'goLogic', memo: 'goMemo', english: 'goEnglish' };
   const SCREENS = {
     road: ['road'], puzzle: ['pickPuzzle', 'puzzle', 'extra'], color: ['pickColor', 'color'],
-    count: ['count'], abc: ['abc'], logic: ['logic'], memo: ['memo']
+    count: ['count'], abc: ['abc'], logic: ['logic'], memo: ['memo'], english: ['english']
   };
 
   const load = url => new Promise((ok, fail) => { const im = new Image(); im.onload = () => ok(url); im.onerror = fail; im.src = url; });
